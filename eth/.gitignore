@@ -1,0 +1,10 @@
+node_modules/*
+build/*
+yarn-error.log
+.gitkeep
+*.env
+.env.prod
+
+.openzeppelin/dev-*.json
+!.openzeppelin/dev-100.json
+.openzeppelin/.session
