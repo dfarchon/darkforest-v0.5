@@ -90,11 +90,11 @@ const deploy = async () => {
     coreControllerWallet,
     ozAdminWallet,
   ] = [
-    new HDWalletProvider(DEPLOYER_MNEMONIC, network_url),
-    new HDWalletProvider(WHITELIST_CONTROLLER_MNEMONIC, network_url),
-    new HDWalletProvider(CORE_CONTROLLER_MNEMONIC, network_url),
-    new HDWalletProvider(OZ_ADMIN_MNEMONIC, network_url),
-  ];
+      new HDWalletProvider(DEPLOYER_MNEMONIC, network_url),
+      new HDWalletProvider(WHITELIST_CONTROLLER_MNEMONIC, network_url),
+      new HDWalletProvider(CORE_CONTROLLER_MNEMONIC, network_url),
+      new HDWalletProvider(OZ_ADMIN_MNEMONIC, network_url),
+    ];
 
   const [whitelistControllerAddress, coreControllerAddress, ozAdminAddress] = [
     whitelistControllerWallet.getAddress(),

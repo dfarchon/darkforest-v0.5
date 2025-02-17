@@ -3,39 +3,46 @@
   "version": "1.0.0",
   "main": "index.js",
   "license": "MIT",
-  "devDependencies": {
-    "hardhat": "^2.0.7",
-    "@openzeppelin/cli": "^2.8.2",
-    "@openzeppelin/contracts-upgradeable": "^3.3.0",
-    "@openzeppelin/test-environment": "^0.1.4",
-    "@openzeppelin/test-helpers": "^0.5.6",
-    "@truffle/hdwallet-provider": "^1.0.40",
-    "@types/node": "^14.0.27",
-    "@types/readline-sync": "^1.4.3",
-    "hardhat-contract-sizer": "^2.0.2",
-    "ganache-cli": "^6.9.1",
-    "mocha": "^8.0.1",
-    "prettier": "^2.0.5",
-    "prettier-plugin-solidity": "^1.0.0-alpha.54",
-    "solhint": "^3.0.0",
-    "typescript": "^3.9.7",
-    "why-is-node-running": "^2.2.0"
-  },
   "engines": {
-    "node": "14.15.*"
-  },
-  "dependencies": {
-    "@openzeppelin/upgrades": "^2.8.0",
-    "bn.js": "^4.11.0",
-    "dotenv": "^8.2.0",
-    "readline-sync": "^1.4.10",
-    "ts-node": "^8.10.2"
+    "node": "18.19.1"
   },
   "scripts": {
-    "deploy:dev": "yarn run compile && NODE_ENV=development ts-node src/deploy.ts",
-    "deploy:prod": "yarn run compile && NODE_ENV=production ts-node src/deploy.ts",
-    "compile": "oz compile --optimizer on",
-    "test": "yarn run compile && mocha --exit --recursive test --timeout 25000",
-    "clean": "rm -rf node_modules"
+    "clean": "del-cli artifacts cache subgraph/build node_modules tsconfig.ref.tsbuildinfo",
+    "format": "prettier --write .",
+    "prettier": "prettier --write --plugin=prettier-plugin-solidity 'contracts/**/*.sol'",
+    "compile": "hardhat compile",
+    "hardhat:dev": "hardhat --network localhost",
+    "deploy:dev": "NODE_ENV=development hardhat --network localhost deploy --whitelist false",
+    "deploy:prod": "NODE_ENV=production hardhat --network holesky deploy --whitelist false",
+    "test": "oz compile --optimizer on && mocha --exit --recursive test --timeout 25000"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-chai-matchers": "^2.0.0",
+    "@nomicfoundation/hardhat-ethers": "^3.0.0",
+    "@nomicfoundation/hardhat-ignition": "^0.15.0",
+    "@nomicfoundation/hardhat-ignition-ethers": "^0.15.0",
+    "@nomicfoundation/hardhat-network-helpers": "^1.0.0",
+    "@nomicfoundation/hardhat-toolbox": "^5.0.0",
+    "@nomicfoundation/hardhat-verify": "^2.0.0",
+    "@typechain/ethers-v6": "^0.5.0",
+    "@typechain/hardhat": "^9.0.0",
+    "@types/chai": "^4.2.0",
+    "@types/mocha": ">=9.1.0",
+    "@types/node": ">=18.0.0",
+    "chai": "^4.2.0",
+    "del-cli": "^6.0.0",
+    "ethers": "^6.4.0",
+    "hardhat": "^2.22.18",
+    "hardhat-gas-reporter": "^1.0.8",
+    "prettier": "^3.4.2",
+    "prettier-plugin-solidity": "^1.4.2",
+    "solidity-coverage": "^0.8.0",
+    "ts-node": ">=8.0.0",
+    "typechain": "^8.3.0",
+    "typescript": ">=4.5.0"
+  },
+  "dependencies": {
+    "@openzeppelin/contracts-upgradeable": "^4.8.3",
+    "dotenv": "^16.4.7"
   }
 }

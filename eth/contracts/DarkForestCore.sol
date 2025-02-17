@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: UNLICENSED
-pragma solidity ^0.6.9;
+
+pragma solidity ^0.8.0;
 pragma experimental ABIEncoderV2;
 
 // Import base Initializable contract
-import "@openzeppelin/contracts-upgradeable/proxy/Initializable.sol";
-import "@openzeppelin/contracts-upgradeable/math/SafeMathUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/math/MathUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
+import "@openzeppelin/contracts-upgradeable/utils/math/MathUpgradeable.sol";
 import "./Verifier.sol";
 import "./DarkForestStorageV1.sol";
 import "./DarkForestTokens.sol";
@@ -31,7 +31,6 @@ import "./DarkForestInitialize.sol";
 
 contract DarkForestCore is Initializable, DarkForestStorageV1 {
     using ABDKMath64x64 for *;
-    using SafeMathUpgradeable for *;
     using MathUpgradeable for uint256;
 
     event PlayerInitialized(address player, uint256 loc);
@@ -57,7 +56,7 @@ contract DarkForestCore is Initializable, DarkForestStorageV1 {
 
         DISABLE_ZK_CHECK = _disableZKCheck;
 
-        tokenMintEndTimestamp = 1611584314; // a month from contract deploy - 01/25/21 2:18:34 GMT
+        tokenMintEndTimestamp = 4911112800; // Fri Aug 17 2125 14:00:00 GMT+0000
         target4RadiusConstant = 800;
 
         planetLevelThresholds = [
@@ -77,7 +76,7 @@ contract DarkForestCore is Initializable, DarkForestStorageV1 {
         initializedPlanetCountByLevel = [0, 0, 0, 0, 0, 0, 0, 0];
         for (uint256 i = 0; i < planetLevelThresholds.length; i += 1) {
             cumulativeRarities.push(
-                (2**24 / planetLevelThresholds[i]) * PLANET_RARITY
+                (2 ** 24 / planetLevelThresholds[i]) * PLANET_RARITY
             );
         }
 
@@ -136,16 +135,15 @@ contract DarkForestCore is Initializable, DarkForestStorageV1 {
         tokenMintEndTimestamp = _newEnd;
     }
 
-    function changeTarget4RadiusConstant(uint256 _newConstant)
-        public
-        onlyAdmin
-    {
+    function changeTarget4RadiusConstant(
+        uint256 _newConstant
+    ) public onlyAdmin {
         target4RadiusConstant = _newConstant;
         _updateWorldRadius();
     }
 
     function withdraw() public onlyAdmin {
-        msg.sender.transfer(address(this).balance);
+        payable(msg.sender).transfer(address(this).balance);
     }
 
     //////////////
@@ -157,11 +155,10 @@ contract DarkForestCore is Initializable, DarkForestStorageV1 {
         return planetIds.length;
     }
 
-    function bulkGetPlanetIds(uint256 startIdx, uint256 endIdx)
-        public
-        view
-        returns (uint256[] memory ret)
-    {
+    function bulkGetPlanetIds(
+        uint256 startIdx,
+        uint256 endIdx
+    ) public view returns (uint256[] memory ret) {
         // return slice of planetIds array from startIdx through endIdx - 1
         ret = new uint256[](endIdx - startIdx);
         for (uint256 i = startIdx; i < endIdx; i++) {
@@ -169,11 +166,9 @@ contract DarkForestCore is Initializable, DarkForestStorageV1 {
         }
     }
 
-    function bulkGetPlanetsByIds(uint256[] calldata ids)
-        public
-        view
-        returns (DarkForestTypes.Planet[] memory ret)
-    {
+    function bulkGetPlanetsByIds(
+        uint256[] calldata ids
+    ) public view returns (DarkForestTypes.Planet[] memory ret) {
         ret = new DarkForestTypes.Planet[](ids.length);
 
         for (uint256 i = 0; i < ids.length; i++) {
@@ -181,14 +176,11 @@ contract DarkForestCore is Initializable, DarkForestStorageV1 {
         }
     }
 
-    function bulkGetPlanetArrivalsByIds(uint256[] calldata ids)
-        public
-        view
-        returns (DarkForestTypes.ArrivalData[][] memory)
-    {
-
-            DarkForestTypes.ArrivalData[][] memory ret
-         = new DarkForestTypes.ArrivalData[][](ids.length);
+    function bulkGetPlanetArrivalsByIds(
+        uint256[] calldata ids
+    ) public view returns (DarkForestTypes.ArrivalData[][] memory) {
+        DarkForestTypes.ArrivalData[][]
+            memory ret = new DarkForestTypes.ArrivalData[][](ids.length);
 
         for (uint256 i = 0; i < ids.length; i++) {
             ret[i] = getPlanetArrivals(ids[i]);
@@ -203,11 +195,9 @@ contract DarkForestCore is Initializable, DarkForestStorageV1 {
     // we have to make five contract calls per new arrival id: arrival data by id, and
     // both planets and planetsExtendedInfo for both from- and to-planets
     // with this we just have to make one call, since only owner/pop/silver would be modified
-    function bulkGetCompactArrivalsByIds(uint256[] calldata ids)
-        public
-        view
-        returns (DarkForestTypes.CompactArrival[] memory ret)
-    {
+    function bulkGetCompactArrivalsByIds(
+        uint256[] calldata ids
+    ) public view returns (DarkForestTypes.CompactArrival[] memory ret) {
         ret = new DarkForestTypes.CompactArrival[](ids.length);
 
         for (uint256 i = 0; i < ids.length; i++) {
@@ -231,11 +221,9 @@ contract DarkForestCore is Initializable, DarkForestStorageV1 {
         }
     }
 
-    function bulkGetPlanetsExtendedInfoByIds(uint256[] calldata ids)
-        public
-        view
-        returns (DarkForestTypes.PlanetExtendedInfo[] memory ret)
-    {
+    function bulkGetPlanetsExtendedInfoByIds(
+        uint256[] calldata ids
+    ) public view returns (DarkForestTypes.PlanetExtendedInfo[] memory ret) {
         ret = new DarkForestTypes.PlanetExtendedInfo[](ids.length);
 
         for (uint256 i = 0; i < ids.length; i++) {
@@ -243,11 +231,10 @@ contract DarkForestCore is Initializable, DarkForestStorageV1 {
         }
     }
 
-    function bulkGetPlanets(uint256 startIdx, uint256 endIdx)
-        public
-        view
-        returns (DarkForestTypes.Planet[] memory ret)
-    {
+    function bulkGetPlanets(
+        uint256 startIdx,
+        uint256 endIdx
+    ) public view returns (DarkForestTypes.Planet[] memory ret) {
         // return array of planets corresponding to planetIds[startIdx] through planetIds[endIdx - 1]
         ret = new DarkForestTypes.Planet[](endIdx - startIdx);
         for (uint256 i = startIdx; i < endIdx; i++) {
@@ -255,11 +242,10 @@ contract DarkForestCore is Initializable, DarkForestStorageV1 {
         }
     }
 
-    function bulkGetPlanetsExtendedInfo(uint256 startIdx, uint256 endIdx)
-        public
-        view
-        returns (DarkForestTypes.PlanetExtendedInfo[] memory ret)
-    {
+    function bulkGetPlanetsExtendedInfo(
+        uint256 startIdx,
+        uint256 endIdx
+    ) public view returns (DarkForestTypes.PlanetExtendedInfo[] memory ret) {
         // return array of planets corresponding to planetIds[startIdx] through planetIds[endIdx - 1]
         ret = new DarkForestTypes.PlanetExtendedInfo[](endIdx - startIdx);
         for (uint256 i = startIdx; i < endIdx; i++) {
@@ -271,11 +257,10 @@ contract DarkForestCore is Initializable, DarkForestStorageV1 {
         return playerIds.length;
     }
 
-    function bulkGetPlayers(uint256 startIdx, uint256 endIdx)
-        public
-        view
-        returns (address[] memory ret)
-    {
+    function bulkGetPlayers(
+        uint256 startIdx,
+        uint256 endIdx
+    ) public view returns (address[] memory ret) {
         // return slice of players array from startIdx through endIdx - 1
         ret = new address[](endIdx - startIdx);
         for (uint256 i = startIdx; i < endIdx; i++) {
@@ -295,11 +280,9 @@ contract DarkForestCore is Initializable, DarkForestStorageV1 {
         return cumulativeRarities;
     }
 
-    function getPlanetArrivals(uint256 _location)
-        public
-        view
-        returns (DarkForestTypes.ArrivalData[] memory ret)
-    {
+    function getPlanetArrivals(
+        uint256 _location
+    ) public view returns (DarkForestTypes.ArrivalData[] memory ret) {
         uint256 arrivalCount = 0;
         for (uint256 i = 0; i < planetEvents[_location].length; i += 1) {
             if (
@@ -322,16 +305,14 @@ contract DarkForestCore is Initializable, DarkForestStorageV1 {
         }
     }
 
-    function bulkGetPlanetArrivals(uint256 startIdx, uint256 endIdx)
-        public
-        view
-        returns (DarkForestTypes.ArrivalData[][] memory)
-    {
+    function bulkGetPlanetArrivals(
+        uint256 startIdx,
+        uint256 endIdx
+    ) public view returns (DarkForestTypes.ArrivalData[][] memory) {
         // return array of planets corresponding to planetIds[startIdx] through planetIds[endIdx - 1]
 
-
-            DarkForestTypes.ArrivalData[][] memory ret
-         = new DarkForestTypes.ArrivalData[][](endIdx - startIdx);
+        DarkForestTypes.ArrivalData[][]
+            memory ret = new DarkForestTypes.ArrivalData[][](endIdx - startIdx);
         for (uint256 i = startIdx; i < endIdx; i++) {
             ret[i - startIdx] = getPlanetArrivals(planetIds[i]);
         }
@@ -343,11 +324,10 @@ contract DarkForestCore is Initializable, DarkForestStorageV1 {
         view
         returns (DarkForestTypes.PlanetDefaultStats[] memory)
     {
-
-            DarkForestTypes.PlanetDefaultStats[] memory ret
-         = new DarkForestTypes.PlanetDefaultStats[](
-            planetLevelThresholds.length
-        );
+        DarkForestTypes.PlanetDefaultStats[]
+            memory ret = new DarkForestTypes.PlanetDefaultStats[](
+                planetLevelThresholds.length
+            );
         for (uint256 i = 0; i < planetLevelThresholds.length; i += 1) {
             ret[i] = planetDefaultStats[i];
         }
@@ -362,11 +342,9 @@ contract DarkForestCore is Initializable, DarkForestStorageV1 {
         return upgrades;
     }
 
-    function getPlayerArtifactIds(address playerId)
-        public
-        view
-        returns (uint256[] memory)
-    {
+    function getPlayerArtifactIds(
+        address playerId
+    ) public view returns (uint256[] memory) {
         return tokens.getPlayerArtifactIds(playerId);
     }
 
@@ -374,11 +352,9 @@ contract DarkForestCore is Initializable, DarkForestStorageV1 {
         return tokens.doesArtifactExist(tokenId);
     }
 
-    function getArtifactById(uint256 artifactId)
-        public
-        view
-        returns (DarkForestTypes.ArtifactWithMetadata memory ret)
-    {
+    function getArtifactById(
+        uint256 artifactId
+    ) public view returns (DarkForestTypes.ArtifactWithMetadata memory ret) {
         DarkForestTypes.Artifact memory artifact = tokens.getArtifact(
             artifactId
         );
@@ -392,11 +368,9 @@ contract DarkForestCore is Initializable, DarkForestStorageV1 {
         });
     }
 
-    function bulkGetArtifactsByIds(uint256[] calldata ids)
-        public
-        view
-        returns (DarkForestTypes.ArtifactWithMetadata[] memory ret)
-    {
+    function bulkGetArtifactsByIds(
+        uint256[] calldata ids
+    ) public view returns (DarkForestTypes.ArtifactWithMetadata[] memory ret) {
         ret = new DarkForestTypes.ArtifactWithMetadata[](ids.length);
 
         for (uint256 i = 0; i < ids.length; i++) {
@@ -443,16 +417,16 @@ contract DarkForestCore is Initializable, DarkForestStorageV1 {
             uint256 _level,
             DarkForestTypes.PlanetResource _resource
         ) = DarkForestUtils._getPlanetLevelAndResource(
-            _location,
-            _perlin,
-            PERLIN_THRESHOLD_1,
-            PERLIN_THRESHOLD_2,
-            SILVER_RARITY_1,
-            SILVER_RARITY_2,
-            SILVER_RARITY_3,
-            planetLevelThresholds,
-            planetDefaultStats
-        );
+                _location,
+                _perlin,
+                PERLIN_THRESHOLD_1,
+                PERLIN_THRESHOLD_2,
+                SILVER_RARITY_1,
+                SILVER_RARITY_2,
+                SILVER_RARITY_3,
+                planetLevelThresholds,
+                planetDefaultStats
+            );
 
         if (_isHomePlanet) {
             require(_level == 0, "Can only initialize on planet level 0");
@@ -613,11 +587,10 @@ contract DarkForestCore is Initializable, DarkForestStorageV1 {
         return (planetEventsCount - 1);
     }
 
-    function upgradePlanet(uint256 _location, uint256 _branch)
-        public
-        notPaused
-        returns (uint256, uint256)
-    {
+    function upgradePlanet(
+        uint256 _location,
+        uint256 _branch
+    ) public notPaused returns (uint256, uint256) {
         // _branch specifies which of the three upgrade branches player is leveling up
         // 0 improves silver production and capacity
         // 1 improves population
@@ -635,10 +608,10 @@ contract DarkForestCore is Initializable, DarkForestStorageV1 {
         return (_location, _branch);
     }
 
-    function transferOwnership(uint256 _location, address _player)
-        public
-        notPaused
-    {
+    function transferOwnership(
+        uint256 _location,
+        address _player
+    ) public notPaused {
         require(
             planetsExtendedInfo[_location].isInitialized == true,
             "Planet is not initialized"
@@ -696,9 +669,9 @@ contract DarkForestCore is Initializable, DarkForestStorageV1 {
         refreshPlanet(planetId);
         DarkForestTypes.Planet storage planet = planets[planetId];
 
-
-            DarkForestTypes.PlanetExtendedInfo storage info
-         = planetsExtendedInfo[planetId];
+        DarkForestTypes.PlanetExtendedInfo storage info = planetsExtendedInfo[
+            planetId
+        ];
         DarkForestTypes.Biome biome = DarkForestUtils._getBiome(
             info.spaceType,
             biomebase,
@@ -766,19 +739,18 @@ contract DarkForestCore is Initializable, DarkForestStorageV1 {
         return;
     }
 
-    function depositArtifact(uint256 locationId, uint256 artifactId)
-        public
-        notPaused
-    {
+    function depositArtifact(
+        uint256 locationId,
+        uint256 artifactId
+    ) public notPaused {
         // should this be implemented as logic that is triggered when a player sends
         // an artifact to the contract with locationId in the extra data?
         // might be better use of the ERC721 standard - can use safeTransfer then
         refreshPlanet(locationId);
         DarkForestTypes.Planet storage planet = planets[locationId];
 
-
-            DarkForestTypes.PlanetExtendedInfo storage planetInfo
-         = planetsExtendedInfo[locationId];
+        DarkForestTypes.PlanetExtendedInfo
+            storage planetInfo = planetsExtendedInfo[locationId];
 
         require(
             tokens.ownerOf(artifactId) == msg.sender,
@@ -813,9 +785,8 @@ contract DarkForestCore is Initializable, DarkForestStorageV1 {
         refreshPlanet(locationId);
         DarkForestTypes.Planet storage planet = planets[locationId];
 
-
-            DarkForestTypes.PlanetExtendedInfo storage planetInfo
-         = planetsExtendedInfo[locationId];
+        DarkForestTypes.PlanetExtendedInfo
+            storage planetInfo = planetsExtendedInfo[locationId];
 
         uint256 artifactId = planetInfo.heldArtifactId;
 
