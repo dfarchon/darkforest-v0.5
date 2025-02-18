@@ -7,6 +7,49 @@ It uses zk-SNARKs for privacy and decentralization, creating a unique gaming exp
 
 ## 🚀 Quick Start
 
+### Setting Up the Project
+
+### Prerequisites
+
+Before getting started, please ensure you have the following tools installed:
+
+- **nvm** (Node Version Manager)
+- **Node.js**
+  - v18.19.1 (required for smart contracts development)
+  - v16.20.2 (required for client development)
+- **Package Managers**
+  - **pnpm** v9.9.0 (used for smart contracts in `eth/` directory)
+  - **yarn** v1.22.21 (used for client application in `client/` directory)
+
+### Installing NVM
+
+```bash
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.35.3/install.sh | bash
+```
+
+1. **Smart Contracts Setup**
+
+```bash
+cd eth/
+nvm use 18.19.1
+pnpm install
+cp .env.example .env
+npx hardhat node
+# In a new terminal:
+pnpm deploy:dev
+```
+
+2. **Client Setup**
+
+```bash
+cd client/
+nvm use 16.20.2
+yarn install
+yarn run start:dev
+```
+
+The game should now be running at `http://localhost:8081`!
+
 ## 🏗️ Project Structure
 
 - `/client` - Game UI and frontend logic
