@@ -1,6 +1,5 @@
 // SPDX-License-Identifier: UNLICENSED
-
-pragma solidity ^0.8.0;
+pragma solidity ^0.6.9;
 pragma experimental ABIEncoderV2;
 
 // Libraries
@@ -15,7 +14,7 @@ library DarkForestUtils {
         uint256 _endByte
     ) public pure returns (uint256 _byteUInt) {
         for (uint256 i = _startByte; i <= _endByte; i++) {
-            _byteUInt += uint256(uint8(_b[i])) * (256 ** (_endByte - i));
+            _byteUInt += uint256(uint8(_b[i])) * (256**(_endByte - i));
         }
     }
 
@@ -105,10 +104,11 @@ library DarkForestUtils {
         return r4;
     }
 
-    function _isPlanetMineable(
-        uint256 planetId,
-        uint256 planetLevel
-    ) internal view returns (bool) {
+    function _isPlanetMineable(uint256 planetId, uint256 planetLevel)
+        internal
+        view
+        returns (bool)
+    {
         bytes memory _b = abi.encodePacked(planetId);
         uint256 fourteenthByte = _calculateByteUInt(_b, 14, 14);
         // TODO this should be a constant
@@ -132,9 +132,11 @@ library DarkForestUtils {
             );
     }
 
-    function _randomArtifactTypeAndLevelBonus(
-        uint256 artifactSeed
-    ) internal view returns (DarkForestTypes.ArtifactType, uint256) {
+    function _randomArtifactTypeAndLevelBonus(uint256 artifactSeed)
+        internal
+        view
+        returns (DarkForestTypes.ArtifactType, uint256)
+    {
         uint256 lastByteOfSeed = artifactSeed % 0xFF;
         uint256 secondLastByteOfSeed = ((artifactSeed - lastByteOfSeed) / 256) %
             0xFF;
@@ -177,9 +179,11 @@ library DarkForestUtils {
         return DarkForestTypes.Biome(biome);
     }
 
-    function _getUpgradeForArtifact(
-        DarkForestTypes.Artifact memory artifact
-    ) public view returns (DarkForestTypes.Upgrade memory) {
+    function _getUpgradeForArtifact(DarkForestTypes.Artifact memory artifact)
+        public
+        view
+        returns (DarkForestTypes.Upgrade memory)
+    {
         // formula pulled out of my ass at 4AM
 
         DarkForestTypes.Upgrade memory ret = DarkForestTypes.Upgrade({

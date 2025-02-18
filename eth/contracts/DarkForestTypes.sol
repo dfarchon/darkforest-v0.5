@@ -1,25 +1,11 @@
 // SPDX-License-Identifier: UNLICENSED
-
-pragma solidity ^0.8.0;
+pragma solidity ^0.6.9;
 
 library DarkForestTypes {
-    enum PlanetResource {
-        NONE,
-        SILVER
-    }
-    enum PlanetEventType {
-        ARRIVAL
-    }
-    enum SpaceType {
-        NEBULA,
-        SPACE,
-        DEEP_SPACE
-    }
-    enum UpgradeBranch {
-        DEFENSE,
-        RANGE,
-        SPEED
-    }
+    enum PlanetResource {NONE, SILVER}
+    enum PlanetEventType {ARRIVAL}
+    enum SpaceType {NEBULA, SPACE, DEEP_SPACE}
+    enum UpgradeBranch {DEFENSE, RANGE, SPEED}
 
     struct Planet {
         address owner;
@@ -106,13 +92,7 @@ library DarkForestTypes {
     }
 
     // for NFTs
-    enum ArtifactType {
-        Unknown,
-        Monolith,
-        Colossus,
-        Spaceship,
-        Pyramid
-    }
+    enum ArtifactType {Unknown, Monolith, Colossus, Spaceship, Pyramid}
 
     // for NFTs
     struct Artifact {

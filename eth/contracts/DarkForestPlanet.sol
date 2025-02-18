@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: UNLICENSED
-
-pragma solidity ^0.8.0;
+pragma solidity ^0.6.9;
 pragma experimental ABIEncoderV2;
 
+import "@openzeppelin/contracts-upgradeable/math/SafeMathUpgradeable.sol";
 import "./DarkForestTypes.sol";
 import "./DarkForestTokens.sol";
 import "./DarkForestLazyUpdate.sol";
@@ -172,7 +172,13 @@ library DarkForestPlanet {
         }
 
         // initial population (barbarians) and silver
-        _planet.population = (_planet.populationCap * _planetDefaultStats.barbarianPercentage) / 100;
+        _planet.population = SafeMathUpgradeable.div(
+            SafeMathUpgradeable.mul(
+                _planet.populationCap,
+                _planetDefaultStats.barbarianPercentage
+            ),
+            100
+        );
         // barbarians adjusted for def debuffs, and buffed in space/deepspace
         if (deepSpace) {
             _planet.population *= 6;
@@ -304,9 +310,9 @@ library DarkForestPlanet {
             );
         }
 
-        DarkForestTypes.Upgrade memory upgrade = upgrades[_branch][
-            upgradeBranchCurrentLevel
-        ];
+
+            DarkForestTypes.Upgrade memory upgrade
+         = upgrades[_branch][upgradeBranchCurrentLevel];
         uint256 upgradeCost = (planets[_location].silverCap *
             20 *
             (totalLevel + 1)) / 100;

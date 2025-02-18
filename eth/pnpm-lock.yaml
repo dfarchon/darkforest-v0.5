@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       '@openzeppelin/contracts-upgradeable':
-        specifier: ^4.8.3
-        version: 4.9.6
+        specifier: ^3.3.0
+        version: 3.4.2
       dotenv:
         specifier: ^16.4.7
         version: 16.4.7
@@ -407,8 +407,8 @@ packages:
     resolution: {integrity: sha512-q4n32/FNKIhQ3zQGGw5CvPF6GTvDCpYwIf7bEY/dZTZbgfDsHyjJwURxUJf3VQuuJj+fDIFl4+KkBVbw4Ef6jA==}
     engines: {node: '>= 12'}
 
-  '@openzeppelin/contracts-upgradeable@4.9.6':
-    resolution: {integrity: sha512-m4iHazOsOCv1DgM7eD7GupTJ+NFVujRZt1wzddDPSVGpWdKq1SKkla5htKG7+IS4d2XOCtzkUNwRZ7Vq5aEUMA==}
+  '@openzeppelin/contracts-upgradeable@3.4.2':
+    resolution: {integrity: sha512-mDlBS17ymb2wpaLcrqRYdnBAmP1EwqhOXMvqWk2c5Q1N1pm5TkiCtXM9Xzznh4bYsQBq0aIWEkFFE2+iLSN1Tw==}
 
   '@scure/base@1.1.9':
     resolution: {integrity: sha512-8YKhl8GHiNI/pU2VMaofa2Tor7PJRAjwQLBBuilkJ9L5+13yVbC7JO/wS7piioAvPSwR3JKM1IJ/u4xQzbcXKg==}
@@ -2710,7 +2710,7 @@ snapshots:
       '@nomicfoundation/solidity-analyzer-linux-x64-musl': 0.1.2
       '@nomicfoundation/solidity-analyzer-win32-x64-msvc': 0.1.2
 
-  '@openzeppelin/contracts-upgradeable@4.9.6': {}
+  '@openzeppelin/contracts-upgradeable@3.4.2': {}
 
   '@scure/base@1.1.9': {}
 

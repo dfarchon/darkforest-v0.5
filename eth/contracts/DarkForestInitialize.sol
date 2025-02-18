@@ -1,6 +1,5 @@
 // SPDX-License-Identifier: UNLICENSED
-
-pragma solidity ^0.8.0;
+pragma solidity ^0.6.9;
 
 // Libraries
 import "./ABDKMath64x64.sol";
@@ -123,40 +122,40 @@ library DarkForestInitialize {
         );
     }
 
-    function initializeUpgrades(
-        DarkForestTypes.Upgrade[4][3] storage upgrades
-    ) public {
+    function initializeUpgrades(DarkForestTypes.Upgrade[4][3] storage upgrades)
+        public
+    {
         // defense
-        upgrades[uint256(DarkForestTypes.UpgradeBranch.DEFENSE)][
-            0
-        ] = DarkForestTypes.Upgrade({
+        upgrades[uint256(
+            DarkForestTypes.UpgradeBranch.DEFENSE
+        )][0] = DarkForestTypes.Upgrade({
             popCapMultiplier: 120,
             popGroMultiplier: 120,
             rangeMultiplier: 100,
             speedMultiplier: 100,
             defMultiplier: 150
         });
-        upgrades[uint256(DarkForestTypes.UpgradeBranch.DEFENSE)][
-            1
-        ] = DarkForestTypes.Upgrade({
+        upgrades[uint256(
+            DarkForestTypes.UpgradeBranch.DEFENSE
+        )][1] = DarkForestTypes.Upgrade({
             popCapMultiplier: 120,
             popGroMultiplier: 120,
             rangeMultiplier: 100,
             speedMultiplier: 100,
             defMultiplier: 150
         });
-        upgrades[uint256(DarkForestTypes.UpgradeBranch.DEFENSE)][
-            2
-        ] = DarkForestTypes.Upgrade({
+        upgrades[uint256(
+            DarkForestTypes.UpgradeBranch.DEFENSE
+        )][2] = DarkForestTypes.Upgrade({
             popCapMultiplier: 120,
             popGroMultiplier: 120,
             rangeMultiplier: 100,
             speedMultiplier: 100,
             defMultiplier: 150
         });
-        upgrades[uint256(DarkForestTypes.UpgradeBranch.DEFENSE)][
-            3
-        ] = DarkForestTypes.Upgrade({
+        upgrades[uint256(
+            DarkForestTypes.UpgradeBranch.DEFENSE
+        )][3] = DarkForestTypes.Upgrade({
             popCapMultiplier: 120,
             popGroMultiplier: 120,
             rangeMultiplier: 100,
@@ -165,36 +164,36 @@ library DarkForestInitialize {
         });
 
         // range
-        upgrades[uint256(DarkForestTypes.UpgradeBranch.RANGE)][
-            0
-        ] = DarkForestTypes.Upgrade({
+        upgrades[uint256(
+            DarkForestTypes.UpgradeBranch.RANGE
+        )][0] = DarkForestTypes.Upgrade({
             popCapMultiplier: 120,
             popGroMultiplier: 120,
             rangeMultiplier: 125,
             speedMultiplier: 100,
             defMultiplier: 100
         });
-        upgrades[uint256(DarkForestTypes.UpgradeBranch.RANGE)][
-            1
-        ] = DarkForestTypes.Upgrade({
+        upgrades[uint256(
+            DarkForestTypes.UpgradeBranch.RANGE
+        )][1] = DarkForestTypes.Upgrade({
             popCapMultiplier: 120,
             popGroMultiplier: 120,
             rangeMultiplier: 125,
             speedMultiplier: 100,
             defMultiplier: 100
         });
-        upgrades[uint256(DarkForestTypes.UpgradeBranch.RANGE)][
-            2
-        ] = DarkForestTypes.Upgrade({
+        upgrades[uint256(
+            DarkForestTypes.UpgradeBranch.RANGE
+        )][2] = DarkForestTypes.Upgrade({
             popCapMultiplier: 120,
             popGroMultiplier: 120,
             rangeMultiplier: 125,
             speedMultiplier: 100,
             defMultiplier: 100
         });
-        upgrades[uint256(DarkForestTypes.UpgradeBranch.RANGE)][
-            3
-        ] = DarkForestTypes.Upgrade({
+        upgrades[uint256(
+            DarkForestTypes.UpgradeBranch.RANGE
+        )][3] = DarkForestTypes.Upgrade({
             popCapMultiplier: 120,
             popGroMultiplier: 120,
             rangeMultiplier: 125,
@@ -203,36 +202,36 @@ library DarkForestInitialize {
         });
 
         // speed
-        upgrades[uint256(DarkForestTypes.UpgradeBranch.SPEED)][
-            0
-        ] = DarkForestTypes.Upgrade({
+        upgrades[uint256(
+            DarkForestTypes.UpgradeBranch.SPEED
+        )][0] = DarkForestTypes.Upgrade({
             popCapMultiplier: 120,
             popGroMultiplier: 120,
             rangeMultiplier: 100,
             speedMultiplier: 150,
             defMultiplier: 100
         });
-        upgrades[uint256(DarkForestTypes.UpgradeBranch.SPEED)][
-            1
-        ] = DarkForestTypes.Upgrade({
+        upgrades[uint256(
+            DarkForestTypes.UpgradeBranch.SPEED
+        )][1] = DarkForestTypes.Upgrade({
             popCapMultiplier: 120,
             popGroMultiplier: 120,
             rangeMultiplier: 100,
             speedMultiplier: 150,
             defMultiplier: 100
         });
-        upgrades[uint256(DarkForestTypes.UpgradeBranch.SPEED)][
-            2
-        ] = DarkForestTypes.Upgrade({
+        upgrades[uint256(
+            DarkForestTypes.UpgradeBranch.SPEED
+        )][2] = DarkForestTypes.Upgrade({
             popCapMultiplier: 120,
             popGroMultiplier: 120,
             rangeMultiplier: 100,
             speedMultiplier: 150,
             defMultiplier: 100
         });
-        upgrades[uint256(DarkForestTypes.UpgradeBranch.SPEED)][
-            3
-        ] = DarkForestTypes.Upgrade({
+        upgrades[uint256(
+            DarkForestTypes.UpgradeBranch.SPEED
+        )][3] = DarkForestTypes.Upgrade({
             popCapMultiplier: 120,
             popGroMultiplier: 120,
             rangeMultiplier: 100,

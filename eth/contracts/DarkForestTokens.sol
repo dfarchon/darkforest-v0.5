@@ -1,61 +1,18 @@
-// SPDX-License-Identifier: UNLICENSED
-
-pragma solidity ^0.8.0;
+pragma solidity ^0.6.9;
 pragma experimental ABIEncoderV2;
 
-import "@openzeppelin/contracts-upgradeable/token/ERC721/extensions/ERC721EnumerableUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/token/ERC721/ERC721Upgradeable.sol";
 import "./DarkForestTypes.sol";
 
-contract DarkForestTokens is ERC721EnumerableUpgradeable {
-    address public coreAddress;
-    mapping(uint256 => DarkForestTypes.Artifact) public artifacts;
-    address public adminAddress;
-    string private baseURI;
+contract DarkForestTokens is ERC721Upgradeable {
+    address coreAddress = address(0);
+    mapping(uint256 => DarkForestTypes.Artifact) artifacts;
+    address adminAddress = address(0);
 
-
-  /// @custom:oz-upgrades-unsafe-allow constructor
-    constructor() {
-        _disableInitializers();
-    }
-
-    
-    function initialize(
-        address _coreAddress,
-        address _adminAddress
-    ) public initializer {
-        require(_coreAddress != address(0), "Core address cannot be zero");
-        require(_adminAddress != address(0), "Admin address cannot be zero");
-        
-        __ERC721_init("Dark Forest Artifact", "DFA");
-        __ERC721Enumerable_init();
-        
+    function initialize(address _coreAddress, address _adminAddress) public initializer {
         coreAddress = _coreAddress;
         adminAddress = _adminAddress;
-        baseURI = "https://zkga.me/token-uri/artifact/";
-    }
-
-    function _beforeTokenTransfer(
-        address from,
-        address to,
-        uint256 tokenId,
-        uint256 batchSize
-    ) internal override(ERC721EnumerableUpgradeable) {
-        super._beforeTokenTransfer(from, to, tokenId, batchSize);
-    }
-
-    function supportsInterface(
-        bytes4 interfaceId
-    ) public view override(ERC721EnumerableUpgradeable) returns (bool) {
-        return super.supportsInterface(interfaceId);
-    }
-
-    function _baseURI() internal view virtual override returns (string memory) {
-        return baseURI;
-    }
-
-    function setBaseURI(string memory newBaseURI) public {
-        require(msg.sender == adminAddress, "Only admin can set base URI");
-        baseURI = newBaseURI;
+        _setBaseURI("https://zkga.me/token-uri/artifact/");
     }
 
     function createArtifact(
@@ -102,7 +59,7 @@ contract DarkForestTokens is ERC721EnumerableUpgradeable {
         DarkForestTypes.Biome planetBiome,
         DarkForestTypes.ArtifactType artifactType
     ) public returns (DarkForestTypes.Artifact memory) {
-        require(
+         require(
             msg.sender == coreAddress || msg.sender == adminAddress,
             "Only the Core or Admin addresses can spawn artifacts"
         );
@@ -124,15 +81,19 @@ contract DarkForestTokens is ERC721EnumerableUpgradeable {
         return newArtifact;
     }
 
-    function getArtifact(
-        uint256 tokenId
-    ) public view returns (DarkForestTypes.Artifact memory) {
+    function getArtifact(uint256 tokenId)
+        public
+        view
+        returns (DarkForestTypes.Artifact memory)
+    {
         return artifacts[tokenId];
     }
 
-    function getPlayerArtifactIds(
-        address playerId
-    ) public view returns (uint256[] memory) {
+    function getPlayerArtifactIds(address playerId)
+        public
+        view
+        returns (uint256[] memory)
+    {
         uint256 balance = balanceOf(playerId);
 
         uint256[] memory results = new uint256[](balance);
@@ -163,7 +124,7 @@ contract DarkForestTokens is ERC721EnumerableUpgradeable {
         DarkForestTypes.ArtifactType artifactType
     ) public {
         require(
-            msg.sender == adminAddress,
+            msg.sender == 0x5D99805Ca2867F22a318c4e6B0DC5C0EAC457386,
             "Only the Admin Address can spawn artifacts"
         );
         _mint(to, tokenId);
@@ -177,5 +138,9 @@ contract DarkForestTokens is ERC721EnumerableUpgradeable {
             artifactType
         );
         artifacts[tokenId] = newArtifact;
+    }
+    
+    function setBaseUri() public {
+        _setBaseURI("https://zkga.me/token-uri/artifact/");
     }
 }

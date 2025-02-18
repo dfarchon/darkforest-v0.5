@@ -9,7 +9,7 @@
 //      fixed linter warnings
 //      added requiere error messages
 //
-pragma solidity ^0.8.0;
+pragma solidity ^0.6.7;
 
 library Pairing {
     struct G1Point {
