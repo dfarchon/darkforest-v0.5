@@ -435,10 +435,20 @@ export default function GameLandingPage(_props: { replayMode: boolean }) {
 
       if (isWhitelisted) {
         terminalEmitter.println("Player whitelisted.", TerminalTextStyle.Green);
-        terminalEmitter.println(
-          `Welcome, player ${address}.`,
-          TerminalTextStyle.White
+        terminalEmitter.print(`Welcome, player `);
+        terminalEmitter.printLink(
+          address,
+          () => {
+            navigator.clipboard.writeText(address);
+            terminalEmitter.println(
+              "\nAddress copied to clipboard!",
+              TerminalTextStyle.Sub
+            );
+          },
+          TerminalTextStyle.White,
+          true
         );
+        terminalEmitter.newline();
         if (!isProd) {
           // in development, automatically get some ether from faucet
           const balance = await ethConnection.getBalance(address);
@@ -507,7 +517,19 @@ export default function GameLandingPage(_props: { replayMode: boolean }) {
         TerminalTextStyle.Green
       );
       terminalEmitter.print(`Welcome, player `);
-      terminalEmitter.println(address, TerminalTextStyle.White);
+      terminalEmitter.printLink(
+        address,
+        () => {
+          navigator.clipboard.writeText(address);
+          terminalEmitter.println(
+            "\nAddress copied to clipboard!",
+            TerminalTextStyle.Sub
+          );
+        },
+        TerminalTextStyle.White,
+        true
+      );
+      terminalEmitter.newline();
       terminalEmitter.print("Sent player $0.05 :) ", TerminalTextStyle.Blue);
       terminalEmitter.printLink(
         "(View Transaction)",
