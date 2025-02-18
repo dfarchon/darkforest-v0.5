@@ -1,3 +1,3 @@
-export const contractAddress = '0x678ACb78948Be7F354B28DaAb79B1ABD81574c1B';
-export const tokensContract = '0x5cFbC3e179C48ccB3B3d35bAD6361972F2C5603B';
-export const whitelistContract = '0x932c595abE6f62e98477A5FD65b0Bd37e23f05fF';
+export const contractAddress = '0x6e87Ab9A2582417F58E6C5F9E10876F2cE87917c';
+export const tokensContract = '0xfFb0862EdCdBe98F8bA48280a8a8C9a2134dd8d8';
+export const whitelistContract = '0x9e0d503B998CEb29C487230A164247044aE96B79';

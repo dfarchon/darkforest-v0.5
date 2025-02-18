@@ -14,7 +14,7 @@ yarn-debug.log*
 yarn-error.log*
 
 # built by local-deploy
-/src/utils/local_contract_addr.ts
+# /src/utils/local_contract_addr.ts
 
 # firebase
 .firebase
@@ -23,3 +23,6 @@ yarn-error.log*
 public/contracts/*.json
 !public/contracts/DarkForestCore.json
 !public/contracts/Whitelist.json
+
+# Local Netlify folder
+.netlify

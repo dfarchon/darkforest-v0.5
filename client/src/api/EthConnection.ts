@@ -22,9 +22,14 @@ import { callWithRetry, sleep } from '../utils/Utils';
  */
 class EthConnection extends EventEmitter {
   // rpc-df only has CORS enabled for zkga.me, not localhost
+  // private static readonly XDAI_DEFAULT_URL = window.origin.includes('localhost')
+  //   ? 'https://rpc.xdaichain.com/'
+  //   : 'https://rpc-df.xdaichain.com/';
+
   private static readonly XDAI_DEFAULT_URL = window.origin.includes('localhost')
-    ? 'https://rpc.xdaichain.com/'
-    : 'https://rpc-df.xdaichain.com/';
+    ? 'https://rpc.ankr.com/eth_holesky'
+    : 'https://rpc.ankr.com/eth_holesky';
+  ;
 
   private readonly knownAddresses: EthAddress[];
   private provider: JsonRpcProvider;
@@ -143,7 +148,7 @@ class EthConnection extends EventEmitter {
     return callWithRetry<boolean>(
       whitelist.isWhitelisted,
       [address],
-      () => {},
+      () => { },
       3
     );
   }
