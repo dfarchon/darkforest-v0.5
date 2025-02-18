@@ -65,7 +65,7 @@ describe("DarkForestHat", function () {
         from: user2,
         value: "1000000000000000000",
       }),
-      "Only owner can buy hat for planet"
+      "Only owner can buy hat for planet",
     );
   });
 
@@ -84,7 +84,7 @@ describe("DarkForestHat", function () {
         from: user1,
         value: "1500000000000000000",
       }),
-      "Insufficient value sent"
+      "Insufficient value sent",
     );
   });
 
@@ -100,7 +100,7 @@ describe("DarkForestHat", function () {
     });
 
     expect(parseInt(await web3.eth.getBalance(this.contract.address))).to.equal(
-      0
+      0,
     );
   });
 
@@ -115,7 +115,7 @@ describe("DarkForestHat", function () {
       this.contract.withdraw({
         from: user1,
       }),
-      "Sender is not a game master"
+      "Sender is not a game master",
     );
   });
 });

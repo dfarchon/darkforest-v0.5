@@ -2,7 +2,6 @@
 
 pragma solidity ^0.8.0;
 
-import "@openzeppelin/contracts-upgradeable/utils/math/MathUpgradeable.sol";
 import "./ABDKMath64x64.sol";
 import "./DarkForestTypes.sol";
 
@@ -29,10 +28,14 @@ library DarkForestLazyUpdate {
 
             uint256 _silverMined = _planet.silverGrowth * _timeDiff;
 
-            _planet.silver = MathUpgradeable.min(
-                _planet.silverCap,
-                _planet.silver + _silverMined
-            );
+            uint256 _silverCap = _planet.silverCap;
+            uint256 _silver = _planet.silver + _silverMined;
+
+            if (_silverCap < _silver) {
+                _planet.silver = _silverCap;
+            } else {
+                _planet.silver = _silver;
+            }
         }
     }
 
@@ -111,10 +114,9 @@ library DarkForestLazyUpdate {
         // checks whether the planet is owned by the player sending ships
         if (_planetArrival.player == _planet.owner) {
             // simply increase the population if so
-            _planet.population = 
+            _planet.population =
                 _planet.population +
-                _planetArrival.popArriving
-            ;
+                _planetArrival.popArriving;
         } else {
             if (
                 _planet.population >
@@ -122,17 +124,18 @@ library DarkForestLazyUpdate {
             ) {
                 // handles if the planet population is bigger than the arriving ships
                 // simply reduce the amount of planet population by the arriving ships
-                _planet.population =  _planet.population - ((_planetArrival.popArriving * 100) / _planet.defense);
+                _planet.population =
+                    _planet.population -
+                    ((_planetArrival.popArriving * 100) / _planet.defense);
             } else {
                 // handles if the planet population is equal or less the arriving ships
                 // reduce the arriving ships amount with the current population and the
                 // result is the new population of the planet now owned by the attacking
                 // player
                 _planet.owner = _planetArrival.player;
-                _planet.population = 
-                    _planetArrival.popArriving - 
-                   ((_planet.population * _planet.defense) / 100)
-                ;
+                _planet.population =
+                    _planetArrival.popArriving -
+                    ((_planet.population * _planet.defense) / 100);
                 if (_planet.population == 0) {
                     // make sure pop is never 0
                     _planet.population = 1;
@@ -140,10 +143,14 @@ library DarkForestLazyUpdate {
             }
         }
 
-        _planet.silver = MathUpgradeable.min(
-            _planet.silverCap,
-           _planet.silver + _planetArrival.silverMoved
-        );
+        uint256 _silverCap = _planet.silverCap;
+        uint256 _silver = _planet.silver + _planetArrival.silverMoved;
+
+        if (_silverCap < _silver) {
+            _planet.silver = _silverCap;
+        } else {
+            _planet.silver = _silver;
+        }
     }
 
     function _applyPendingEvents(

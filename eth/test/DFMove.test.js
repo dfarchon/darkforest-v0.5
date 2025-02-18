@@ -56,7 +56,7 @@ describe("DarkForestMove", function () {
       const silverSent = 0;
       const receipt = await this.contract.move(
         ...makeMoveArgs(fromId, toId, 10, 2000, dist, shipsSent, silverSent),
-        { from: user1 }
+        { from: user1 },
       );
 
       expectEvent(
@@ -64,7 +64,7 @@ describe("DarkForestMove", function () {
         "ArrivalQueued",
         (eventArgs = {
           arrivalId: web3.utils.toBN(0),
-        })
+        }),
       );
     });
 
@@ -87,10 +87,10 @@ describe("DarkForestMove", function () {
 
       // check planet arrival
       expect(
-        planetArrivals[planetEventsCount - 1].player
+        planetArrivals[planetEventsCount - 1].player,
       ).to.be.bignumber.equal(user1);
       expect(
-        planetArrivals[planetEventsCount - 1].fromPlanet
+        planetArrivals[planetEventsCount - 1].fromPlanet,
       ).to.be.bignumber.equal(fromId);
 
       // check that time delay is correct
@@ -98,11 +98,11 @@ describe("DarkForestMove", function () {
 
       const dist = 100;
       const expectedTime = Math.floor(
-        (dist * 100) / fromPlanet.speed.toNumber()
+        (dist * 100) / fromPlanet.speed.toNumber(),
       );
       const planetArrival = (await this.contract.getPlanetArrivals(toId))[0];
       expect(
-        planetArrival.arrivalTime - planetArrival.departureTime
+        planetArrival.arrivalTime - planetArrival.departureTime,
       ).to.be.equal(expectedTime);
     });
 
@@ -120,10 +120,10 @@ describe("DarkForestMove", function () {
 
       const planetArrivals = await this.contract.getPlanetArrivals(toId);
       expect(parseInt(planetArrivals[0].popArriving)).to.be.above(
-        approxArriving - 1000
+        approxArriving - 1000,
       );
       expect(parseInt(planetArrivals[0].popArriving)).to.be.below(
-        approxArriving + 1000
+        approxArriving + 1000,
       );
     });
 
@@ -131,7 +131,7 @@ describe("DarkForestMove", function () {
       const toId = getPlanetIdFromHex(asteroid2Location.hex);
       const planetExtendedInfo = await this.contract.planetsExtendedInfo(toId);
       expect(planetExtendedInfo.lastUpdated).to.be.bignumber.equal(
-        await time.latest()
+        await time.latest(),
       );
 
       time.increase(SMALL_INTERVAL);
@@ -142,7 +142,7 @@ describe("DarkForestMove", function () {
       const lvl0PlanetStartingPop = 0.0 * 100000;
 
       expect(
-        (await this.contract.planets(toId)).population
+        (await this.contract.planets(toId)).population,
       ).to.be.bignumber.equal(lvl0PlanetStartingPop.toString());
     });
 
@@ -150,7 +150,7 @@ describe("DarkForestMove", function () {
       const toId = getPlanetIdFromHex(asteroid2Location.hex);
       const planetExtendedInfo = await this.contract.planetsExtendedInfo(toId);
       expect(planetExtendedInfo.lastUpdated).to.be.bignumber.equal(
-        await time.latest()
+        await time.latest(),
       );
 
       time.increase(LARGE_INTERVAL);
@@ -159,7 +159,7 @@ describe("DarkForestMove", function () {
       await this.contract.refreshPlanet(toId);
 
       expect(
-        (await this.contract.planets(toId)).population
+        (await this.contract.planets(toId)).population,
       ).to.be.bignumber.above("0");
     });
 
@@ -172,21 +172,21 @@ describe("DarkForestMove", function () {
       // drain the population first
       await this.contract.move(
         ...makeMoveArgs(toId, fromId, 16, 2000, dist, 99999, silverSent),
-        { from: user1 }
+        { from: user1 },
       );
 
       // initiate move
       await this.contract.move(
         ...makeMoveArgs(fromId, toId, 16, 2000, dist, shipsSent, silverSent),
-        { from: user1 }
+        { from: user1 },
       );
       await this.contract.move(
         ...makeMoveArgs(fromId, toId, 16, 2000, dist, shipsSent, silverSent),
-        { from: user1 }
+        { from: user1 },
       );
       await this.contract.move(
         ...makeMoveArgs(fromId, toId, 16, 2000, dist, shipsSent, silverSent),
-        { from: user1 }
+        { from: user1 },
       );
       let planetArrivals = await this.contract.getPlanetArrivals(toId);
       const popArrivingTotal =
@@ -206,7 +206,7 @@ describe("DarkForestMove", function () {
       let planets = await this.contract.planets(toId);
       // above because need to take into account some pop growth
       expect(planets.population).to.be.bignumber.above(
-        popArrivingTotal.toString()
+        popArrivingTotal.toString(),
       );
     });
 
@@ -219,11 +219,11 @@ describe("DarkForestMove", function () {
 
       await this.contract.move(
         ...makeMoveArgs(fromId, toId, 16, 2000, dist, shipsSent, silverSent),
-        { from: user1 }
+        { from: user1 },
       );
 
       expect(
-        (await this.contract.planets(toId)).population
+        (await this.contract.planets(toId)).population,
       ).to.be.bignumber.above("0");
     });
 
@@ -239,11 +239,11 @@ describe("DarkForestMove", function () {
 
       await this.contract.move(
         ...makeMoveArgs(fromId, toId, 20, 1, dist, shipsSent, silverSent),
-        { from: user1 }
+        { from: user1 },
       );
 
       expect(await this.contract.worldRadius()).to.be.bignumber.above(
-        initialRadius
+        initialRadius,
       );
     });
   });
@@ -268,7 +268,7 @@ describe("DarkForestMove", function () {
 
       await this.contract.move(
         ...makeMoveArgs(fromId, toId, 10, 2000, dist, shipsSent, silverSent),
-        { from: user1 }
+        { from: user1 },
       );
     });
 
@@ -284,7 +284,7 @@ describe("DarkForestMove", function () {
       await this.contract.refreshPlanet(toId);
 
       expect(
-        (await this.contract.planets(toId)).population
+        (await this.contract.planets(toId)).population,
       ).to.be.bignumber.above(initialPlanetPopulation);
     });
 
@@ -301,7 +301,7 @@ describe("DarkForestMove", function () {
 
       await this.contract.move(
         ...makeMoveArgs(fromId, toId, 16, 2000, dist, shipsSent, silverSent),
-        { from: user1 }
+        { from: user1 },
       );
 
       time.increase(200);
@@ -310,7 +310,7 @@ describe("DarkForestMove", function () {
       await this.contract.refreshPlanet(toId);
 
       expect(
-        (await this.contract.planets(toId)).population
+        (await this.contract.planets(toId)).population,
       ).to.be.bignumber.above(planet2.populationCap);
     });
 
@@ -325,7 +325,7 @@ describe("DarkForestMove", function () {
 
       await this.contract.move(
         ...makeMoveArgs(fromId, toId, 16, 2000, dist, shipsSent, silverSent),
-        { from: user1 }
+        { from: user1 },
       );
 
       time.increase(LARGE_INTERVAL);
@@ -334,13 +334,13 @@ describe("DarkForestMove", function () {
       await this.contract.refreshPlanet(toId);
 
       expect((await this.contract.planets(toId)).silver).to.be.bignumber.above(
-        "0"
+        "0",
       );
 
       // send silver to toId2 but don't conquer it. 30000 conquers but 10000 move fails
       await this.contract.move(
         ...makeMoveArgs(toId, toId2, 16, 2000, 10, 20000, 100),
-        { from: user1 }
+        { from: user1 },
       );
 
       const oldTo2 = await this.contract.planets(toId2);
@@ -353,10 +353,10 @@ describe("DarkForestMove", function () {
       await this.contract.refreshPlanet(toId2);
 
       expect((await this.contract.planets(toId2)).silver).to.be.bignumber.above(
-        oldSilverValue
+        oldSilverValue,
       );
       expect((await this.contract.planets(toId2)).silver).to.be.bignumber.below(
-        silverCap
+        silverCap,
       );
     });
   });
@@ -398,9 +398,9 @@ describe("DarkForestMove", function () {
           2000,
           dist,
           shipsSent,
-          silverSent
+          silverSent,
         ),
-        { from: user1 }
+        { from: user1 },
       );
 
       const toPlanetDef = (
@@ -419,10 +419,10 @@ describe("DarkForestMove", function () {
 
       // range of tolerances
       expect(planet2.population.toNumber()).to.be.above(
-        planet2.populationCap.toNumber() - attackForce - 1000
+        planet2.populationCap.toNumber() - attackForce - 1000,
       );
       expect(planet2.population.toNumber()).to.be.below(
-        planet2.populationCap.toNumber() - attackForce + 1000
+        planet2.populationCap.toNumber() - attackForce + 1000,
       );
     });
 
@@ -443,9 +443,9 @@ describe("DarkForestMove", function () {
           2000,
           dist,
           95000,
-          silverSent
+          silverSent,
         ),
-        { from: user2 }
+        { from: user2 },
       );
 
       await this.contract.refreshPlanet(planet2Id);
@@ -462,9 +462,9 @@ describe("DarkForestMove", function () {
           2000,
           dist,
           50000,
-          silverSent
+          silverSent,
         ),
-        { from: user1 }
+        { from: user1 },
       );
 
       const planetArrival = (
@@ -479,10 +479,10 @@ describe("DarkForestMove", function () {
 
       // range of tolerances
       expect(planet2.population.toNumber()).to.be.above(
-        shipsMoved - defenseForce - 1000
+        shipsMoved - defenseForce - 1000,
       );
       expect(planet2.population.toNumber()).to.be.below(
-        shipsMoved - defenseForce + 1000
+        shipsMoved - defenseForce + 1000,
       );
     });
 
@@ -496,7 +496,7 @@ describe("DarkForestMove", function () {
 
       await this.contract.move(
         ...makeMoveArgs(planet1Id, planet2Id, 20, 2000, dist, 99999, 0),
-        { from: user1 }
+        { from: user1 },
       );
 
       time.increase(200);
@@ -510,9 +510,9 @@ describe("DarkForestMove", function () {
           2000,
           dist,
           99999,
-          silverSent
+          silverSent,
         ),
-        { from: user2 }
+        { from: user2 },
       );
 
       time.increase(200);
@@ -553,11 +553,11 @@ describe("DarkForestMove", function () {
             2000,
             dist,
             shipsSent,
-            silverSent
+            silverSent,
           ),
-          { from: user1 }
+          { from: user1 },
         ),
-        "Tried to move more silver than what exists"
+        "Tried to move more silver than what exists",
       );
     });
 
@@ -578,11 +578,11 @@ describe("DarkForestMove", function () {
             2000,
             dist,
             shipsSent,
-            silverSent
+            silverSent,
           ),
-          { from: user1 }
+          { from: user1 },
         ),
-        "Tried to move more population that what exists"
+        "Tried to move more population that what exists",
       );
     });
 
@@ -603,11 +603,11 @@ describe("DarkForestMove", function () {
             2000,
             dist,
             shipsSent,
-            silverSent
+            silverSent,
           ),
-          { from: user1 }
+          { from: user1 },
         ),
-        "Not enough forces to make move"
+        "Not enough forces to make move",
       );
     });
 
@@ -622,7 +622,7 @@ describe("DarkForestMove", function () {
         ...makeInitArgs(planet1Id, 10, 1999),
         {
           from: user2,
-        }
+        },
       );
 
       await expectRevert(
@@ -634,11 +634,11 @@ describe("DarkForestMove", function () {
             2000,
             dist,
             shipsSent,
-            silverSent
+            silverSent,
           ),
-          { from: user1 }
+          { from: user1 },
         ),
-        "Only owner account can perform operation on planets"
+        "Only owner account can perform operation on planets",
       );
     });
 
@@ -658,11 +658,11 @@ describe("DarkForestMove", function () {
             9999999999,
             dist,
             shipsSent,
-            silverSent
+            silverSent,
           ),
-          { from: user1 }
+          { from: user1 },
         ),
-        "Attempting to move out of bounds"
+        "Attempting to move out of bounds",
       );
     });
   });
@@ -694,7 +694,7 @@ describe("DarkForestMove", function () {
           ...makeMoveArgs(planet1, planet3, 10, 1999, 0, 90000, 0),
           {
             from: user1,
-          }
+          },
         );
       }
       time.increase(LARGE_INTERVAL);
@@ -715,9 +715,9 @@ describe("DarkForestMove", function () {
           1999,
           from.range.toNumber(),
           from.populationCap.toNumber() / 8,
-          0
+          0,
         ),
-        { from: user1 }
+        { from: user1 },
       );
       time.increase(from.range.toNumber() / (from.speed.toNumber() / 100) - 5);
       // do 5 moves after some time
@@ -730,9 +730,9 @@ describe("DarkForestMove", function () {
             1999,
             from.range.toNumber(),
             from.populationCap.toNumber() / 8,
-            0
+            0,
           ),
-          { from: user1 }
+          { from: user1 },
         );
       }
       // queue should be full
@@ -745,11 +745,11 @@ describe("DarkForestMove", function () {
             1999,
             from.range.toNumber(),
             from.populationCap.toNumber() / 8,
-            0
+            0,
           ),
-          { from: user1 }
+          { from: user1 },
         ),
-        "Planet is rate-limited."
+        "Planet is rate-limited.",
       );
       time.increase(10);
       // first move should be done
@@ -761,9 +761,9 @@ describe("DarkForestMove", function () {
           1999,
           from.range.toNumber(),
           from.populationCap.toNumber() / 8,
-          0
+          0,
         ),
-        { from: user1 }
+        { from: user1 },
       );
     });
 
@@ -780,9 +780,9 @@ describe("DarkForestMove", function () {
             1999,
             from.range.toNumber(),
             from.populationCap.toNumber() / 8,
-            0
+            0,
           ),
-          { from: user1 }
+          { from: user1 },
         );
       }
       await expectRevert(
@@ -794,11 +794,11 @@ describe("DarkForestMove", function () {
             1999,
             from.range.toNumber(),
             from.populationCap.toNumber() / 8,
-            0
+            0,
           ),
-          { from: user1 }
+          { from: user1 },
         ),
-        "Planet is rate-limited."
+        "Planet is rate-limited.",
       );
     });
 
@@ -817,9 +817,9 @@ describe("DarkForestMove", function () {
             1999,
             enemyFrom.range.toNumber(),
             enemyFrom.populationCap.toNumber() / 8,
-            0
+            0,
           ),
-          { from: user2 }
+          { from: user2 },
         );
       }
       for (let i = 0; i < 6; i++) {
@@ -831,9 +831,9 @@ describe("DarkForestMove", function () {
             1999,
             myFrom.range.toNumber(),
             myFrom.populationCap.toNumber() / 8,
-            0
+            0,
           ),
-          { from: user1 }
+          { from: user1 },
         );
       }
     });

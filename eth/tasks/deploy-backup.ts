@@ -90,11 +90,11 @@ const deploy = async () => {
     coreControllerWallet,
     ozAdminWallet,
   ] = [
-      new HDWalletProvider(DEPLOYER_MNEMONIC, network_url),
-      new HDWalletProvider(WHITELIST_CONTROLLER_MNEMONIC, network_url),
-      new HDWalletProvider(CORE_CONTROLLER_MNEMONIC, network_url),
-      new HDWalletProvider(OZ_ADMIN_MNEMONIC, network_url),
-    ];
+    new HDWalletProvider(DEPLOYER_MNEMONIC, network_url),
+    new HDWalletProvider(WHITELIST_CONTROLLER_MNEMONIC, network_url),
+    new HDWalletProvider(CORE_CONTROLLER_MNEMONIC, network_url),
+    new HDWalletProvider(OZ_ADMIN_MNEMONIC, network_url),
+  ];
 
   const [whitelistControllerAddress, coreControllerAddress, ozAdminAddress] = [
     whitelistControllerWallet.getAddress(),
@@ -111,7 +111,7 @@ const deploy = async () => {
 
   // deploy the whitelist contract
   const whitelistContractAddress = await deployWhitelist(
-    whitelistControllerAddress
+    whitelistControllerAddress,
   );
 
   // Save the deployment environment variables relevant for whitelist
@@ -128,11 +128,11 @@ const deploy = async () => {
   const coreContractAddress = await deployCore(
     coreControllerAddress,
     whitelistContractAddress,
-    tokensContractAddress
+    tokensContractAddress,
   );
 
   await exec(
-    `oz send-tx -n ${NETWORK} --to ${tokensContractAddress} --method initialize --args ${coreContractAddress},${coreControllerAddress} --no-interactive`
+    `oz send-tx -n ${NETWORK} --to ${tokensContractAddress} --method initialize --args ${coreContractAddress},${coreControllerAddress} --no-interactive`,
   );
 
   // save the addresses of the deployed contracts to files that
@@ -142,21 +142,21 @@ const deploy = async () => {
     isProd
       ? "../client/src/utils/prod_contract_addr.ts"
       : "../client/src/utils/local_contract_addr.ts",
-    `export const contractAddress = '${coreContractAddress}';\nexport const tokensContract = '${tokensContractAddress}';\nexport const whitelistContract = '${whitelistContractAddress}';\n`
+    `export const contractAddress = '${coreContractAddress}';\nexport const tokensContract = '${tokensContractAddress}';\nexport const whitelistContract = '${whitelistContractAddress}';\n`,
   );
 
   // save the core contract json
   await exec("mkdir -p ../client/public/contracts");
   await exec(
-    "cp build/contracts/DarkForestCore.json ../client/public/contracts/"
+    "cp build/contracts/DarkForestCore.json ../client/public/contracts/",
   );
   await exec(
-    "cp build/contracts/DarkForestTokens.json ../client/public/contracts/"
+    "cp build/contracts/DarkForestTokens.json ../client/public/contracts/",
   );
   await exec("cp build/contracts/Whitelist.json ../client/public/contracts/");
 
   await exec(
-    `oz set-admin ${coreControllerAddress} ${ozAdminAddress} --network ${NETWORK} --no-interactive --force`
+    `oz set-admin ${coreControllerAddress} ${ozAdminAddress} --network ${NETWORK} --no-interactive --force`,
   );
 
   // save environment variables (i.e. contract addresses) and contract ABI to cache-server
@@ -167,11 +167,11 @@ const deploy = async () => {
     isProd
       ? "../cache-server/src/prod_contract_addrs.ts"
       : "../cache-server/src/local_contract_addrs.ts",
-    `export const coreContractAddress = '${coreContractAddress}';\nexport const tokensContract = '${tokensContractAddress}';\nexport const whitelistContract = '${whitelistContractAddress}';\n`
+    `export const coreContractAddress = '${coreContractAddress}';\nexport const tokensContract = '${tokensContractAddress}';\nexport const whitelistContract = '${whitelistContractAddress}';\n`,
   );
   await exec("cp build/contracts/DarkForestCore.json ../cache-server/src/abi/");
   await exec(
-    "cp build/contracts/DarkForestTokens.json ../cache-server/src/abi/"
+    "cp build/contracts/DarkForestTokens.json ../cache-server/src/abi/",
   );
   await exec("cp build/contracts/Whitelist.json ../cache-server/src/abi/");
 
@@ -179,18 +179,18 @@ const deploy = async () => {
 };
 
 const deployWhitelist = async (
-  whitelistControllerAddress: string
+  whitelistControllerAddress: string,
 ): Promise<string> => {
   await exec(`oz add Whitelist`);
   await exec(`oz push -n ${NETWORK} --no-interactive --reset --force`);
   const whitelistAddress = await exec(
-    `oz deploy Whitelist -k regular -n ${NETWORK} --no-interactive`
+    `oz deploy Whitelist -k regular -n ${NETWORK} --no-interactive`,
   );
   await exec(
-    `oz send-tx -n ${NETWORK} --to ${whitelistAddress} --method initialize --args ${whitelistControllerAddress},${isProd} --no-interactive`
+    `oz send-tx -n ${NETWORK} --to ${whitelistAddress} --method initialize --args ${whitelistControllerAddress},${isProd} --no-interactive`,
   );
   await exec(
-    `oz send-tx -n ${NETWORK} --to ${whitelistAddress} --method receiveEther --value 2000000000000000000 --no-interactive`
+    `oz send-tx -n ${NETWORK} --to ${whitelistAddress} --method receiveEther --value 2000000000000000000 --no-interactive`,
   );
   console.log(`Whitelist deployed to ${whitelistAddress}`);
   return whitelistAddress;
@@ -200,7 +200,7 @@ const deployTokens = async (): Promise<string> => {
   await exec(`oz add DarkForestTokens`);
   await exec(`oz push -n ${NETWORK} --no-interactive --reset --force`);
   const dfTokensAddress = await exec(
-    `oz deploy DarkForestTokens -k upgradeable -n ${NETWORK} --no-interactive`
+    `oz deploy DarkForestTokens -k upgradeable -n ${NETWORK} --no-interactive`,
   );
 
   console.log(`DarkForestTokens deployed to ${dfTokensAddress}.`);
@@ -210,15 +210,15 @@ const deployTokens = async (): Promise<string> => {
 const deployCore = async (
   coreControllerAddress: string,
   whitelistAddress: string,
-  tokensAddress: string
+  tokensAddress: string,
 ): Promise<string> => {
   await exec(`oz add DarkForestCore`);
   await exec(`oz push -n ${NETWORK} --no-interactive --reset --force`);
   const dfCoreAddress = await exec(
-    `oz deploy DarkForestCore -k upgradeable -n ${NETWORK} --no-interactive`
+    `oz deploy DarkForestCore -k upgradeable -n ${NETWORK} --no-interactive`,
   );
   await exec(
-    `oz send-tx -n ${NETWORK} --to ${dfCoreAddress} --method initialize --args ${coreControllerAddress},${whitelistAddress},${tokensAddress},${DISABLE_ZK_CHECKS} --no-interactive`
+    `oz send-tx -n ${NETWORK} --to ${dfCoreAddress} --method initialize --args ${coreControllerAddress},${whitelistAddress},${tokensAddress},${DISABLE_ZK_CHECKS} --no-interactive`,
   );
   console.log(`DFCore deployed to ${dfCoreAddress}.`);
   return dfCoreAddress;

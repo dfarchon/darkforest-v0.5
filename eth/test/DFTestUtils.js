@@ -159,7 +159,7 @@ exports.makeMoveArgs = (
   newRadius,
   maxDist,
   popMoved,
-  silverMoved
+  silverMoved,
 ) => {
   return [
     [0, 0],
@@ -194,11 +194,11 @@ exports.initializeTest = async function (testObj, whitelistEnabled) {
   await DarkForestPlanet.detectNetwork();
   await DarkForestPlanet.link(
     "DarkForestTokens",
-    testObj.tokensContract.address
+    testObj.tokensContract.address,
   );
   await DarkForestPlanet.link(
     "DarkForestLazyUpdate",
-    testObj.dfLazyUpdateLib.address
+    testObj.dfLazyUpdateLib.address,
   );
   await DarkForestPlanet.link("DarkForestUtils", testObj.dfUtilsLib.address);
   testObj.dfPlanetLib = await DarkForestPlanet.new({ from: deployer });
@@ -208,13 +208,13 @@ exports.initializeTest = async function (testObj, whitelistEnabled) {
   await DarkForestCore.link("DarkForestPlanet", testObj.dfPlanetLib.address);
   await DarkForestCore.link(
     "DarkForestLazyUpdate",
-    testObj.dfLazyUpdateLib.address
+    testObj.dfLazyUpdateLib.address,
   );
   await DarkForestCore.link("DarkForestTypes", testObj.dfTypesLib.address);
   await DarkForestCore.link("DarkForestUtils", testObj.dfUtilsLib.address);
   await DarkForestCore.link(
     "DarkForestInitialize",
-    testObj.dfInitializeLib.address
+    testObj.dfInitializeLib.address,
   );
   testObj.contract = await DarkForestCore.new({ from: deployer });
 
@@ -225,6 +225,6 @@ exports.initializeTest = async function (testObj, whitelistEnabled) {
     deployer,
     testObj.whitelistContract.address,
     testObj.tokensContract.address,
-    true
+    true,
   );
 };

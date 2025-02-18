@@ -48,18 +48,18 @@ describe("DarkForestArtifacts", function () {
         1999,
         0,
         80000,
-        0
+        0,
       ),
       {
         from: user1,
-      }
+      },
     );
   }
 
   async function getArtifactsOwnedBy(test, addr) {
     const artifactsIds = await test.contract.getPlayerArtifactIds(addr);
     return (await test.contract.bulkGetArtifactsByIds(artifactsIds)).map(
-      (artifactWithMetadata) => artifactWithMetadata[0]
+      (artifactWithMetadata) => artifactWithMetadata[0],
     );
   }
 
@@ -106,18 +106,18 @@ describe("DarkForestArtifacts", function () {
       [planetWithArtifact1Id, 1],
       {
         from: user1,
-      }
+      },
     );
 
     let planetInfo = await this.contract.planetsExtendedInfo(
-      planetWithArtifact1Id
+      planetWithArtifact1Id,
     );
     expect(planetInfo.heldArtifactId).to.not.be.bignumber.equal("0");
 
     // artifact should be owned by contract
     const artifactsBefore = await getArtifactsOwnedBy(
       this,
-      this.contract.address
+      this.contract.address,
     );
     expect(artifactsBefore[0].discoverer).to.eq(user1);
     expect(artifactsBefore.length).to.equal(1);
@@ -167,19 +167,19 @@ describe("DarkForestArtifacts", function () {
       [planetWithArtifact1Id, 1],
       {
         from: user1,
-      }
+      },
     );
 
     let planetInfo = await this.contract.planetsExtendedInfo(
-      planetWithArtifact1Id
+      planetWithArtifact1Id,
     );
 
     const tokenUri = await this.tokensContract.tokenURI(
-      planetInfo.heldArtifactId
+      planetInfo.heldArtifactId,
     );
 
     expect(tokenUri).to.eq(
-      "https://zkga.me/token-uri/artifact/" + planetInfo.heldArtifactId
+      "https://zkga.me/token-uri/artifact/" + planetInfo.heldArtifactId,
     );
   });
 
@@ -203,7 +203,7 @@ describe("DarkForestArtifacts", function () {
       [planetWithArtifact1Id, 1],
       {
         from: user1,
-      }
+      },
     );
 
     time.increase(SMALL_INTERVAL);
@@ -213,7 +213,7 @@ describe("DarkForestArtifacts", function () {
       this.contract.withdrawArtifact(planetWithArtifact1Id, {
         from: user1,
       }),
-      "planet's artifact is in lockup period"
+      "planet's artifact is in lockup period",
     );
   });
 
@@ -238,7 +238,7 @@ describe("DarkForestArtifacts", function () {
       [planetWithArtifact1Id, 1],
       {
         from: user1,
-      }
+      },
     );
 
     // withdraw artifact after lockup period is over
@@ -282,7 +282,7 @@ describe("DarkForestArtifacts", function () {
       ...makeMoveArgs(spawnPointId, silverMineId, 10, 1999, 0, 80000, 0),
       {
         from: user1,
-      }
+      },
     );
 
     await this.contract.findArtifact(
@@ -295,7 +295,7 @@ describe("DarkForestArtifacts", function () {
       [planetWithArtifact1Id, 1],
       {
         from: user1,
-      }
+      },
     );
 
     // withdraw artifact after lockup period is over
@@ -311,7 +311,7 @@ describe("DarkForestArtifacts", function () {
       this.contract.depositArtifact(silverMineId, artifacts[0].id, {
         from: user1,
       }),
-      "can't deposit artifact on silver mine"
+      "can't deposit artifact on silver mine",
     );
   });
 
@@ -325,7 +325,7 @@ describe("DarkForestArtifacts", function () {
       ...makeInitArgs(spawnPoint2Id, 10, 1999),
       {
         from: user2,
-      }
+      },
     );
 
     await conquerArtifactPlanet(this);
@@ -343,7 +343,7 @@ describe("DarkForestArtifacts", function () {
       [planetWithArtifact1Id, 1],
       {
         from: user1,
-      }
+      },
     );
 
     time.increase(LARGE_INTERVAL);
@@ -353,7 +353,7 @@ describe("DarkForestArtifacts", function () {
       this.contract.withdrawArtifact(planetWithArtifact1Id, {
         from: user2,
       }),
-      "you can only withdraw from a planet you own"
+      "you can only withdraw from a planet you own",
     );
 
     await this.contract.withdrawArtifact(planetWithArtifact1Id, {
@@ -365,14 +365,14 @@ describe("DarkForestArtifacts", function () {
       this.contract.depositArtifact(spawnPoint2Id, artifactId, {
         from: user1,
       }),
-      "you can only deposit on a planet you own"
+      "you can only deposit on a planet you own",
     );
 
     expectRevert(
       this.contract.depositArtifact(spawnPoint2Id, artifactId, {
         from: user2,
       }),
-      "you can only deposit artifacts you own"
+      "you can only deposit artifacts you own",
     );
   });
 
@@ -389,7 +389,7 @@ describe("DarkForestArtifacts", function () {
         ...makeMoveArgs(spawnPointId, planetId, 10, 1999, 0, 80000, 0),
         {
           from: user1,
-        }
+        },
       );
     }
 
@@ -407,7 +407,7 @@ describe("DarkForestArtifacts", function () {
         [planetId, 1],
         {
           from: user1,
-        }
+        },
       );
     }
 
@@ -422,7 +422,7 @@ describe("DarkForestArtifacts", function () {
       this.contract.depositArtifact(planetWithArtifact2Id, artifactId, {
         from: user1,
       }),
-      "planet already has an artifact"
+      "planet already has an artifact",
     );
   });
 
@@ -437,7 +437,7 @@ describe("DarkForestArtifacts", function () {
       ...makeInitArgs(spawnPoint2Id, 10, 1999),
       {
         from: user2,
-      }
+      },
     );
 
     await conquerArtifactPlanet(this);
@@ -455,7 +455,7 @@ describe("DarkForestArtifacts", function () {
       [planetWithArtifact1Id, 1],
       {
         from: user1,
-      }
+      },
     );
 
     // after finding artifact, planet's popCap might get buffed
@@ -474,9 +474,9 @@ describe("DarkForestArtifacts", function () {
         1999,
         10,
         Math.floor(artifactPlanetPopCap * 0.999), // if only 0.99 it's still untakeable, bc high def
-        0
+        0,
       ),
-      { from: user1 }
+      { from: user1 },
     );
 
     // steal planet
@@ -488,9 +488,9 @@ describe("DarkForestArtifacts", function () {
         1999,
         0,
         50000,
-        0
+        0,
       ),
-      { from: user2 }
+      { from: user2 },
     );
 
     // withdraw artifact after lockup period is over
@@ -521,7 +521,7 @@ describe("DarkForestArtifacts", function () {
     )[0];
 
     expect(parseInt(planet.population)).to.be.lessThan(
-      0.95 * parseInt(planet.populationCap)
+      0.95 * parseInt(planet.populationCap),
     );
 
     expectRevert(
@@ -535,13 +535,13 @@ describe("DarkForestArtifacts", function () {
         [planetWithArtifact1Id, 1],
         {
           from: user1,
-        }
+        },
       ),
-      "you must have 95% of the max energy."
+      "you must have 95% of the max energy.",
     );
 
     const planetInfo = await this.contract.planetsExtendedInfo(
-      planetWithArtifact1Id
+      planetWithArtifact1Id,
     );
     expect(planetInfo.heldArtifactId).to.be.bignumber.equal("0");
   });
@@ -551,7 +551,7 @@ describe("DarkForestArtifacts", function () {
 
     const spawnPointId = getPlanetIdFromHex(asteroid1Location.hex);
     const silverMineWithArtifactId = getPlanetIdFromHex(
-      "00007c2512896efb002d462faee6041fb33d58930eb9e6b4fbae6d048e9c44c3"
+      "00007c2512896efb002d462faee6041fb33d58930eb9e6b4fbae6d048e9c44c3",
     );
 
     time.increase(LARGE_INTERVAL);
@@ -565,11 +565,11 @@ describe("DarkForestArtifacts", function () {
         1999,
         0,
         80000,
-        0
+        0,
       ),
       {
         from: user1,
-      }
+      },
     );
     time.increase(LARGE_INTERVAL);
     time.advanceBlock();
@@ -585,9 +585,9 @@ describe("DarkForestArtifacts", function () {
         [silverMineWithArtifactId, 1],
         {
           from: user1,
-        }
+        },
       ),
-      "can't mint artifact on silver mine"
+      "can't mint artifact on silver mine",
     );
   });
 
@@ -610,9 +610,9 @@ describe("DarkForestArtifacts", function () {
         [spawnPointId, 1],
         {
           from: user1,
-        }
+        },
       ),
-      "you can't find an artifact on this planet"
+      "you can't find an artifact on this planet",
     );
 
     const planetInfo = await this.contract.planetsExtendedInfo(spawnPointId);
@@ -634,7 +634,7 @@ describe("DarkForestArtifacts", function () {
 
       const planetWithArtifactId = getPlanetIdFromHex(randomId);
       console.log(
-        `token randomness check ${i + 1}/20 - ${planetWithArtifactId}`
+        `token randomness check ${i + 1}/20 - ${planetWithArtifactId}`,
       );
 
       time.increase(LARGE_INTERVAL);
@@ -648,11 +648,11 @@ describe("DarkForestArtifacts", function () {
           1999,
           0,
           80000,
-          0
+          0,
         ),
         {
           from: user1,
-        }
+        },
       );
 
       time.increase(LARGE_INTERVAL);
@@ -668,7 +668,7 @@ describe("DarkForestArtifacts", function () {
         [planetWithArtifactId, 1],
         {
           from: user1,
-        }
+        },
       );
 
       time.increase(LARGE_INTERVAL);
@@ -682,7 +682,7 @@ describe("DarkForestArtifacts", function () {
       expect(artifacts[artifacts.length - 1].planetBiome).to.eq("1");
       expect(artifacts[artifacts.length - 1].discoverer).to.eq(user1);
       expect(
-        parseInt(artifacts[artifacts.length - 1].planetLevel)
+        parseInt(artifacts[artifacts.length - 1].planetLevel),
       ).to.be.at.least(1);
 
       prevLocationId = planetWithArtifactId;
@@ -723,7 +723,7 @@ describe("DarkForestArtifacts", function () {
       [planetWithArtifact1Id, 1],
       {
         from: user1,
-      }
+      },
     );
 
     time.increase(LARGE_INTERVAL);
@@ -740,9 +740,9 @@ describe("DarkForestArtifacts", function () {
         [planetWithArtifact1Id, 1],
         {
           from: user1,
-        }
+        },
       ),
-      "planet already plundered"
+      "planet already plundered",
     );
   });
 });

@@ -172,7 +172,9 @@ library DarkForestPlanet {
         }
 
         // initial population (barbarians) and silver
-        _planet.population = (_planet.populationCap * _planetDefaultStats.barbarianPercentage) / 100;
+        _planet.population =
+            (_planet.populationCap * _planetDefaultStats.barbarianPercentage) /
+            100;
         // barbarians adjusted for def debuffs, and buffed in space/deepspace
         if (deepSpace) {
             _planet.population *= 6;

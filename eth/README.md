@@ -4,9 +4,9 @@
 
 ### Installing Core Dependencies
 
--   Node (v14.15.x)
--   Yarn (Javascript Package Manager)
--   Ganache CLI
+- Node (v14.15.x)
+- Yarn (Javascript Package Manager)
+- Ganache CLI
 
 #### Installing The Correct Node Version Using NVM
 
@@ -34,8 +34,8 @@ yarn install
 
 All of our smartcontract related code are located in the `/eth` directory.
 
--   `/eth/contracts` contains the smartcontract code written in solidity
--   `/eth/test` contains the test for the smartcontract written in Javascript
+- `/eth/contracts` contains the smartcontract code written in solidity
+- `/eth/test` contains the test for the smartcontract written in Javascript
 
 #### Installing Dependenciees
 

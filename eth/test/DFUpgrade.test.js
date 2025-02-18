@@ -33,7 +33,7 @@ describe("DarkForestUpgrade", function () {
 
     await expectRevert(
       this.contract.upgradePlanet(fromId, 0, { from: user1 }),
-      "Planet has not been initialized"
+      "Planet has not been initialized",
     );
   });
 
@@ -44,12 +44,12 @@ describe("DarkForestUpgrade", function () {
       ...makeInitArgs(player1Planet, 10, 2000),
       {
         from: user1,
-      }
+      },
     );
 
     await expectRevert(
       this.contract.upgradePlanet(player1Planet, 0, { from: user2 }),
-      "Only owner account can perform operation on planets"
+      "Only owner account can perform operation on planets",
     );
   });
 
@@ -60,12 +60,12 @@ describe("DarkForestUpgrade", function () {
       ...makeInitArgs(lowLevelPlanet, 10, 2000),
       {
         from: user1,
-      }
+      },
     );
 
     await expectRevert(
       this.contract.upgradePlanet(lowLevelPlanet, 0, { from: user1 }),
-      "Planet level is not high enough for this upgrade"
+      "Planet level is not high enough for this upgrade",
     );
   });
 
@@ -80,7 +80,7 @@ describe("DarkForestUpgrade", function () {
       ...makeInitArgs(homePlanetId, 10, 2000),
       {
         from: user1,
-      }
+      },
     );
 
     for (let i = 0; i < 4; i++) {
@@ -95,15 +95,15 @@ describe("DarkForestUpgrade", function () {
           2000,
           dist,
           shipsSent,
-          silverSent
+          silverSent,
         ),
-        { from: user1 }
+        { from: user1 },
       );
     }
 
     await expectRevert(
       this.contract.upgradePlanet(upgradeablePlanetId, 99, { from: user1 }),
-      "Upgrade branch not valid"
+      "Upgrade branch not valid",
     );
   });
 
@@ -119,7 +119,7 @@ describe("DarkForestUpgrade", function () {
       ...makeInitArgs(homePlanetId, 10, 2000),
       {
         from: user1,
-      }
+      },
     );
 
     // conquer silver mine and upgradeable planet
@@ -135,9 +135,9 @@ describe("DarkForestUpgrade", function () {
           2000,
           dist,
           shipsSent,
-          silverSent
+          silverSent,
         ),
-        { from: user1 }
+        { from: user1 },
       );
 
       time.increase(LARGE_INTERVAL);
@@ -151,9 +151,9 @@ describe("DarkForestUpgrade", function () {
           2000,
           dist,
           shipsSent,
-          silverSent
+          silverSent,
         ),
-        { from: user1 }
+        { from: user1 },
       );
     }
 
@@ -169,16 +169,15 @@ describe("DarkForestUpgrade", function () {
         2000,
         dist,
         Math.floor(0.5 * silverMine.populationCap),
-        silverMine.silverCap
+        silverMine.silverCap,
       ),
-      { from: user1 }
+      { from: user1 },
     );
 
     this.contract.refreshPlanet(upgradeablePlanetId);
 
-    const planetBeforeUpgrade = await this.contract.planets(
-      upgradeablePlanetId
-    );
+    const planetBeforeUpgrade =
+      await this.contract.planets(upgradeablePlanetId);
 
     let silverCap = planetBeforeUpgrade.silverCap.toNumber();
     let initialSilver = planetBeforeUpgrade.silver.toNumber();
@@ -196,7 +195,7 @@ describe("DarkForestUpgrade", function () {
     expectEvent(
       receipt,
       "PlanetUpgraded",
-      (eventArgs = { loc: upgradeablePlanetId })
+      (eventArgs = { loc: upgradeablePlanetId }),
     );
     expect(newSilver).to.equal(initialSilver - 0.2 * silverCap);
     expect(initialPopulationCap).to.be.bignumber.below(newPopulationCap);
@@ -214,7 +213,7 @@ describe("DarkForestUpgrade", function () {
       ...makeInitArgs(homePlanetId, 10, 2000),
       {
         from: user1,
-      }
+      },
     );
 
     // conquer the upgradeable planet
@@ -230,9 +229,9 @@ describe("DarkForestUpgrade", function () {
           2000,
           dist,
           shipsSent,
-          silverSent
+          silverSent,
         ),
-        { from: user1 }
+        { from: user1 },
       );
     }
 
@@ -241,7 +240,7 @@ describe("DarkForestUpgrade", function () {
 
     await expectRevert(
       this.contract.upgradePlanet(silverMinePlanetId, 0, { from: user1 }),
-      "Can't upgrade silver mine"
+      "Can't upgrade silver mine",
     );
   });
 
@@ -256,7 +255,7 @@ describe("DarkForestUpgrade", function () {
       ...makeInitArgs(homePlanetId, 10, 2000),
       {
         from: user1,
-      }
+      },
     );
 
     // conquer the upgradeable planet
@@ -272,9 +271,9 @@ describe("DarkForestUpgrade", function () {
           2000,
           dist,
           shipsSent,
-          silverSent
+          silverSent,
         ),
-        { from: user1 }
+        { from: user1 },
       );
     }
 
@@ -283,7 +282,7 @@ describe("DarkForestUpgrade", function () {
 
     await expectRevert(
       this.contract.upgradePlanet(upgradeablePlanetId, 0, { from: user1 }),
-      "Insufficient silver to upgrade"
+      "Insufficient silver to upgrade",
     );
   });
 
@@ -301,7 +300,7 @@ describe("DarkForestUpgrade", function () {
       ...makeInitArgs(homePlanetId, 10, 2000),
       {
         from: user1,
-      }
+      },
     );
 
     // conquer upgradeable planet and silver planet
@@ -317,9 +316,9 @@ describe("DarkForestUpgrade", function () {
           2000,
           dist,
           shipsSent,
-          silverSent
+          silverSent,
         ),
-        { from: user1 }
+        { from: user1 },
       );
 
       time.increase(LARGE_INTERVAL);
@@ -333,9 +332,9 @@ describe("DarkForestUpgrade", function () {
           2000,
           dist,
           shipsSent,
-          silverSent
+          silverSent,
         ),
-        { from: user1 }
+        { from: user1 },
       );
     }
 
@@ -354,9 +353,9 @@ describe("DarkForestUpgrade", function () {
             2000,
             1,
             shipsSent,
-            silverMinePlanet.silverCap
+            silverMinePlanet.silverCap,
           ),
-          { from: user1 }
+          { from: user1 },
         );
         time.increase(LARGE_INTERVAL);
         time.advanceBlock();
@@ -372,7 +371,7 @@ describe("DarkForestUpgrade", function () {
 
     await expectRevert(
       this.contract.upgradePlanet(upgradeablePlanetId, 1, { from: user1 }),
-      "Upgrade branch already maxed"
+      "Upgrade branch already maxed",
     );
   });
 
@@ -390,7 +389,7 @@ describe("DarkForestUpgrade", function () {
       ...makeInitArgs(homePlanetId, 10, 2000),
       {
         from: user1,
-      }
+      },
     );
 
     // conquer upgradeable planet and silver planet
@@ -406,9 +405,9 @@ describe("DarkForestUpgrade", function () {
           2000,
           dist,
           shipsSent,
-          silverSent
+          silverSent,
         ),
-        { from: user1 }
+        { from: user1 },
       );
 
       time.increase(LARGE_INTERVAL);
@@ -422,9 +421,9 @@ describe("DarkForestUpgrade", function () {
           2000,
           dist,
           shipsSent,
-          silverSent
+          silverSent,
         ),
-        { from: user1 }
+        { from: user1 },
       );
     }
 
@@ -444,9 +443,9 @@ describe("DarkForestUpgrade", function () {
             2000,
             1,
             shipsSent,
-            silverMinePlanet.silverCap
+            silverMinePlanet.silverCap,
           ),
-          { from: user1 }
+          { from: user1 },
         );
         time.increase(LARGE_INTERVAL);
         time.advanceBlock();
@@ -462,7 +461,7 @@ describe("DarkForestUpgrade", function () {
 
     await expectRevert(
       this.contract.upgradePlanet(upgradeablePlanetId, 1, { from: user1 }),
-      "Planet at max total level"
+      "Planet at max total level",
     );
   });
 
@@ -480,7 +479,7 @@ describe("DarkForestUpgrade", function () {
       ...makeInitArgs(homePlanetId, 10, 2000),
       {
         from: user1,
-      }
+      },
     );
 
     // conquer upgradeable planet and silver planet
@@ -496,9 +495,9 @@ describe("DarkForestUpgrade", function () {
           2000,
           dist,
           shipsSent,
-          silverSent
+          silverSent,
         ),
-        { from: user1 }
+        { from: user1 },
       );
 
       time.increase(LARGE_INTERVAL);
@@ -512,9 +511,9 @@ describe("DarkForestUpgrade", function () {
           2000,
           dist,
           shipsSent,
-          silverSent
+          silverSent,
         ),
-        { from: user1 }
+        { from: user1 },
       );
     }
 
@@ -534,9 +533,9 @@ describe("DarkForestUpgrade", function () {
             2000,
             1,
             shipsSent,
-            silverMinePlanet.silverCap
+            silverMinePlanet.silverCap,
           ),
-          { from: user1 }
+          { from: user1 },
         );
         time.increase(LARGE_INTERVAL);
         time.advanceBlock();
@@ -552,7 +551,7 @@ describe("DarkForestUpgrade", function () {
 
     await expectRevert(
       this.contract.upgradePlanet(upgradeablePlanetId, 1, { from: user1 }),
-      "Planet at max total level"
+      "Planet at max total level",
     );
   });
 
@@ -570,7 +569,7 @@ describe("DarkForestUpgrade", function () {
       ...makeInitArgs(homePlanetId, 10, 2000),
       {
         from: user1,
-      }
+      },
     );
 
     // conquer upgradeable planet and silver planet
@@ -586,9 +585,9 @@ describe("DarkForestUpgrade", function () {
           2000,
           dist,
           shipsSent,
-          silverSent
+          silverSent,
         ),
-        { from: user1 }
+        { from: user1 },
       );
 
       time.increase(LARGE_INTERVAL);
@@ -602,9 +601,9 @@ describe("DarkForestUpgrade", function () {
           2000,
           dist,
           shipsSent,
-          silverSent
+          silverSent,
         ),
-        { from: user1 }
+        { from: user1 },
       );
     }
 
@@ -623,9 +622,9 @@ describe("DarkForestUpgrade", function () {
             2000,
             1,
             shipsSent,
-            silverMinePlanet.silverCap
+            silverMinePlanet.silverCap,
           ),
-          { from: user1 }
+          { from: user1 },
         );
         time.increase(LARGE_INTERVAL);
         time.advanceBlock();
@@ -634,7 +633,7 @@ describe("DarkForestUpgrade", function () {
       if (i === 2) {
         await expectRevert(
           this.contract.upgradePlanet(upgradeablePlanetId, 0, { from: user1 }),
-          "Can't upgrade DEF past level 2 in deep space"
+          "Can't upgrade DEF past level 2 in deep space",
         );
       } else {
         await this.contract.upgradePlanet(upgradeablePlanetId, 0, {

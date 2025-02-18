@@ -12,42 +12,40 @@ contract DarkForestTokens is ERC721EnumerableUpgradeable {
     address public adminAddress;
     string private baseURI;
 
-
-  /// @custom:oz-upgrades-unsafe-allow constructor
+    /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() {
         _disableInitializers();
     }
 
-    
     function initialize(
         address _coreAddress,
         address _adminAddress
     ) public initializer {
         require(_coreAddress != address(0), "Core address cannot be zero");
         require(_adminAddress != address(0), "Admin address cannot be zero");
-        
+
         __ERC721_init("Dark Forest Artifact", "DFA");
         __ERC721Enumerable_init();
-        
+
         coreAddress = _coreAddress;
         adminAddress = _adminAddress;
         baseURI = "https://zkga.me/token-uri/artifact/";
     }
 
-    function _beforeTokenTransfer(
-        address from,
-        address to,
-        uint256 tokenId,
-        uint256 batchSize
-    ) internal override(ERC721EnumerableUpgradeable) {
-        super._beforeTokenTransfer(from, to, tokenId, batchSize);
-    }
+    // function _beforeTokenTransfer(
+    //     address from,
+    //     address to,
+    //     uint256 tokenId,
+    //     uint256 batchSize
+    // ) internal override(ERC721EnumerableUpgradeable) {
+    //     super._beforeTokenTransfer(from, to, tokenId, batchSize);
+    // }
 
-    function supportsInterface(
-        bytes4 interfaceId
-    ) public view override(ERC721EnumerableUpgradeable) returns (bool) {
-        return super.supportsInterface(interfaceId);
-    }
+    // function supportsInterface(
+    //     bytes4 interfaceId
+    // ) public view override(ERC721EnumerableUpgradeable) returns (bool) {
+    //     return super.supportsInterface(interfaceId);
+    // }
 
     function _baseURI() internal view virtual override returns (string memory) {
         return baseURI;

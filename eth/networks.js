@@ -12,7 +12,7 @@ module.exports = {
       provider: () =>
         new HDWalletProvider(
           process.env.deployer_mnemonic,
-          "http://localhost:8545"
+          "http://localhost:8545",
         ),
       protocol: "http",
       host: "localhost",
@@ -25,7 +25,7 @@ module.exports = {
       provider: () =>
         new HDWalletProvider(
           process.env.deployer_mnemonic,
-          `https://ropsten.infura.io/v3/${process.env.project_id}`
+          `https://ropsten.infura.io/v3/${process.env.project_id}`,
         ),
       networkId: 3,
       gasPrice: 10e9,
@@ -34,7 +34,7 @@ module.exports = {
       provider: () =>
         new HDWalletProvider(
           process.env.deployer_mnemonic,
-          `https://dai.poa.network/`
+          `https://dai.poa.network/`,
         ),
       networkId: 100,
       gas: 8000000,
@@ -44,7 +44,7 @@ module.exports = {
       provider: () =>
         new HDWalletProvider(
           process.env.deployer_mnemonic,
-          "https://dark-forest.online:8545"
+          "https://dark-forest.online:8545",
         ),
       gas: 8000000,
       gasPrice: 1e8,

@@ -45,7 +45,7 @@ describe("DarkForestPlanet", function () {
     const toId2 = getPlanetIdFromHex(maxLvlLocation2.hex);
     await this.contract.move(
       ...makeMoveArgs(fromId, toId1, 10, 2000, 0, 30000, 0),
-      { from: user1 }
+      { from: user1 },
     );
 
     const bigPlanet1 = await this.contract.planets(toId1);
@@ -56,7 +56,7 @@ describe("DarkForestPlanet", function () {
 
     await this.contract.move(
       ...makeMoveArgs(fromId, toId2, 16, 2000, 0, 30000, 0),
-      { from: user1 }
+      { from: user1 },
     );
 
     const bigPlanet2 = await this.contract.planets(toId2);
@@ -68,7 +68,7 @@ describe("DarkForestPlanet", function () {
     const toId = getPlanetIdFromHex(maxLvlLocation1.hex);
     await this.contract.move(
       ...makeMoveArgs(fromId, toId, 20, 2000, 0, 30000, 0),
-      { from: user1 }
+      { from: user1 },
     );
 
     const bigPlanet = await this.contract.planets(toId);
@@ -82,12 +82,12 @@ describe("DarkForestPlanet", function () {
     // nebula
     await this.contract.move(
       ...makeMoveArgs(fromId, lvlFourId1, 10, 2000, 0, 10000, 0),
-      { from: user1 }
+      { from: user1 },
     );
     // medium space
     await this.contract.move(
       ...makeMoveArgs(fromId, lvlFourId2, 16, 2000, 0, 10000, 0),
-      { from: user1 }
+      { from: user1 },
     );
 
     const lvlFourPlanet1 = await this.contract.planets(lvlFourId1);
@@ -95,36 +95,36 @@ describe("DarkForestPlanet", function () {
 
     expectEqualWithTolerance(
       lvlFourPlanet1.range.toNumber() * 1.25,
-      lvlFourPlanet2.range.toNumber()
+      lvlFourPlanet2.range.toNumber(),
     );
     expectEqualWithTolerance(
       lvlFourPlanet1.speed.toNumber() * 1.25,
-      lvlFourPlanet2.speed.toNumber()
+      lvlFourPlanet2.speed.toNumber(),
     );
     expectEqualWithTolerance(
       lvlFourPlanet1.populationCap.toNumber() * 1.25,
-      lvlFourPlanet2.populationCap.toNumber()
+      lvlFourPlanet2.populationCap.toNumber(),
     );
     expectEqualWithTolerance(
       lvlFourPlanet1.populationGrowth.toNumber() * 1.25,
-      lvlFourPlanet2.populationGrowth.toNumber()
+      lvlFourPlanet2.populationGrowth.toNumber(),
     );
     expectEqualWithTolerance(
       lvlFourPlanet1.silverCap.toNumber() * 1.25,
-      lvlFourPlanet2.silverCap.toNumber()
+      lvlFourPlanet2.silverCap.toNumber(),
     );
     expectEqualWithTolerance(
       lvlFourPlanet1.silverGrowth.toNumber() * 1.25,
-      lvlFourPlanet2.silverGrowth.toNumber()
+      lvlFourPlanet2.silverGrowth.toNumber(),
     );
     expectEqualWithTolerance(
       lvlFourPlanet1.defense.toNumber() * 0.5,
-      lvlFourPlanet2.defense.toNumber()
+      lvlFourPlanet2.defense.toNumber(),
     );
     // barbarians
     expectEqualWithTolerance(
       lvlFourPlanet1.population.toNumber() * 2.5 * 1.25,
-      lvlFourPlanet2.population.toNumber()
+      lvlFourPlanet2.population.toNumber(),
     );
   });
 
@@ -133,32 +133,32 @@ describe("DarkForestPlanet", function () {
     const toId = getPlanetIdFromHex(asteroid2Location.hex);
     await this.contract.move(
       ...makeMoveArgs(fromId, toId, 20, 2000, 0, 30000, 0),
-      { from: user1 }
+      { from: user1 },
     );
 
     const fromPlanet = await this.contract.planets(fromId);
     const toPlanet = await this.contract.planets(toId);
 
     expect(Math.floor(fromPlanet.range.toNumber() * 1.5)).to.be.equal(
-      toPlanet.range.toNumber()
+      toPlanet.range.toNumber(),
     );
     expect(Math.floor(fromPlanet.speed.toNumber() * 1.5)).to.be.equal(
-      toPlanet.speed.toNumber()
+      toPlanet.speed.toNumber(),
     );
     expect(Math.floor(fromPlanet.populationCap.toNumber() * 1.5)).to.be.equal(
-      toPlanet.populationCap.toNumber()
+      toPlanet.populationCap.toNumber(),
     );
     expect(
-      Math.floor(fromPlanet.populationGrowth.toNumber() * 1.5)
+      Math.floor(fromPlanet.populationGrowth.toNumber() * 1.5),
     ).to.be.equal(toPlanet.populationGrowth.toNumber());
     expect(Math.floor(fromPlanet.silverCap.toNumber() * 1.5)).to.be.equal(
-      toPlanet.silverCap.toNumber()
+      toPlanet.silverCap.toNumber(),
     );
     expect(Math.floor(fromPlanet.silverGrowth.toNumber() * 1.5)).to.be.equal(
-      toPlanet.silverGrowth.toNumber()
+      toPlanet.silverGrowth.toNumber(),
     );
     expect(Math.floor(fromPlanet.defense.toNumber() * 0.25)).to.be.equal(
-      toPlanet.defense.toNumber()
+      toPlanet.defense.toNumber(),
     );
   });
 
@@ -167,7 +167,7 @@ describe("DarkForestPlanet", function () {
     const toId = getPlanetIdFromHex(asteroid3Location.hex);
     await this.contract.move(
       ...makeMoveArgs(fromId, toId, 10, 2000, 0, 30000, 0),
-      { from: user1 }
+      { from: user1 },
     );
 
     const fromPlanet = await this.contract.planets(fromId);
@@ -175,11 +175,11 @@ describe("DarkForestPlanet", function () {
 
     // should buff popcap
     expect(fromPlanet.populationCap.toNumber() * 2).to.be.equal(
-      toPlanet.populationCap.toNumber()
+      toPlanet.populationCap.toNumber(),
     );
     // should not buff other stats
     expect(fromPlanet.populationGrowth.toNumber()).to.be.equal(
-      toPlanet.populationGrowth.toNumber()
+      toPlanet.populationGrowth.toNumber(),
     );
   });
 
@@ -191,7 +191,7 @@ describe("DarkForestPlanet", function () {
     const deepSpaceMineId = getPlanetIdFromHex(silverStar4Location.hex);
     await this.contract.move(
       ...makeMoveArgs(homeId, nebulaNonMineId, 10, 2000, 0, 30000, 0),
-      { from: user1 }
+      { from: user1 },
     );
 
     time.increase(LARGE_INTERVAL);
@@ -199,7 +199,7 @@ describe("DarkForestPlanet", function () {
 
     await this.contract.move(
       ...makeMoveArgs(homeId, deepSpaceMineId, 20, 2000, 0, 30000, 0),
-      { from: user1 }
+      { from: user1 },
     );
 
     const nonSilverPlanet = await this.contract.planets(nebulaNonMineId);
@@ -215,7 +215,7 @@ describe("DarkForestPlanet", function () {
     const silverPlanetId = getPlanetIdFromHex(silverStar2Location.hex);
     await this.contract.move(
       ...makeMoveArgs(homeId, regularPlanetId, 10, 2000, 0, 30000, 0),
-      { from: user1 }
+      { from: user1 },
     );
 
     time.increase(LARGE_INTERVAL);
@@ -223,7 +223,7 @@ describe("DarkForestPlanet", function () {
 
     await this.contract.move(
       ...makeMoveArgs(homeId, silverPlanetId, 10, 2000, 0, 30000, 0),
-      { from: user1 }
+      { from: user1 },
     );
 
     const regularPlanet = await this.contract.planets(regularPlanetId);
@@ -231,21 +231,21 @@ describe("DarkForestPlanet", function () {
 
     // debuffs silver mines
     expect(Math.floor(regularPlanet.populationCap.toNumber() / 2)).to.be.equal(
-      silverPlanet.populationCap.toNumber()
+      silverPlanet.populationCap.toNumber(),
     );
     expect(
-      Math.floor(regularPlanet.populationGrowth.toNumber() / 2)
+      Math.floor(regularPlanet.populationGrowth.toNumber() / 2),
     ).to.be.equal(silverPlanet.populationGrowth.toNumber());
     expect(Math.floor(regularPlanet.silverCap.toNumber() * 2)).to.be.equal(
-      silverPlanet.silverCap.toNumber()
+      silverPlanet.silverCap.toNumber(),
     );
     expect(Math.floor(regularPlanet.defense.toNumber() / 2)).to.be.equal(
-      silverPlanet.defense.toNumber()
+      silverPlanet.defense.toNumber(),
     );
 
     // planet is filled with silver
     expect(silverPlanet.silver.toNumber()).to.be.equal(
-      silverPlanet.silverCap.toNumber() / 2
+      silverPlanet.silverCap.toNumber() / 2,
     );
   });
 });

@@ -28,7 +28,7 @@ describe("DarkForestWhitelist", function () {
   it("should reject change admin if not admin", async function () {
     await expectRevert(
       this.whitelistContract.changeAdmin(user1, { from: user2 }),
-      "Only administrator can perform this action"
+      "Only administrator can perform this action",
     );
   });
 
@@ -38,9 +38,9 @@ describe("DarkForestWhitelist", function () {
         [web3.utils.keccak256("XXXXX-XXXXX-XXXXX-XXXXX-XXXXX")],
         {
           from: user2,
-        }
+        },
       ),
-      "Only administrator can perform this action"
+      "Only administrator can perform this action",
     );
   });
 
@@ -49,14 +49,14 @@ describe("DarkForestWhitelist", function () {
       [web3.utils.keccak256("XXXXX-XXXXX-XXXXX-XXXXX-XXXXX")],
       {
         from: deployer,
-      }
+      },
     );
 
     await expectRevert(
       this.whitelistContract.useKey("XXXXX-XXXXX-XXXXX-XXXXX-XXXXX", user1, {
         from: user2,
       }),
-      "Only administrator can perform this action"
+      "Only administrator can perform this action",
     );
   });
 
@@ -68,7 +68,7 @@ describe("DarkForestWhitelist", function () {
       ],
       {
         from: deployer,
-      }
+      },
     );
 
     await this.whitelistContract.useKey(
@@ -76,14 +76,14 @@ describe("DarkForestWhitelist", function () {
       user1,
       {
         from: deployer,
-      }
+      },
     );
 
     await expectRevert(
       this.whitelistContract.useKey("XXXXX-XXXXX-XXXXX-XXXXX-XXXX0", user1, {
         from: deployer,
       }),
-      "player already whitelisted"
+      "player already whitelisted",
     );
   });
 
@@ -92,14 +92,14 @@ describe("DarkForestWhitelist", function () {
       [web3.utils.keccak256("XXXXX-XXXXX-XXXXX-XXXXX-XXXXX")],
       {
         from: deployer,
-      }
+      },
     );
 
     await expectRevert(
       this.whitelistContract.useKey("XXXXX-XXXXX-XXXXX-XXXXX-XXXX0", user1, {
         from: deployer,
       }),
-      "invalid key"
+      "invalid key",
     );
   });
 
@@ -108,7 +108,7 @@ describe("DarkForestWhitelist", function () {
       [web3.utils.keccak256("XXXXX-XXXXX-XXXXX-XXXXX-XXXXX")],
       {
         from: deployer,
-      }
+      },
     );
 
     await this.whitelistContract.useKey(
@@ -116,14 +116,14 @@ describe("DarkForestWhitelist", function () {
       user2,
       {
         from: deployer,
-      }
+      },
     );
 
     await expectRevert(
       this.whitelistContract.useKey("XXXXX-XXXXX-XXXXX-XXXXX-XXXXX", user1, {
         from: deployer,
       }),
-      "invalid key"
+      "invalid key",
     );
   });
 
@@ -132,7 +132,7 @@ describe("DarkForestWhitelist", function () {
       [web3.utils.keccak256("XXXXX-XXXXX-XXXXX-XXXXX-XXXXX")],
       {
         from: deployer,
-      }
+      },
     );
 
     await this.whitelistContract.useKey(
@@ -140,14 +140,14 @@ describe("DarkForestWhitelist", function () {
       user1,
       {
         from: deployer,
-      }
+      },
     );
 
     await expectRevert(
       this.whitelistContract.removeFromWhitelist(user1, {
         from: user2,
       }),
-      "Only administrator can perform this action"
+      "Only administrator can perform this action",
     );
   });
 
@@ -156,7 +156,7 @@ describe("DarkForestWhitelist", function () {
       this.whitelistContract.removeFromWhitelist(user1, {
         from: deployer,
       }),
-      "player was not whitelisted to begin with"
+      "player was not whitelisted to begin with",
     );
   });
 
@@ -166,7 +166,7 @@ describe("DarkForestWhitelist", function () {
       [web3.utils.keccak256("XXXXX-XXXXX-XXXXX-XXXXX-XXXXX")],
       {
         from: deployer,
-      }
+      },
     );
 
     await this.whitelistContract.useKey(
@@ -174,7 +174,7 @@ describe("DarkForestWhitelist", function () {
       user1,
       {
         from: deployer,
-      }
+      },
     );
 
     await this.contract.initializePlayer(...makeInitArgs(planetId, 10, 1999), {
@@ -191,7 +191,7 @@ describe("DarkForestWhitelist", function () {
       this.contract.initializePlayer(...makeInitArgs(planetId, 10, 1999), {
         from: user1,
       }),
-      "Player is not whitelisted"
+      "Player is not whitelisted",
     );
   });
 
@@ -201,7 +201,7 @@ describe("DarkForestWhitelist", function () {
       [web3.utils.keccak256("XXXXX-XXXXX-XXXXX-XXXXX-XXXXX")],
       {
         from: deployer,
-      }
+      },
     );
 
     await this.whitelistContract.useKey(
@@ -209,7 +209,7 @@ describe("DarkForestWhitelist", function () {
       user1,
       {
         from: deployer,
-      }
+      },
     );
 
     await this.whitelistContract.removeFromWhitelist(user1, { from: deployer });
@@ -218,7 +218,7 @@ describe("DarkForestWhitelist", function () {
       this.contract.initializePlayer(...makeInitArgs(planetId, 10, 1999), {
         from: user1,
       }),
-      "Player is not whitelisted"
+      "Player is not whitelisted",
     );
   });
 
@@ -227,7 +227,7 @@ describe("DarkForestWhitelist", function () {
       [web3.utils.keccak256("XXXXX-XXXXX-XXXXX-XXXXX-XXXXX")],
       {
         from: deployer,
-      }
+      },
     );
 
     await this.whitelistContract.changeDrip("20000000000000000", {
@@ -235,13 +235,13 @@ describe("DarkForestWhitelist", function () {
     });
 
     const drip = parseFloat(
-      web3.utils.fromWei(await this.whitelistContract.drip())
+      web3.utils.fromWei(await this.whitelistContract.drip()),
     );
 
     expectEqualWithTolerance(drip, 0.02, 0.00000000000001);
 
     const oldBalance = parseFloat(
-      web3.utils.fromWei(await web3.eth.getBalance(user1), "ether")
+      web3.utils.fromWei(await web3.eth.getBalance(user1), "ether"),
     );
 
     await this.whitelistContract.useKey(
@@ -249,11 +249,11 @@ describe("DarkForestWhitelist", function () {
       user1,
       {
         from: deployer,
-      }
+      },
     );
 
     const newBalance = parseFloat(
-      web3.utils.fromWei(await web3.eth.getBalance(user1), "ether")
+      web3.utils.fromWei(await web3.eth.getBalance(user1), "ether"),
     );
 
     expectEqualWithTolerance(newBalance, oldBalance + drip, 0.00000000000001);

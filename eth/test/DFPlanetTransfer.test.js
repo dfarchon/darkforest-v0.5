@@ -34,7 +34,7 @@ describe("DarkForestTransferOwnership", function () {
         ...makePlayerInitializeArgs(planet1Id, 10, 2000),
         {
           from: user1,
-        }
+        },
       );
     });
 
@@ -54,11 +54,11 @@ describe("DarkForestTransferOwnership", function () {
             2000,
             dist,
             shipsSent,
-            silverSent
+            silverSent,
           ),
-          { from: user2 }
+          { from: user2 },
         ),
-        "Only owner account can perform operation on planets"
+        "Only owner account can perform operation on planets",
       );
     });
 
@@ -69,11 +69,11 @@ describe("DarkForestTransferOwnership", function () {
         ...makePlayerInitializeArgs(
           getPlanetIdFromHex(asteroid3Location.hex),
           10,
-          2000
+          2000,
         ),
         {
           from: user2,
-        }
+        },
       );
 
       const receipt = await this.contract.transferOwnership(planet, user2, {
@@ -86,17 +86,16 @@ describe("DarkForestTransferOwnership", function () {
         (eventArgs = {
           loc: planet,
           player: user2,
-        })
+        }),
       );
     });
 
     it("new planet's owner must be the new owner", async function () {
       const planet1Id = getPlanetIdFromHex(asteroid1Location.hex);
-      const planetExtendedInfo = await this.contract.planetsExtendedInfo(
-        planet1Id
-      );
+      const planetExtendedInfo =
+        await this.contract.planetsExtendedInfo(planet1Id);
       expect(planetExtendedInfo.lastUpdated).to.be.bignumber.equal(
-        await time.latest()
+        await time.latest(),
       );
 
       time.increase(LARGE_INTERVAL);
@@ -122,9 +121,9 @@ describe("DarkForestTransferOwnership", function () {
           2000,
           dist,
           shipsSent,
-          silverSent
+          silverSent,
         ),
-        { from: user2 }
+        { from: user2 },
       );
 
       expectEvent(
@@ -132,7 +131,7 @@ describe("DarkForestTransferOwnership", function () {
         "ArrivalQueued",
         (eventArgs = {
           arrivalId: web3.utils.toBN(0),
-        })
+        }),
       );
     });
 
@@ -148,7 +147,7 @@ describe("DarkForestTransferOwnership", function () {
         (eventArgs = {
           loc: planet,
           player: user1,
-        })
+        }),
       );
     });
   });
