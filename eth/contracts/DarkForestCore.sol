@@ -57,7 +57,7 @@ contract DarkForestCore is Initializable, DarkForestStorageV1 {
 
         DISABLE_ZK_CHECK = _disableZKCheck;
 
-        tokenMintEndTimestamp = 1611584314; // a month from contract deploy - 01/25/21 2:18:34 GMT
+        tokenMintEndTimestamp = 4911112800; // 2125-08-17T14:00:00.000Z 
         target4RadiusConstant = 800;
 
         planetLevelThresholds = [

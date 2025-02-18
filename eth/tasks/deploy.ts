@@ -193,11 +193,15 @@ async function deploy(
     await initTx.wait();
     console.log("✅ Tokens contract initialized");
 
+    const addressPath = isDev
+        ? "../client/src/utils/local_contract_addr.ts"
+        : "../client/src/utils/prod_contract_addr.ts";
+
     fs.writeFileSync(
-        isDev === false
-            ? "../client/src/utils/prod_contract_addr.ts"
-            : "../client/src/utils/local_contract_addr.ts",
-        `export const contractAddress = '${coreContract.target.toString()}';`,
+        addressPath,
+        `export const contractAddress = '${coreContract.target.toString()}';\n` +
+        `export const tokensContract = '${tokensContract.target.toString()}';\n` +
+        `export const whitelistContract = '${whitelistContract.target.toString()}';\n`
     );
 
     console.log("Deploy over. You can quit this process.");
@@ -212,6 +216,11 @@ async function clientConfig() {
     await exec(
         "cp ./artifacts/contracts/DarkForestCore.sol/DarkForestCore.json ../client/public/contracts/DarkForestCore.json",
     );
+    await exec(
+        "cp ./artifacts/contracts/DarkForestTokens.json ../client/public/contracts/"
+    );
+    await exec("cp ./artifacts/contracts/Whitelist.json ../client/public/contracts/");
+
 }
 
 export async function deployWhitelist(

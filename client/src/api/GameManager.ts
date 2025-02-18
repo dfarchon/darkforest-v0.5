@@ -92,7 +92,10 @@ class GameManager extends EventEmitter {
   private readonly entityStore: GameObjects;
   private readonly useMockHash: boolean;
   private readonly contractConstants: ContractConstants;
-  private readonly endTimeSeconds: number = 1643587533; // jan 2022
+  // NOTICE: set end time
+  private readonly endTimeSeconds: number = new Date('2125-08-17T14:00:00.000Z').getTime() / 1000;
+  // 4911112800
+
   private readonly ethConnection: EthConnection;
 
   private balance: number;
@@ -1083,8 +1086,7 @@ class GameManager extends EventEmitter {
           minedChunksCount++;
           if (minedChunksCount % 8 === 0) {
             terminalEmitter.println(
-              `Hashed ${
-                minedChunksCount * MIN_CHUNK_SIZE ** 2
+              `Hashed ${minedChunksCount * MIN_CHUNK_SIZE ** 2
               } potential home planets...`
             );
           }
