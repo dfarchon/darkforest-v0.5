@@ -1033,20 +1033,33 @@ class GameManager extends EventEmitter {
       // contract will only enforce <= PERLIN_THRESHOLD_1 but there's no reason to
       // initialize in a lower perlin area
       const isProd = process.env.NODE_ENV === 'production';
+
+      console.log('this.worldRadius', this.worldRadius);
       do {
         // sample from square
         x = Math.random() * this.worldRadius * 2 - this.worldRadius;
         y = Math.random() * this.worldRadius * 2 - this.worldRadius;
         d = Math.sqrt(x ** 2 + y ** 2);
         p = perlin({ x, y }, false);
+
+        // console.log(x, y, d, p);
+        // console.log(p < perlinThreshold);
+        // console.log(p > perlinThreshold - 1);
+        // console.log(d < this.worldRadius);
+
+        // console.log(d > UNIFORM_RANDOM_UNTIL_1);
+        // console.log(!(this.worldRadius > UNIFORM_RANDOM_UNTIL_2 && d <= 0.95 * this.worldRadius));
+
       } while (
         p >= perlinThreshold || // can't be in space/deepspace
         p < perlinThreshold - 1 || // can't be too deep in nebula
         d >= this.worldRadius || // can't be out of bound
-        (isProd &&
-          (d <= UNIFORM_RANDOM_UNTIL_1 || // can't be in initial (first 100 players) spawn circle
-            (this.worldRadius > UNIFORM_RANDOM_UNTIL_2 &&
-              d <= 0.95 * this.worldRadius))) // can't be in inner 90%, if worldRadius large enough
+        false
+        // NOTICE:  temporarily comment out this restriction
+        // (isProd &&
+        // (d <= UNIFORM_RANDOM_UNTIL_1 || // can't be in initial (first 100 players) spawn circle
+        // (this.worldRadius > UNIFORM_RANDOM_UNTIL_2 &&
+        // d <= 0.95 * this.worldRadius))) // can't be in inner 90%, if worldRadius large enough
       );
 
       // when setting up a new account in development mode, you can tell
@@ -1082,8 +1095,10 @@ class GameManager extends EventEmitter {
       homePlanetFinder.on(
         MinerManagerEvent.DiscoveredNewChunk,
         (chunk: ExploredChunkData) => {
+
           chunkStore.addChunk(chunk);
           minedChunksCount++;
+
           if (minedChunksCount % 8 === 0) {
             terminalEmitter.println(
               `Hashed ${minedChunksCount * MIN_CHUNK_SIZE ** 2
