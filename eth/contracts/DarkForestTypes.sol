@@ -126,4 +126,26 @@ library DarkForestTypes {
         Wasteland,
         Lava
     }
+
+    struct DarkForestGameConfig {
+        address adminAddress;
+        bool whitelistEnabled;
+        bool paused;
+        bool DISABLE_ZK_CHECK;
+        uint256 TIME_FACTOR_HUNDREDTHS;
+        uint256 PERLIN_THRESHOLD_1;
+        uint256 PERLIN_THRESHOLD_2;
+        uint256 BIOME_THRESHOLD_1;
+        uint256 BIOME_THRESHOLD_2;
+        uint256 PLANET_RARITY;
+        uint256 SILVER_RARITY_1;
+        uint256 SILVER_RARITY_2;
+        uint256 SILVER_RARITY_3;
+        uint256[] planetLevelThresholds;
+        uint256 gameEndTimestamp;
+        uint256 target4RadiusConstant;
+        uint256 target5RadiusConstant;
+        uint256 ARTIFACT_LOCKUP_DURATION_SECONDS;
+        address tokensAddress;
+    }
 }

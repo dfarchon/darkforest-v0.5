@@ -4,8 +4,6 @@ pragma experimental ABIEncoderV2;
 
 // Import base Initializable contract
 import "@openzeppelin/contracts-upgradeable/proxy/Initializable.sol";
-import "@openzeppelin/contracts-upgradeable/math/SafeMathUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/math/MathUpgradeable.sol";
 import "./Verifier.sol";
 import "./DarkForestStorageV1.sol";
 import "./DarkForestTokens.sol";
@@ -34,6 +32,11 @@ contract DarkForestCore is Initializable, DarkForestStorageV1 {
     using SafeMathUpgradeable for *;
     using MathUpgradeable for uint256;
 
+    bool whitelistEnabled;
+    mapping(address => bool) allowedAccounts;
+    mapping(bytes32 => bool) allowedKeyHashes;
+    address[] allowedAccountsArray;
+
     event PlayerInitialized(address player, uint256 loc);
     event ArrivalQueued(uint256 arrivalId);
     event PlanetUpgraded(uint256 loc);
@@ -45,12 +48,12 @@ contract DarkForestCore is Initializable, DarkForestStorageV1 {
 
     function initialize(
         address _adminAddress,
-        address payable _whitelistAddress,
+        bool _whitelistEnabled,
         address payable _tokensAddress,
         bool _disableZKCheck
     ) public initializer {
         adminAddress = _adminAddress;
-        whitelist = Whitelist(_whitelistAddress);
+        whitelistEnabled = _whitelistEnabled;
         tokens = DarkForestTokens(_tokensAddress);
 
         paused = false;
@@ -58,7 +61,8 @@ contract DarkForestCore is Initializable, DarkForestStorageV1 {
         DISABLE_ZK_CHECK = _disableZKCheck;
 
         tokenMintEndTimestamp = 4911112800; // 2125-08-17T14:00:00.000Z 
-        target4RadiusConstant = 800;
+        target4RadiusConstant = 8;
+        target5RadiusConstant = 2; 
 
         planetLevelThresholds = [
             16777216,
@@ -84,6 +88,134 @@ contract DarkForestCore is Initializable, DarkForestStorageV1 {
         _updateWorldRadius();
     }
 
+    function init(
+        DarkForestTypes.DarkForestGameConfig memory _gameConfig
+    ) public initializer {
+        adminAddress = _gameConfig.adminAddress;
+        whitelistEnabled = _gameConfig.whitelistEnabled;
+        paused = _gameConfig.paused;
+        DISABLE_ZK_CHECK = _gameConfig.DISABLE_ZK_CHECK;
+        TIME_FACTOR_HUNDREDTHS = _gameConfig.TIME_FACTOR_HUNDREDTHS;
+        PERLIN_THRESHOLD_1 = _gameConfig.PERLIN_THRESHOLD_1;
+        PERLIN_THRESHOLD_2 = _gameConfig.PERLIN_THRESHOLD_2;
+        PLANET_RARITY = _gameConfig.PLANET_RARITY;
+        SILVER_RARITY_1 = _gameConfig.SILVER_RARITY_1;
+        SILVER_RARITY_2 = _gameConfig.SILVER_RARITY_2;
+        SILVER_RARITY_3 = _gameConfig.SILVER_RARITY_3;
+        planetLevelThresholds = _gameConfig.planetLevelThresholds;
+        gameEndTimestamp = _gameConfig.gameEndTimestamp;
+        target4RadiusConstant = _gameConfig.target4RadiusConstant;
+        target5RadiusConstant = _gameConfig.target5RadiusConstant;
+        tokens = DarkForestTokens(_gameConfig.tokensAddress);
+
+        DarkForestInitialize.initializeDefaults(planetDefaultStats);
+        DarkForestInitialize.initializeUpgrades(upgrades);
+
+        initializedPlanetCountByLevel = [0, 0, 0, 0, 0, 0, 0, 0];
+        for (uint256 i = 0; i < planetLevelThresholds.length; i += 1) {
+            cumulativeRarities.push(
+                (2 ** 24 / planetLevelThresholds[i]) * PLANET_RARITY
+            );
+        }
+        _updateWorldRadius();
+    }
+
+    ////////////////////////////
+    /// Whitelist Functions ////
+    ////////////////////////////
+
+    // Whitelist events
+    event WhitelistStatusChanged(bool enabled);
+    event PlayerWhitelisted(address player);
+    event KeyAdded(bytes32 keyHash);
+    event KeyUsed(bytes32 keyHash, address owner);
+    event PlayerRemovedFromWhitelist(address player);
+
+    // Toggle whitelist functionality
+    function setWhitelistEnabled(bool _enabled) public onlyAdmin {
+        whitelistEnabled = _enabled;
+        emit WhitelistStatusChanged(_enabled);
+    }
+
+    // Check if an address is whitelisted
+    function isWhitelisted(address _addr) public view returns (bool) {
+        if (!whitelistEnabled) {
+            return true;
+        }
+        return allowedAccounts[_addr];
+    }
+
+    // Get number of allowed accounts
+    function getNAllowed() public view returns (uint256) {
+        return allowedAccountsArray.length;
+    }
+
+    // Check if a key is valid
+    function isKeyValid(string memory key) public view returns (bool) {
+        bytes32 hashed = keccak256(abi.encodePacked(key));
+        return allowedKeyHashes[hashed];
+    }
+
+    // Add keys to the whitelist
+    function addKeys(bytes32[] memory hashes) public onlyAdmin {
+        for (uint16 i = 0; i < hashes.length; i++) {
+            allowedKeyHashes[hashes[i]] = true;
+            emit KeyAdded(hashes[i]);
+        }
+    }
+
+    // Use a key to whitelist an address
+    function useKey(string memory key, address owner) public onlyAdmin {
+        require(!allowedAccounts[owner], "Player already whitelisted");
+        bytes32 hashed = keccak256(abi.encodePacked(key));
+        require(allowedKeyHashes[hashed], "Invalid key");
+        allowedAccounts[owner] = true;
+        allowedAccountsArray.push(owner);
+        allowedKeyHashes[hashed] = false;
+        emit PlayerWhitelisted(owner);
+        emit KeyUsed(hashed, owner);
+    }
+
+    // Remove an address from the whitelist
+    function removeFromWhitelist(address toRemove) public onlyAdmin {
+        require(
+            allowedAccounts[toRemove],
+            "Player was not whitelisted to begin with"
+        );
+        allowedAccounts[toRemove] = false;
+        for (uint256 i = 0; i < allowedAccountsArray.length; i++) {
+            if (allowedAccountsArray[i] == toRemove) {
+                allowedAccountsArray[i] = allowedAccountsArray[
+                    allowedAccountsArray.length - 1
+                ];
+                allowedAccountsArray.pop();
+                break;
+            }
+        }
+        emit PlayerRemovedFromWhitelist(toRemove);
+    }
+
+    // Add player directly to whitelist
+    function addToWhitelist(address player) public onlyAdmin {
+        require(!allowedAccounts[player], "Player already whitelisted");
+        allowedAccounts[player] = true;
+        allowedAccountsArray.push(player);
+        emit PlayerWhitelisted(player);
+    }
+
+    // Add multiple players to whitelist
+    function addToWhitelistMultiple(
+        address[] calldata players
+    ) public onlyAdmin {
+        for (uint256 i = 0; i < players.length; i++) {
+            if (!allowedAccounts[players[i]]) {
+                allowedAccounts[players[i]] = true;
+                allowedAccountsArray.push(players[i]);
+                emit PlayerWhitelisted(players[i]);
+            }
+        }
+    }
+
     //////////////////////
     /// ACCESS CONTROL ///
     //////////////////////
@@ -93,10 +225,7 @@ contract DarkForestCore is Initializable, DarkForestStorageV1 {
     }
 
     modifier onlyWhitelisted() {
-        require(
-            whitelist.isWhitelisted(msg.sender),
-            "Player is not whitelisted"
-        );
+        require(isWhitelisted(msg.sender), "Player is not whitelisted");
         _;
     }
 
@@ -416,7 +545,7 @@ contract DarkForestCore is Initializable, DarkForestStorageV1 {
 
     // private utilities
 
-    function _locationIdValid(uint256 _loc) public pure returns (bool) {
+    function _locationIdValid(uint256 _loc) public view returns (bool) {
         return (_loc <
             (21888242871839275222246405745257275088548364400416034343698204186575808495617 /
                 PLANET_RARITY));

@@ -1,0 +1,30 @@
+{
+    "adminAddress": "0x0000000000000000000000000000000000000000",
+    "whitelistEnabled": false,
+    "paused": false,
+    "DISABLE_ZK_CHECK": false,
+    "TIME_FACTOR_HUNDREDTHS": 400,
+    "PERLIN_THRESHOLD_1": 15,
+    "PERLIN_THRESHOLD_2": 17,
+    "PLANET_RARITY": 6000,
+    "SILVER_RARITY_1": 8,
+    "SILVER_RARITY_2": 8,
+    "SILVER_RARITY_3": 4,
+    "BIOME_THRESHOLD_1": 15,
+    "BIOME_THRESHOLD_2": 17,
+    "ARTIFACT_LOCKUP_DURATION_SECONDS": 43200,
+    "planetLevelThresholds": [
+        16777216,
+        4194256,
+        1048516,
+        262081,
+        65472,
+        16320,
+        4032,
+        960
+    ],
+    "gameEndTimestamp": 4911112800,
+    "target4RadiusConstant": 8,
+    "target5RadiusConstant": 2,
+    "tokensAddress": "0x0000000000000000000000000000000000000000"
+}

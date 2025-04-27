@@ -12,8 +12,8 @@
     "prettier": "prettier --write --plugin=prettier-plugin-solidity 'contracts/**/*.sol'",
     "compile": "hardhat compile",
     "hardhat:dev": "hardhat --network localhost",
-    "deploy:dev": "NODE_ENV=development hardhat --network localhost deploy --whitelist false",
-    "deploy:prod": "NODE_ENV=production hardhat --network holesky deploy --whitelist false",
+    "deploy:dev": "NODE_ENV=development hardhat --network localhost deploy",
+    "deploy:prod": "NODE_ENV=production hardhat --network holesky deploy",
     "test": "oz compile --optimizer on && mocha --exit --recursive test --timeout 25000"
   },
   "devDependencies": {
