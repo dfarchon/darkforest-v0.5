@@ -19,6 +19,7 @@ import {
   LocatablePlanet,
   Biome,
   isLocatable,
+  GameConfig,
 } from '../../_types/global/GlobalTypes';
 import autoBind from 'auto-bind';
 import { EventEmitter } from 'events';
@@ -751,6 +752,10 @@ class GameUIManager extends EventEmitter {
     // TODO: do something like JSON.stringify(args) so we know formatting is correct
     terminalEmitter.jsShell(`df.buyHat('${planet.locationId}')`);
     this.gameManager.buyHat(planet.locationId);
+  }
+
+  deployContract(gameConfig?: GameConfig): Promise<string> {
+    return this.gameManager.deployContract(gameConfig);
   }
 
   // non-nullable

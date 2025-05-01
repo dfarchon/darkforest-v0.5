@@ -16,6 +16,7 @@ import {
   isLocatable,
   VoyageId,
   LocatablePlanet,
+  GameConfig,
 } from '../_types/global/GlobalTypes';
 import PersistentChunkStore from './PersistentChunkStore';
 import { MIN_CHUNK_SIZE } from '../utils/constants';
@@ -185,12 +186,18 @@ class GameManager extends EventEmitter {
     clearInterval(this.balanceInterval);
   }
 
-  static async create(ethConnection: EthConnection): Promise<GameManager> {
+  static async create(
+    ethConnection: EthConnection,
+    customContractAddress?: string
+  ): Promise<GameManager> {
     // initialize dependencies according to a DAG
 
     // first we initialize the ContractsAPI and get the user's eth account,
     // and load contract constants + state
-    const contractsAPI = await ContractsAPI.create(ethConnection);
+    const contractsAPI = await ContractsAPI.create(
+      ethConnection,
+      customContractAddress
+    );
     const useMockHash = await contractsAPI.zkChecksDisabled();
 
     // then we initialize the local storage manager and SNARK helper
@@ -1553,6 +1560,10 @@ class GameManager extends EventEmitter {
 
   private handleTxIntent(txIntent: TxIntent) {
     this.entityStore.onTxIntent(txIntent);
+  }
+
+  deployContract(gameConfig?: GameConfig): Promise<string> {
+    return this.contractsAPI.deployContract(gameConfig);
   }
 
   /**

@@ -16,7 +16,7 @@ import TerminalEmitter, {
   TerminalEvent,
 } from "../utils/TerminalEmitter";
 import Terminal from "./Terminal";
-import { useHistory } from "react-router-dom";
+import { useHistory, useParams } from "react-router-dom";
 import ModalWindow from "./ModalWindow";
 import GameWindow from "./GameWindow";
 import {
@@ -27,7 +27,7 @@ import {
 } from "./GameLandingPageComponents";
 import UIEmitter, { UIEmitterEvent } from "../utils/UIEmitter";
 import { utils, Wallet } from "ethers";
-import EthConnection from "../api/EthConnection";
+import ethConnection from "../api/EthConnection";
 import { CheckedTypeUtils } from "../utils/CheckedTypeUtils";
 import { UIDataKey, useStoredUIState } from "../api/UIStateStorageManager";
 import TutorialManager, { TutorialState } from "../utils/TutorialManager";
@@ -70,11 +70,12 @@ export enum InitRenderState {
 }
 
 export default function GameLandingPage(_props: { replayMode: boolean }) {
-  const [ethConnection, _setEthConnection] = useState(new EthConnection());
+  // const [ethConnection, _setEthConnection] = useState(new EthConnection());
   const [gameManager, setGameManager] = useState<GameManager | undefined>();
 
   const history = useHistory();
   const isProd = process.env.NODE_ENV === "production";
+  const { contractAddress } = useParams<{ contractAddress?: string }>();
 
   let initState = InitState.NONE;
   const [initRenderState, setInitRenderState] = useState<InitRenderState>(
@@ -106,10 +107,19 @@ export default function GameLandingPage(_props: { replayMode: boolean }) {
 
   const getUserInput = async () => {
     const terminalEmitter = TerminalEmitter.getInstance();
+    console.log('Enabling user input and waiting for response...');
     terminalEmitter.enableUserInput();
     const ret: string = await new Promise((resolve) => {
-      terminalEmitter.once(TerminalEvent.UserEnteredInput, resolve);
+      // terminalEmitter.once(TerminalEvent.UserEnteredInput, resolve);
+      const handleUserInput = (input: string) => {
+        console.log('Received user input:', input);
+        resolve(input);
+      };
+
+      terminalEmitter.once(TerminalEvent.UserEnteredInput, handleUserInput);
     });
+
+    console.log('User input received, disabling input field:', ret);
     terminalEmitter.disableUserInput();
 
     return ret.trim();
@@ -310,7 +320,7 @@ export default function GameLandingPage(_props: { replayMode: boolean }) {
     terminalEmitter.println("<tbd>", TerminalTextStyle.White);
     terminalEmitter.newline();
 
-    const knownAddrs = ethConnection.getKnownAccounts();
+    const knownAddrs = ethConnection.getInstance().getKnownAccounts();
     terminalEmitter.println(
       `Found ${knownAddrs.length} accounts on this device.`
     );
@@ -322,20 +332,20 @@ export default function GameLandingPage(_props: { replayMode: boolean }) {
     terminalEmitter.println(`Select an option.`, TerminalTextStyle.White);
 
     const userInput = await getUserInput();
-    if (userInput === "a") {
+    if (userInput.toLowerCase() === "a") {
       initState = InitState.DISPLAY_ACCOUNTS;
-    } else if (userInput === "n") {
+    } else if (userInput.toLowerCase() === "n") {
       initState = InitState.GENERATE_ACCOUNT;
-    } else if (userInput === "i") {
+    } else if (userInput.toLowerCase() === "i") {
       initState = InitState.IMPORT_ACCOUNT;
     } else {
-      terminalEmitter.println("Unrecognized input. Please try again.");
+      terminalEmitter.println(`Unrecognized input: '${userInput}'. Please try again.`);
     }
   };
 
   const advanceStateFromDisplayAccounts = async () => {
     const terminalEmitter = TerminalEmitter.getInstance();
-    const knownAddrs = ethConnection.getKnownAccounts();
+    const knownAddrs = ethConnection.getInstance().getKnownAccounts();
     terminalEmitter.println(`Select an account.`, TerminalTextStyle.White);
     for (let i = 0; i < knownAddrs.length; i += 1) {
       terminalEmitter.println(`(${i + 1}): ${knownAddrs[i]}`);
@@ -346,7 +356,7 @@ export default function GameLandingPage(_props: { replayMode: boolean }) {
     } else {
       const addr = knownAddrs[selection - 1];
       try {
-        ethConnection.setAccount(addr);
+        ethConnection.getInstance().setAccount(addr);
         initState = InitState.ACCOUNT_SET;
       } catch (e) {
         terminalEmitter.println(
@@ -363,8 +373,8 @@ export default function GameLandingPage(_props: { replayMode: boolean }) {
     const newSKey = newWallet.privateKey;
     const newAddr = CheckedTypeUtils.address(newWallet.address);
     try {
-      ethConnection.addAccount(newSKey);
-      ethConnection.setAccount(newAddr);
+      ethConnection.getInstance().addAccount(newSKey);
+      ethConnection.getInstance().setAccount(newAddr);
       terminalEmitter.println(
         `Created new burner wallet with address ${newAddr}.`
       );
@@ -409,8 +419,8 @@ export default function GameLandingPage(_props: { replayMode: boolean }) {
     const newSKey = await getUserInput();
     try {
       const newAddr = CheckedTypeUtils.address(utils.computeAddress(newSKey));
-      ethConnection.addAccount(newSKey);
-      ethConnection.setAccount(newAddr);
+      ethConnection.getInstance().addAccount(newSKey);
+      ethConnection.getInstance().setAccount(newAddr);
       terminalEmitter.println(`Imported account with address ${newAddr}.`);
       initState = InitState.ACCOUNT_SET;
     } catch (e) {
@@ -425,8 +435,8 @@ export default function GameLandingPage(_props: { replayMode: boolean }) {
     const terminalEmitter = TerminalEmitter.getInstance();
 
     try {
-      const address = ethConnection.getAddress();
-      const isWhitelisted = await ethConnection.isWhitelisted(address);
+      const address = ethConnection.getInstance().getAddress();
+      const isWhitelisted = await ethConnection.getInstance().isWhitelisted(address);
 
       terminalEmitter.bashShell("df join v0.5");
       terminalEmitter.print("Checking if whitelisted... (address ");
@@ -451,7 +461,7 @@ export default function GameLandingPage(_props: { replayMode: boolean }) {
         terminalEmitter.newline();
         if (!isProd) {
           // in development, automatically get some ether from faucet
-          const balance = await ethConnection.getBalance(address);
+          const balance = await ethConnection.getInstance().getBalance(address);
           if (balance === 0) {
             await requestDevFaucet(address);
           }
@@ -490,7 +500,7 @@ export default function GameLandingPage(_props: { replayMode: boolean }) {
 
   const advanceStateFromAskWhitelistKey = async () => {
     const terminalEmitter = TerminalEmitter.getInstance();
-    const address = ethConnection.getAddress();
+    const address = ethConnection.getInstance().getAddress();
 
     terminalEmitter.println(
       "Please enter your invite key. (XXXXX-XXXXX-XXXXX-XXXXX-XXXXX)",
@@ -583,7 +593,7 @@ export default function GameLandingPage(_props: { replayMode: boolean }) {
 
   const advanceStateFromAskPlayerEmail = async () => {
     const terminalEmitter = TerminalEmitter.getInstance();
-    const address = ethConnection.getAddress();
+    const address = ethConnection.getInstance().getAddress();
 
     terminalEmitter.print(
       "Enter your email address. ",
@@ -620,7 +630,7 @@ export default function GameLandingPage(_props: { replayMode: boolean }) {
     let newGameManager: GameManager;
 
     try {
-      newGameManager = await GameManager.create(ethConnection);
+      newGameManager = await GameManager.create(ethConnection.getInstance(), contractAddress);
     } catch (e) {
       console.log(e);
 
@@ -654,6 +664,10 @@ export default function GameLandingPage(_props: { replayMode: boolean }) {
 
     terminalEmitter.println("Connected to DarkForestCore contract.");
     gameUIManagerRef.current = newGameUIManager;
+
+    // Display current connected contract address
+    const connectedContractAddress = newGameManager.getContractAddress();
+    terminalEmitter.println(`Contract address: ${connectedContractAddress}`, TerminalTextStyle.Blue);
 
     if (!newGameManager.hasJoinedGame()) {
       initState = InitState.NO_HOME_PLANET;
@@ -849,44 +863,51 @@ export default function GameLandingPage(_props: { replayMode: boolean }) {
   };
 
   const advanceState = async () => {
-    if (initState === InitState.NONE) {
-      await advanceStateFromNone();
-    } else if (initState === InitState.COMPATIBILITY_CHECKS_PASSED) {
-      await advanceStateFromCompatibilityPassed();
-    } else if (initState === InitState.DISPLAY_ACCOUNTS) {
-      await advanceStateFromDisplayAccounts();
-    } else if (initState === InitState.GENERATE_ACCOUNT) {
-      await advanceStateFromGenerateAccount();
-    } else if (initState === InitState.IMPORT_ACCOUNT) {
-      await advanceStateFromImportAccount();
-    } else if (initState === InitState.ACCOUNT_SET) {
-      await advanceStateFromAccountSet();
-    } else if (initState === InitState.ASKING_HAS_WHITELIST_KEY) {
-      await advanceStateFromAskHasWhitelistKey();
-    } else if (initState === InitState.ASKING_WHITELIST_KEY) {
-      await advanceStateFromAskWhitelistKey();
-    } else if (initState === InitState.ASKING_WAITLIST_EMAIL) {
-      await advanceStateFromAskWaitlistEmail();
-    } else if (initState === InitState.ASKING_PLAYER_EMAIL) {
-      await advanceStateFromAskPlayerEmail();
-    } else if (initState === InitState.FETCHING_ETH_DATA) {
-      await advanceStateFromFetchingEthData();
-    } else if (initState === InitState.ASK_ADD_ACCOUNT) {
-      await advanceStateFromAskAddAccount();
-    } else if (initState === InitState.ADD_ACCOUNT) {
-      await advanceStateFromAddAccount();
-    } else if (initState === InitState.NO_HOME_PLANET) {
-      await advanceStateFromNoHomePlanet();
-    } else if (initState === InitState.ALL_CHECKS_PASS) {
-      await advanceStateFromAllChecksPass();
-    } else if (initState === InitState.COMPLETE) {
-      await advanceStateFromComplete();
-    } else if (initState === InitState.ERROR) {
-      await advanceStateFromError();
-    }
-
-    if (initState !== InitState.TERMINATED) {
-      advanceState();
+    try {
+      if (initState === InitState.NONE) {
+        await advanceStateFromNone();
+      } else if (initState === InitState.COMPATIBILITY_CHECKS_PASSED) {
+        await advanceStateFromCompatibilityPassed();
+      } else if (initState === InitState.DISPLAY_ACCOUNTS) {
+        await advanceStateFromDisplayAccounts();
+      } else if (initState === InitState.GENERATE_ACCOUNT) {
+        await advanceStateFromGenerateAccount();
+      } else if (initState === InitState.IMPORT_ACCOUNT) {
+        await advanceStateFromImportAccount();
+      } else if (initState === InitState.ACCOUNT_SET) {
+        await advanceStateFromAccountSet();
+      } else if (initState === InitState.ASKING_HAS_WHITELIST_KEY) {
+        await advanceStateFromAskHasWhitelistKey();
+      } else if (initState === InitState.ASKING_WHITELIST_KEY) {
+        await advanceStateFromAskWhitelistKey();
+      } else if (initState === InitState.ASKING_WAITLIST_EMAIL) {
+        await advanceStateFromAskWaitlistEmail();
+      } else if (initState === InitState.ASKING_PLAYER_EMAIL) {
+        await advanceStateFromAskPlayerEmail();
+      } else if (initState === InitState.FETCHING_ETH_DATA) {
+        await advanceStateFromFetchingEthData();
+      } else if (initState === InitState.ASK_ADD_ACCOUNT) {
+        await advanceStateFromAskAddAccount();
+      } else if (initState === InitState.ADD_ACCOUNT) {
+        await advanceStateFromAddAccount();
+      } else if (initState === InitState.NO_HOME_PLANET) {
+        await advanceStateFromNoHomePlanet();
+      } else if (initState === InitState.ALL_CHECKS_PASS) {
+        await advanceStateFromAllChecksPass();
+      } else if (initState === InitState.COMPLETE) {
+        await advanceStateFromComplete();
+      } else if (initState === InitState.ERROR) {
+        await advanceStateFromError();
+      }
+      console.log('After processing, state is now:', initState);
+  
+      if (initState !== InitState.TERMINATED) {
+        setTimeout(() => advanceState(), 0);
+      }
+    } catch (error) {
+      console.error('Error in advanceState:', error);
+      // Try to continue after error occurs
+      setTimeout(() => advanceState(), 1000);
     }
   };
 

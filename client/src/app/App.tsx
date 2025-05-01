@@ -10,12 +10,14 @@ import { TxConfirmPopup } from './TxConfirmPopup';
 import UnsubscribePage from './UnsubscribePage';
 import { ShareArtifact } from './sharing/ShareArtifact';
 import { ThrottledConcurrentQueueBenchmark } from './benchmark/ThrottledConcurrentQueueBenchmark';
+import LobbyLandingPage from './LobbyLandingPage';
 
 function App() {
   return (
     <Router>
       <Switch>
-        <Route path='/game1' component={GameLandingPage} />
+        <Route path='/lobby' component={LobbyLandingPage} />
+        <Route path='/game1/:contractAddress?' component={GameLandingPage} />
         <Route
           path='/replay1'
           render={() => <GameLandingPage replayMode={true} />}

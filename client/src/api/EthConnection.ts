@@ -26,6 +26,8 @@ class EthConnection extends EventEmitter {
   //   ? 'https://rpc.xdaichain.com/'
   //   : 'https://rpc-df.xdaichain.com/';
 
+  static instance: EthConnection | null = null;
+
   private static readonly XDAI_DEFAULT_URL = window.origin.includes('localhost')
     ? 'https://rpc.ankr.com/eth_holesky'
     : 'https://rpc.ankr.com/eth_holesky';
@@ -57,6 +59,13 @@ class EthConnection extends EventEmitter {
         this.knownAddresses.push(CheckedTypeUtils.address(addrStr));
       }
     }
+  }
+
+  public static getInstance(): EthConnection {
+    if (!EthConnection.instance) {
+      EthConnection.instance = new EthConnection();
+    }
+    return EthConnection.instance;
   }
 
   public getRpcEndpoint(): string {
@@ -114,15 +123,19 @@ class EthConnection extends EventEmitter {
     }
   }
 
-  public async loadCoreContract(): Promise<Contract> {
+  public async loadCoreContract(customContractAddress?: string): Promise<Contract> {
     const contractABI = (
       await fetch('/public/contracts/DarkForestCore.json').then((x) => x.json())
     ).abi;
 
     const isProd = process.env.NODE_ENV === 'production';
-    const contractAddress = isProd
+    let contractAddress = isProd
       ? require('../utils/prod_contract_addr').contractAddress
       : require('../utils/local_contract_addr').contractAddress;
+
+    if (customContractAddress) {
+      contractAddress = customContractAddress;
+    }
 
     return this.loadContract(contractAddress, contractABI);
   }
@@ -256,6 +269,14 @@ class EthConnection extends EventEmitter {
         tries += 1;
       }
     });
+  }
+
+  /**
+   * Gets the provider for this account manager
+   * @returns The ethers provider
+   */
+  public getProvider(): JsonRpcProvider {
+    return this.provider;
   }
 }
 

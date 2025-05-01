@@ -1,4 +1,4 @@
-import { EventEmitter } from 'events';
+import { EventEmitter } from "events";
 import {
   EthAddress,
   Player,
@@ -8,7 +8,7 @@ import {
   Artifact,
   ArtifactId,
   Location,
-} from '../_types/global/GlobalTypes';
+} from "../_types/global/GlobalTypes";
 import {
   Contract,
   providers,
@@ -16,10 +16,11 @@ import {
   Event,
   BigNumber as EthersBN,
   ContractFunction,
-} from 'ethers';
-import _ from 'lodash';
+  ethers,
+} from "ethers";
+import _ from "lodash";
 
-import { CheckedTypeUtils } from '../utils/CheckedTypeUtils';
+import { CheckedTypeUtils } from "../utils/CheckedTypeUtils";
 import {
   ContractConstants,
   InitializePlayerArgs,
@@ -54,16 +55,17 @@ import {
   UnconfirmedDepositArtifact,
   UnconfirmedWithdrawArtifact,
   RawArtifactWithMetadata,
-} from '../_types/darkforest/api/ContractsAPITypes';
-import { aggregateBulkGetter, callWithRetry } from '../utils/Utils';
-import TerminalEmitter, { TerminalTextStyle } from '../utils/TerminalEmitter';
-import EthConnection from './EthConnection';
-import NotificationManager from '../utils/NotificationManager';
-import { BLOCK_EXPLORER_URL } from '../utils/constants';
-import bigInt from 'big-integer';
-import { EthDecoders } from './EthDecoders';
-import { TxExecutor } from './TxExecutor';
-import { ThrottledConcurrentQueue } from '../utils/ThrottledConcurrentQueue';
+} from "../_types/darkforest/api/ContractsAPITypes";
+import { aggregateBulkGetter, callWithRetry } from "../utils/Utils";
+import TerminalEmitter, { TerminalTextStyle } from "../utils/TerminalEmitter";
+import EthConnection from "./EthConnection";
+import NotificationManager from "../utils/NotificationManager";
+import { BLOCK_EXPLORER_URL } from "../utils/constants";
+import bigInt from "big-integer";
+import { EthDecoders } from "./EthDecoders";
+import { TxExecutor } from "./TxExecutor";
+import { ThrottledConcurrentQueue } from "../utils/ThrottledConcurrentQueue";
+import { GameConfig, DEFAULT_GAME_CONFIG } from "../_types/global/GlobalTypes";
 
 export const CONTRACT_PRECISION = 1000;
 
@@ -90,17 +92,20 @@ class ContractsAPI extends EventEmitter {
     this.ethConnection = ethConnection;
   }
 
-  static async create(ethConnection: EthConnection): Promise<ContractsAPI> {
+  static async create(
+    ethConnection: EthConnection,
+    customContractAddress?: string
+  ): Promise<ContractsAPI> {
     let nonce = 0;
     try {
       nonce = await ethConnection.getNonce();
     } catch (e) {
-      console.log('WARNING: creating TxExecutor with no account/signer');
+      console.log("WARNING: creating TxExecutor with no account/signer");
     }
 
     const contractsAPI: ContractsAPI = new ContractsAPI(
       ethConnection,
-      await ethConnection.loadCoreContract(),
+      await ethConnection.loadCoreContract(customContractAddress),
       nonce
     );
 
@@ -126,9 +131,8 @@ class ContractsAPI extends EventEmitter {
     // TODO replace these with block polling
     this.coreContract
       .on(ContractEvent.FoundArtifact, async (loc, _owner, rawArtifactId) => {
-        const artifactId = CheckedTypeUtils.artifactIdFromEthersBN(
-          rawArtifactId
-        );
+        const artifactId =
+          CheckedTypeUtils.artifactIdFromEthersBN(rawArtifactId);
         this.emit(ContractsAPIEvent.ArtifactUpdate, artifactId);
         this.emit(
           ContractsAPIEvent.PlanetUpdate,
@@ -136,9 +140,8 @@ class ContractsAPI extends EventEmitter {
         );
       })
       .on(ContractEvent.DepositedArtifact, (loc, _owner, rawArtifactId) => {
-        const artifactId = CheckedTypeUtils.artifactIdFromEthersBN(
-          rawArtifactId
-        );
+        const artifactId =
+          CheckedTypeUtils.artifactIdFromEthersBN(rawArtifactId);
         this.emit(ContractsAPIEvent.ArtifactUpdate, artifactId);
         this.emit(
           ContractsAPIEvent.PlanetUpdate,
@@ -146,9 +149,8 @@ class ContractsAPI extends EventEmitter {
         );
       })
       .on(ContractEvent.WithdrewArtifact, (loc, _owner, rawArtifactId) => {
-        const artifactId = CheckedTypeUtils.artifactIdFromEthersBN(
-          rawArtifactId
-        );
+        const artifactId =
+          CheckedTypeUtils.artifactIdFromEthersBN(rawArtifactId);
         this.emit(ContractsAPIEvent.ArtifactUpdate, artifactId);
         this.emit(
           ContractsAPIEvent.PlanetUpdate,
@@ -181,7 +183,7 @@ class ContractsAPI extends EventEmitter {
             arrivalId.toNumber()
           );
           if (!arrival) {
-            console.error('arrival is null');
+            console.error("arrival is null");
             return;
           }
           this.emit(ContractsAPIEvent.PlanetUpdate, arrival.toPlanet);
@@ -202,7 +204,7 @@ class ContractsAPI extends EventEmitter {
         );
       });
 
-    this.ethConnection.on('ChangedRPCEndpoint', async () => {
+    this.ethConnection.on("ChangedRPCEndpoint", async () => {
       this.coreContract = await this.ethConnection.loadCoreContract();
     });
   }
@@ -313,7 +315,7 @@ class ContractsAPI extends EventEmitter {
     action: UnconfirmedInit
   ): Promise<providers.TransactionReceipt> {
     if (!this.txRequestExecutor) {
-      throw new Error('no signer, cannot execute tx');
+      throw new Error("no signer, cannot execute tx");
     }
     const tx = this.txRequestExecutor.makeRequest(
       EthTxType.INIT,
@@ -337,7 +339,7 @@ class ContractsAPI extends EventEmitter {
     actionId: string
   ): Promise<providers.TransactionReceipt> {
     if (!this.txRequestExecutor) {
-      throw new Error('no signer, cannot execute tx');
+      throw new Error("no signer, cannot execute tx");
     }
     const tx = this.txRequestExecutor.makeRequest(
       EthTxType.PLANET_TRANSFER,
@@ -365,7 +367,7 @@ class ContractsAPI extends EventEmitter {
     actionId: string
   ): Promise<providers.TransactionReceipt> {
     if (!this.txRequestExecutor) {
-      throw new Error('no signer, cannot execute tx');
+      throw new Error("no signer, cannot execute tx");
     }
     const tx = this.txRequestExecutor.makeRequest(
       EthTxType.UPGRADE,
@@ -396,7 +398,7 @@ class ContractsAPI extends EventEmitter {
     actionId: string
   ): Promise<providers.TransactionReceipt> {
     if (!this.txRequestExecutor) {
-      throw new Error('no signer, cannot execute tx');
+      throw new Error("no signer, cannot execute tx");
     }
     const tx = this.txRequestExecutor.makeRequest(
       EthTxType.FIND_ARTIFACT,
@@ -420,7 +422,7 @@ class ContractsAPI extends EventEmitter {
     action: UnconfirmedDepositArtifact
   ): Promise<providers.TransactionReceipt> {
     if (!this.txRequestExecutor) {
-      throw new Error('no signer, cannot execute tx');
+      throw new Error("no signer, cannot execute tx");
     }
     const args: DepositArtifactArgs = [
       CheckedTypeUtils.locationIdToDecStr(action.locationId),
@@ -449,7 +451,7 @@ class ContractsAPI extends EventEmitter {
     action: UnconfirmedWithdrawArtifact
   ): Promise<providers.TransactionReceipt> {
     if (!this.txRequestExecutor) {
-      throw new Error('no signer, cannot execute tx');
+      throw new Error("no signer, cannot execute tx");
     }
     const args: WithdrawArtifactArgs = [
       CheckedTypeUtils.locationIdToDecStr(action.locationId),
@@ -480,7 +482,7 @@ class ContractsAPI extends EventEmitter {
     actionId: string
   ): Promise<providers.TransactionReceipt> {
     if (!this.txRequestExecutor) {
-      throw new Error('no signer, cannot execute tx');
+      throw new Error("no signer, cannot execute tx");
     }
     const args = [
       snarkArgs[ZKArgIdx.PROOF_A],
@@ -533,7 +535,7 @@ class ContractsAPI extends EventEmitter {
     actionId: string
   ) {
     if (!this.txRequestExecutor) {
-      throw new Error('no signer, cannot execute tx');
+      throw new Error("no signer, cannot execute tx");
     }
     const overrides: providers.TransactionRequest = {
       gasLimit: 500000,
@@ -559,6 +561,137 @@ class ContractsAPI extends EventEmitter {
     };
 
     return this.waitFor(unminedBuyHatTx, tx.confirmed);
+  }
+
+  linkLibraries(
+    bytecode: string,
+    linkReferences: any,
+    libraries: Record<string, string>
+  ) {
+    for (const fileName in linkReferences) {
+      for (const libName in linkReferences[fileName]) {
+        const fixups = linkReferences[fileName][libName];
+        const address = libraries[libName];
+        if (!address) throw new Error(`Missing address for library ${libName}`);
+
+        for (const fixup of fixups) {
+          // Insert address (remove 0x prefix, convert to lowercase)
+          bytecode =
+            bytecode.substring(0, 2 + fixup.start * 2) +
+            address.toLowerCase().replace(/^0x/, "") +
+            bytecode.substring(2 + (fixup.start + fixup.length) * 2);
+        }
+      }
+    }
+    return bytecode;
+  }
+
+  async deployContract(gameConfig?: GameConfig): Promise<string> {
+    const terminalEmitter = TerminalEmitter.getInstance();
+    terminalEmitter.println(
+      "Starting DarkForest contract deployment...",
+      TerminalTextStyle.Green
+    );
+
+    // Get contract ABIs and bytecode
+    terminalEmitter.println("Loading contract JSONs...", TerminalTextStyle.Sub);
+    const DarkForestCoreJSON = await fetch(
+      "/public/contracts/DarkForestCore.json"
+    ).then((r) => r.json());
+
+    // For ethers compatibility
+
+    const ethConnection = EthConnection.getInstance();
+
+    const provider: providers.JsonRpcProvider = ethConnection.getProvider();
+    const signer = provider.getSigner();
+
+    // Merge provided config with default config
+    const finalConfig: GameConfig = {
+      ...DEFAULT_GAME_CONFIG,
+      ...gameConfig,
+    };
+
+    finalConfig.adminAddress = (await signer.getAddress()) as EthAddress;
+
+    // Add error handling for missing library address files
+    let libraryAddresses = {};
+    try {
+      // Look for chain-specific library addresses in local_library_addrs.ts
+      const isProd = process.env.NODE_ENV === "production";
+      if (isProd) {
+        libraryAddresses =
+          require("../utils/prod_library_addrs").libraryAddresses;
+      } else {
+        libraryAddresses =
+          require("../utils/local_library_addrs").libraryAddresses;
+      }
+    } catch (error) {
+      terminalEmitter.println(
+        `Warning: Library addresses file not found. Using empty object.`,
+        TerminalTextStyle.Red
+      );
+      console.warn("Library addresses file not found:", error);
+    }
+
+    try {
+      // Now deploy the main DarkForestCore contract with libraries
+      terminalEmitter.println(`Deploying main DarkForestCore contract...`);
+
+      const linkedBytecode = this.linkLibraries(
+        DarkForestCoreJSON.bytecode,
+        DarkForestCoreJSON.linkReferences,
+        libraryAddresses
+      );
+
+      const coreFactory = new ethers.ContractFactory(
+        DarkForestCoreJSON.abi,
+        linkedBytecode,
+        signer
+      );
+
+      terminalEmitter.println(
+        "Please confirm the deployment transaction in your wallet...",
+        TerminalTextStyle.White
+      );
+      const coreContract = await coreFactory.deploy();
+      terminalEmitter.println(
+        `Core contract deployment transaction submitted: ${coreContract.deployTransaction.hash}`,
+        TerminalTextStyle.Blue
+      );
+      await coreContract.deployed();
+
+      // Initialize the core contract
+      terminalEmitter.println(
+        "Initializing DarkForestCore contract...",
+        TerminalTextStyle.Green
+      );
+
+      console.log("finalConfig");
+      console.log(finalConfig);
+
+      const initTx = await coreContract.init(finalConfig);
+
+      terminalEmitter.println(
+        `Initialization transaction submitted: ${initTx.hash}`,
+        TerminalTextStyle.Blue
+      );
+      await initTx.wait();
+
+      terminalEmitter.println(
+        `Contract successfully deployed at: ${coreContract.address}`,
+        TerminalTextStyle.Green
+      );
+
+      return coreContract.address;
+    } catch (error) {
+      terminalEmitter.println(
+        `Deployment failed: ${error.message}`,
+        TerminalTextStyle.Red
+      );
+      console.error(error);
+      throw error;
+    }
   }
 
   async getConstants(): Promise<ContractConstants> {
@@ -593,9 +726,8 @@ class ContractsAPI extends EventEmitter {
     const SILVER_RARITY_2 = res1[7].toNumber();
     const SILVER_RARITY_3 = res1[8].toNumber();
 
-    const upgrades: UpgradesInfo = EthDecoders.rawUpgradesInfoToUpgradesInfo(
-      rawUpgrades
-    );
+    const upgrades: UpgradesInfo =
+      EthDecoders.rawUpgradesInfoToUpgradesInfo(rawUpgrades);
 
     const rawDefaults: RawDefaults = await this.makeCall<RawDefaults>(
       this.coreContract.getDefaultStats
@@ -662,7 +794,7 @@ class ContractsAPI extends EventEmitter {
   }
 
   public async getPlayers(): Promise<Map<string, Player>> {
-    console.log('getting players');
+    console.log("getting players");
     const nPlayers: number = (
       await this.makeCall<EthersBN>(this.coreContract.getNPlayers)
     ).toNumber();
@@ -774,20 +906,22 @@ class ContractsAPI extends EventEmitter {
   public async bulkGetPlanets(
     toLoadPlanets: LocationId[]
   ): Promise<Map<LocationId, Planet>> {
-    const rawPlanetsExtendedInfo = await aggregateBulkGetter<
-      RawPlanetExtendedInfo
-    >(
-      toLoadPlanets.length,
-      1000,
-      async (start, end) =>
-        await this.makeCall(this.coreContract.bulkGetPlanetsExtendedInfoByIds, [
-          toLoadPlanets
-            .slice(start, end)
-            .map((id) => CheckedTypeUtils.locationIdToDecStr(id)),
-        ]),
-      true,
-      100
-    );
+    const rawPlanetsExtendedInfo =
+      await aggregateBulkGetter<RawPlanetExtendedInfo>(
+        toLoadPlanets.length,
+        1000,
+        async (start, end) =>
+          await this.makeCall(
+            this.coreContract.bulkGetPlanetsExtendedInfoByIds,
+            [
+              toLoadPlanets
+                .slice(start, end)
+                .map((id) => CheckedTypeUtils.locationIdToDecStr(id)),
+            ]
+          ),
+        true,
+        100
+      );
 
     const rawPlanets = await aggregateBulkGetter<RawPlanetData>(
       toLoadPlanets.length,
@@ -851,20 +985,19 @@ class ContractsAPI extends EventEmitter {
     artifactIds: ArtifactId[],
     printProgress = false
   ): Promise<Artifact[]> {
-    const rawArtifacts: RawArtifactWithMetadata[] = await aggregateBulkGetter<
-      RawArtifactWithMetadata
-    >(
-      artifactIds.length,
-      500,
-      async (start, end) =>
-        await this.makeCall(this.coreContract.bulkGetArtifactsByIds, [
-          artifactIds
-            .slice(start, end)
-            .map(CheckedTypeUtils.artifactIdToDecStr),
-        ]),
-      printProgress,
-      100
-    );
+    const rawArtifacts: RawArtifactWithMetadata[] =
+      await aggregateBulkGetter<RawArtifactWithMetadata>(
+        artifactIds.length,
+        500,
+        async (start, end) =>
+          await this.makeCall(this.coreContract.bulkGetArtifactsByIds, [
+            artifactIds
+              .slice(start, end)
+              .map(CheckedTypeUtils.artifactIdToDecStr),
+          ]),
+        printProgress,
+        100
+      );
 
     const ret: Artifact[] = rawArtifacts.map(
       EthDecoders.rawArtifactWithMetadataToArtifact

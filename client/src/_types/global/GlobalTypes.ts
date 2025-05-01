@@ -274,6 +274,11 @@ export interface Player {
   twitter?: string;
 }
 
+export interface ChunkFootprint {
+  bottomLeft: WorldCoords;
+  sideLength: number;
+}
+
 export interface Rectangle {
   bottomLeft: WorldCoords;
   sideLength: number;
@@ -292,4 +297,57 @@ export interface MinerWorkerMessage {
   planetRarity: number;
   jobId: number;
   useMockHash: boolean;
+}
+
+
+/**
+ * Game configuration values
+ * Based on eth/config/gameConfig.json
+ */
+
+export interface GameConfig {
+  adminAddress: EthAddress;
+  whitelistEnabled: boolean;
+  paused: boolean;
+  DISABLE_ZK_CHECK: boolean;
+  TIME_FACTOR_HUNDREDTHS: number;
+  PERLIN_THRESHOLD_1: number;
+  PERLIN_THRESHOLD_2: number;
+  BIOME_THRESHOLD_1: number;
+  BIOME_THRESHOLD_2: number;
+  PLANET_RARITY: number;
+  SILVER_RARITY_1: number;
+  SILVER_RARITY_2: number;
+  SILVER_RARITY_3: number;
+  planetLevelThresholds: number[];
+  gameEndTimestamp: number;
+  target4RadiusConstant: number;
+  target5RadiusConstant: number;
+  ARTIFACT_LOCKUP_DURATION_SECONDS: number;
+}
+
+/**
+ * Default game configuration values
+ * Based on eth/config/gameConfig.json
+ */
+
+export const DEFAULT_GAME_CONFIG: GameConfig = {
+  adminAddress: '0x0000000000000000000000000000000000000000' as EthAddress,
+  whitelistEnabled: false,
+  paused: false,
+  DISABLE_ZK_CHECK: false,
+  TIME_FACTOR_HUNDREDTHS: 400,
+  PERLIN_THRESHOLD_1: 15,
+  PERLIN_THRESHOLD_2: 17,
+  BIOME_THRESHOLD_1: 15,
+  BIOME_THRESHOLD_2: 17,
+  PLANET_RARITY: 6000,
+  SILVER_RARITY_1: 8,
+  SILVER_RARITY_2: 8,
+  SILVER_RARITY_3: 4,
+  planetLevelThresholds: [16777216, 4194256, 1048516, 262081, 65472, 16320, 4032, 960],
+  gameEndTimestamp: 4911112800,
+  target4RadiusConstant: 8,
+  target5RadiusConstant: 2,
+  ARTIFACT_LOCKUP_DURATION_SECONDS: 12 * 60 * 60,
 }

@@ -94,3 +94,16 @@ export class CheckedTypeUtils {
     );
   }
 }
+
+export const address: (str: string) => EthAddress = (str) => {
+  let ret = str.toLowerCase();
+  if (ret.slice(0, 2) === '0x') {
+    ret = ret.slice(2);
+  }
+  for (const c of ret) {
+    if ('0123456789abcdef'.indexOf(c) === -1)
+      throw new Error('not a valid address');
+  }
+  if (ret.length !== 40) throw new Error('not a valid address');
+  return `0x${ret}` as EthAddress;
+};
