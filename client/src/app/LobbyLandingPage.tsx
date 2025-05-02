@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import GameManager from '../api/GameManager';
 import GameUIManagerContext from './board/GameUIManagerContext';
 import GameUIManager, { GameUIManagerEvent } from './board/GameUIManager';
-import AbstractGameManager from '../api/AbstractGameManager';
+import AbstractGameManager from '../api/GameManager';
 import { unsupportedFeatures, Incompatibility } from '../api/BrowserChecks';
 import {
     isAddressWhitelisted,
@@ -223,7 +223,7 @@ export default function LobbyLandingPage(_props: { replayMode: boolean }) {
         return ret.trim();
     };
 
-    const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+    const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
     const animEllipsis = async () => {
         const terminalEmitter = TerminalEmitter.getInstance();
@@ -450,9 +450,9 @@ export default function LobbyLandingPage(_props: { replayMode: boolean }) {
             terminalEmitter.println('Game manager not initialized. Please wait...', TerminalTextStyle.Red);
 
             try {
-                const newGameManager: AbstractGameManager = await GameManager.create();
+                const newGameManager: AbstractGameManager = await GameManager.create(EthereumAccountManager.getInstance());
                 window.df = newGameManager;
-                const newGameUIManager = GameUIManager.create(newGameManager);
+                const newGameUIManager = await GameUIManager.create(newGameManager);
                 window.uiManager = newGameUIManager;
                 gameUIManagerRef.current = newGameUIManager;
                 terminalEmitter.println('Game manager initialized.', TerminalTextStyle.Green);
@@ -587,9 +587,9 @@ export default function LobbyLandingPage(_props: { replayMode: boolean }) {
         if (initState === InitState.COMPLETE && !gameUIManagerRef.current) {
             const setupGameManager = async () => {
                 try {
-                    const newGameManager: AbstractGameManager = await GameManager.create();
+                    const newGameManager: AbstractGameManager = await GameManager.create(EthereumAccountManager.getInstance());
                     window.df = newGameManager;
-                    const newGameUIManager = GameUIManager.create(newGameManager);
+                    const newGameUIManager = await GameUIManager.create(newGameManager);
                     window.uiManager = newGameUIManager;
                     gameUIManagerRef.current = newGameUIManager;
 

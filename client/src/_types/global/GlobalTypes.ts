@@ -78,6 +78,7 @@ declare global {
     df?: GameManager;
     ui?: GameUIManager;
     terminal?: TerminalEmitter;
+    uiManager?: GameUIManager;
   }
 }
 
