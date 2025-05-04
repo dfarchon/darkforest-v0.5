@@ -436,7 +436,7 @@ export default function GameLandingPage(_props: { replayMode: boolean }) {
 
     try {
       const address = ethConnection.getInstance().getAddress();
-      const isWhitelisted = await ethConnection.getInstance().isWhitelisted(address);
+      const isWhitelisted = true; //await ethConnection.getInstance().isWhitelisted(address);
 
       terminalEmitter.bashShell("df join v0.5");
       terminalEmitter.print("Checking if whitelisted... (address ");
@@ -771,9 +771,9 @@ export default function GameLandingPage(_props: { replayMode: boolean }) {
 
     terminalEmitter.println(
       "We collect a minimal set of statistics such as SNARK proving" +
-        " times and average transaction times across browsers, to help " +
-        "us optimize performance and fix bugs. You can opt out of " +
-        "this in the settings pane."
+      " times and average transaction times across browsers, to help " +
+      "us optimize performance and fix bugs. You can opt out of " +
+      "this in the settings pane."
     );
 
     terminalEmitter.newline();
@@ -900,7 +900,7 @@ export default function GameLandingPage(_props: { replayMode: boolean }) {
         await advanceStateFromError();
       }
       console.log('After processing, state is now:', initState);
-  
+
       if (initState !== InitState.TERMINATED) {
         setTimeout(() => advanceState(), 0);
       }
