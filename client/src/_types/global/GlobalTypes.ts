@@ -348,7 +348,7 @@ export const DEFAULT_GAME_CONFIG: GameConfig = {
   SILVER_RARITY_3: 4,
   planetLevelThresholds: [16777216, 4194256, 1048516, 262081, 65472, 16320, 4032, 960],
   gameEndTimestamp: 4911112800,
-  target4RadiusConstant: 8,
-  target5RadiusConstant: 2,
+  target4RadiusConstant: 800,
+  target5RadiusConstant: 200,
   ARTIFACT_LOCKUP_DURATION_SECONDS: 12 * 60 * 60,
 }
