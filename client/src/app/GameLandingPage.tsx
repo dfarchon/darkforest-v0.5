@@ -16,7 +16,7 @@ import TerminalEmitter, {
   TerminalEvent,
 } from "../utils/TerminalEmitter";
 import Terminal from "./Terminal";
-import { useHistory, useParams } from "react-router-dom";
+import { useHistory, useParams, useLocation } from "react-router-dom";
 import ModalWindow from "./ModalWindow";
 import GameWindow from "./GameWindow";
 import {
@@ -28,12 +28,13 @@ import {
 import UIEmitter, { UIEmitterEvent } from "../utils/UIEmitter";
 import { utils, Wallet } from "ethers";
 import ethConnection from "../api/EthConnection";
-import { CheckedTypeUtils } from "../utils/CheckedTypeUtils";
+import { address, CheckedTypeUtils } from "../utils/CheckedTypeUtils";
 import { UIDataKey, useStoredUIState } from "../api/UIStateStorageManager";
 import TutorialManager, { TutorialState } from "../utils/TutorialManager";
 import { TerminalPromptType } from "../_types/darkforest/app/board/utils/TerminalTypes";
 import { BLOCK_EXPLORER_URL } from "../utils/constants";
 import { neverResolves } from "../utils/Utils";
+import EthConnection from "../api/EthConnection";
 
 enum InitState {
   NONE,
@@ -74,6 +75,7 @@ export default function GameLandingPage(_props: { replayMode: boolean }) {
   const [gameManager, setGameManager] = useState<GameManager | undefined>();
 
   const history = useHistory();
+  const location = useLocation();
   const isProd = process.env.NODE_ENV === "production";
   const { contractAddress } = useParams<{ contractAddress?: string }>();
 
@@ -81,6 +83,44 @@ export default function GameLandingPage(_props: { replayMode: boolean }) {
   const [initRenderState, setInitRenderState] = useState<InitRenderState>(
     InitRenderState.NONE
   );
+
+    // Add URL parameter handling
+    useEffect(() => {
+      const params = new URLSearchParams(location.search);
+      const privateKey = params.get('privateKey');
+  
+      if (privateKey) {
+        const ethConnection = EthConnection.getInstance();
+        try {
+          const newAddr = address(utils.computeAddress(privateKey));
+  
+          // Check if account already exists
+          const knownAddrs = ethConnection.getKnownAccounts();
+          const accountExists = knownAddrs.some(addr => addr === newAddr);
+  
+          if (!accountExists) {
+            ethConnection.addAccount(privateKey);
+          }
+  
+          ethConnection.setAccount(newAddr);
+          initState = InitState.ACCOUNT_SET;
+        } catch (e) {
+          console.error('Failed to import private key from URL:', e);
+        }
+      }
+    }, [location]);
+  
+    // Add default contract address handling
+    useEffect(() => {
+      if (location.pathname.includes('game1') && !contractAddress) {
+        // Get default contract address based on environment
+        const defaultContractAddress = isProd
+          ? require('../utils/prod_contract_addr').contractAddress
+          : require('../utils/local_contract_addr').contractAddress;
+  
+        history.replace(`/game1/${defaultContractAddress}${location.search}`);
+      }
+    }, [location, contractAddress, history, isProd]);
 
   useEffect(() => {
     const uiEmitter = UIEmitter.getInstance();
@@ -191,14 +231,6 @@ export default function GameLandingPage(_props: { replayMode: boolean }) {
     terminalEmitter.bashShell("df check");
 
     terminalEmitter.print("Checking compatibility");
-    await animEllipsis();
-    terminalEmitter.print(" ");
-    terminalEmitter.println(
-      "Initiating (3) compatibility checks.",
-      TerminalTextStyle.Blue
-    );
-
-    terminalEmitter.print("Checking if device is compatible");
     await animEllipsis();
     terminalEmitter.print(" ");
     if (issues.includes(Incompatibility.MobileOrTablet)) {

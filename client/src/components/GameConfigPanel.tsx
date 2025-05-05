@@ -9,8 +9,23 @@ const ConfigContainer = styled.div`
   flex-direction: column;
   width: 100%;
   height: 100%;
-  overflow-y: auto;
+  overflow-y: scroll;
   color: white;
+  padding-right: 8px;
+  /* Scrollbar styling */
+  &::-webkit-scrollbar {
+    width: 4px;
+  }
+  &::-webkit-scrollbar-track {
+    background: rgba(0, 173, 225, 0.05);
+  }
+  &::-webkit-scrollbar-thumb {
+    background: #00ADE1;
+    border-radius: 2px;
+  }
+  /* Firefox */
+  scrollbar-width: thin;
+  scrollbar-color: #00ADE1 rgba(0, 173, 225, 0.05);
 `;
 
 const ConfigSection = styled.div`
