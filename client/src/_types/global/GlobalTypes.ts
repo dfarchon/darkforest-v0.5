@@ -325,6 +325,7 @@ export interface GameConfig {
   target4RadiusConstant: number;
   target5RadiusConstant: number;
   ARTIFACT_LOCKUP_DURATION_SECONDS: number;
+  tokensAddress: EthAddress;
 }
 
 /**
@@ -351,4 +352,5 @@ export const DEFAULT_GAME_CONFIG: GameConfig = {
   target4RadiusConstant: 800,
   target5RadiusConstant: 200,
   ARTIFACT_LOCKUP_DURATION_SECONDS: 12 * 60 * 60,
+  tokensAddress: '0x0000000000000000000000000000000000000000' as EthAddress,
 }

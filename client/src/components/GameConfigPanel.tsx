@@ -107,7 +107,10 @@ const configHelp = {
     planetLevelThresholds: "Planet level thresholds",
     gameEndTimestamp: "Game end timestamp (Unix time)",
     target4RadiusConstant: "Target 4 radius constant",
-    target5RadiusConstant: "Target 5 radius constant"
+    target5RadiusConstant: "Target 5 radius constant",
+    BIOME_THRESHOLD_1: "First biome threshold",
+    BIOME_THRESHOLD_2: "Second biome threshold",
+    ARTIFACT_LOCKUP_DURATION_SECONDS: "Artifact lockup duration (seconds)"
 };
 
 interface GameConfigPanelProps {
@@ -219,6 +222,35 @@ const GameConfigPanel: React.FC<GameConfigPanelProps> = ({ onSaveConfig, initial
         return date.toLocaleString();
     };
 
+    // Format seconds into human readable duration string
+    const formatSeconds = (seconds: number): string => {
+        if (seconds <= 0) return '0 seconds';
+        
+        const days = Math.floor(seconds / (24 * 60 * 60));
+        const hours = Math.floor((seconds % (24 * 60 * 60)) / (60 * 60));
+        const minutes = Math.floor((seconds % (60 * 60)) / 60);
+        const remainingSeconds = seconds % 60;
+
+        const parts = [];
+        if (days > 0) parts.push(`${days} day${days > 1 ? 's' : ''}`);
+        if (hours > 0) parts.push(`${hours} hour${hours > 1 ? 's' : ''}`);
+        if (minutes > 0) parts.push(`${minutes} minute${minutes > 1 ? 's' : ''}`);
+        if (remainingSeconds > 0) parts.push(`${remainingSeconds} second${remainingSeconds > 1 ? 's' : ''}`);
+
+        return parts.join(' ');
+    };
+
+    // Functions to set duration for half day and one day
+    const setDurationForHalfDay = () => {
+        const halfDayInSeconds = 12 * 60 * 60; // Number of seconds in 12 hours
+        handleChange('ARTIFACT_LOCKUP_DURATION_SECONDS', halfDayInSeconds);
+    };
+
+    const setDurationForOneDay = () => {
+        const oneDayInSeconds = 24 * 60 * 60; // Number of seconds in 24 hours
+        handleChange('ARTIFACT_LOCKUP_DURATION_SECONDS', oneDayInSeconds);
+    };
+
     return (
         <ConfigContainer>
             <ConfigSection>
@@ -292,6 +324,52 @@ const GameConfigPanel: React.FC<GameConfigPanelProps> = ({ onSaveConfig, initial
                             onChange={(e) => handleNumberChange('SILVER_RARITY_3', e.target.value)}
                         />
                         <ConfigDescription>{configHelp.SILVER_RARITY_3}</ConfigDescription>
+                    </ConfigItem>
+                    <ConfigItem>
+                        <ConfigLabel>Biome Threshold 1</ConfigLabel>
+                        <ConfigInput
+                            type="number"
+                            value={config.BIOME_THRESHOLD_1}
+                            onChange={(e) => handleNumberChange('BIOME_THRESHOLD_1', e.target.value)}
+                        />
+                        <ConfigDescription>{configHelp.BIOME_THRESHOLD_1}</ConfigDescription>
+                    </ConfigItem>
+                    <ConfigItem>
+                        <ConfigLabel>Biome Threshold 2</ConfigLabel>
+                        <ConfigInput
+                            type="number"
+                            value={config.BIOME_THRESHOLD_2}
+                            onChange={(e) => handleNumberChange('BIOME_THRESHOLD_2', e.target.value)}
+                        />
+                        <ConfigDescription>{configHelp.BIOME_THRESHOLD_2}</ConfigDescription>
+                    </ConfigItem>
+                    <ConfigItem>
+                        <ConfigLabel>Artifact Lockup Duration</ConfigLabel>
+                        <ConfigInput
+                            type="number"
+                            value={config.ARTIFACT_LOCKUP_DURATION_SECONDS}
+                            onChange={(e) => handleNumberChange('ARTIFACT_LOCKUP_DURATION_SECONDS', e.target.value)}
+                        />
+                        <ConfigDescription>
+                            {configHelp.ARTIFACT_LOCKUP_DURATION_SECONDS}
+                            <div style={{ marginTop: '4px', color: '#00ADE1' }}>
+                                Duration: {formatSeconds(config.ARTIFACT_LOCKUP_DURATION_SECONDS)}
+                            </div>
+                            <div style={{ marginTop: '5px', display: 'flex', gap: '5px' }}>
+                                <BlueButton
+                                    style={{ padding: '2px 5px', fontSize: '12px' }}
+                                    onClick={setDurationForHalfDay}
+                                >
+                                    Set to half day
+                                </BlueButton>
+                                <BlueButton
+                                    style={{ padding: '2px 5px', fontSize: '12px' }}
+                                    onClick={setDurationForOneDay}
+                                >
+                                    Set to one day
+                                </BlueButton>
+                            </div>
+                        </ConfigDescription>
                     </ConfigItem>
                 </ConfigGrid>
             </ConfigSection>

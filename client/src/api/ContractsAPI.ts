@@ -635,6 +635,12 @@ class ContractsAPI extends EventEmitter {
     }
 
     try {
+      // Check if we have enough balance to deploy
+      const balance = await provider.getBalance(ethConnection.getAddress());
+      if (balance.eq(0)) {
+        throw new Error("Account has zero balance. You need some xDAI to deploy a contract.");
+      }
+
       // Now deploy the main DarkForestCore contract with libraries
       terminalEmitter.println(`Deploying main DarkForestCore contract...`);
 

@@ -264,7 +264,7 @@ export default function LobbyLandingPage(_props: { replayMode: boolean }) {
     const advanceStateFromCompatibilityPassed = async () => {
         const terminalEmitter = TerminalEmitter.getInstance();
 
-        terminalEmitter.println('Dark Forest v0.4');
+        terminalEmitter.println('Dark Forest v0.5');
         terminalEmitter.newline();
 
         const knownAddrs = EthereumAccountManager.getInstance().getKnownAccounts();
