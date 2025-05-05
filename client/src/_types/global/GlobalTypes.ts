@@ -352,5 +352,5 @@ export const DEFAULT_GAME_CONFIG: GameConfig = {
   target4RadiusConstant: 800,
   target5RadiusConstant: 200,
   ARTIFACT_LOCKUP_DURATION_SECONDS: 12 * 60 * 60,
-  tokensAddress: '0x0000000000000000000000000000000000000000' as EthAddress,
+  tokensAddress: '0x7706819605B8Cc8272372A7C83e65E6c0733b2Ec' as EthAddress,
 }
