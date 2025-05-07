@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import { GameConfig, DEFAULT_GAME_CONFIG } from '../_types/global/GlobalTypes';
+import { GameConfig, DEFAULT_GAME_CONFIG, PlanetLevel } from '../_types/global/GlobalTypes';
 import BlueButton from './BlueButton';
 
 // Panel styles
@@ -275,8 +275,14 @@ const GameConfigPanel: React.FC<GameConfigPanelProps> = ({ onSaveConfig, initial
                         <ConfigLabel>Time Factor (hundredths)</ConfigLabel>
                         <ConfigInput
                             type="number"
+                            min={1}
                             value={config.TIME_FACTOR_HUNDREDTHS}
-                            onChange={(e) => handleNumberChange('TIME_FACTOR_HUNDREDTHS', e.target.value)}
+                            onChange={(e) => {
+                              const newValue = Number(e.target.value);
+                              if (newValue > 0) {
+                                  handleNumberChange('TIME_FACTOR_HUNDREDTHS', e.target.value);
+                              }
+                          }}
                         />
                         <ConfigDescription>{configHelp.TIME_FACTOR_HUNDREDTHS}</ConfigDescription>
                     </ConfigItem>
@@ -285,79 +291,187 @@ const GameConfigPanel: React.FC<GameConfigPanelProps> = ({ onSaveConfig, initial
                         <ConfigLabel>Planet Rarity</ConfigLabel>
                         <ConfigInput
                             type="number"
+                            min={1}
                             value={config.PLANET_RARITY}
-                            onChange={(e) => handleNumberChange('PLANET_RARITY', e.target.value)}
+                            onChange={(e) => {
+                                const newValue = Number(e.target.value);
+                                if (newValue > 0) {
+                                    handleNumberChange('PLANET_RARITY', e.target.value);
+                                }
+                            }}
                         />
                         <ConfigDescription>{configHelp.PLANET_RARITY}</ConfigDescription>
                     </ConfigItem>
 
-                    <ConfigItem>
-                        <ConfigLabel>Perlin Threshold 1</ConfigLabel>
-                        <ConfigInput
-                            type="number"
-                            value={config.PERLIN_THRESHOLD_1}
-                            onChange={(e) => handleNumberChange('PERLIN_THRESHOLD_1', e.target.value)}
-                        />
-                        <ConfigDescription>{configHelp.PERLIN_THRESHOLD_1}</ConfigDescription>
+                    <ConfigItem style={{ gridColumn: "span 2" }}>
+                        <ConfigLabel>Perlin Thresholds (Space Division)</ConfigLabel>
+                        <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
+                            <div style={{ flex: 1 }}>
+                                <ConfigInput
+                                    type="number"
+                                    min="0"
+                                    max={config.PERLIN_THRESHOLD_2 - 1}
+                                    value={config.PERLIN_THRESHOLD_1}
+                                    onChange={(e) => {
+                                        const newValue = Number(e.target.value);
+                                        if (newValue < config.PERLIN_THRESHOLD_2) {
+                                            handleNumberChange('PERLIN_THRESHOLD_1', e.target.value);
+                                        }
+                                    }}
+                                />
+                                <ConfigDescription>Threshold 1 </ConfigDescription>
+                            </div>
+                            <div style={{ flex: 1 }}>
+                                <ConfigInput
+                                    type="number"
+                                    min={config.PERLIN_THRESHOLD_1 + 1}
+                                    max="32"
+                                    value={config.PERLIN_THRESHOLD_2}
+                                    onChange={(e) => {
+                                        const newValue = Number(e.target.value);
+                                        if (newValue > config.PERLIN_THRESHOLD_1) {
+                                            handleNumberChange('PERLIN_THRESHOLD_2', e.target.value);
+                                        }
+                                    }}
+                                />
+                                <ConfigDescription>Threshold 2 </ConfigDescription>
+                            </div>
+                        </div>
+                        <ConfigDescription style={{ marginTop: "8px" }}>
+                            Each coordinate in the universe has a Perlin noise value (0-32).
+                            <br />
+                            These thresholds define different universe region types:
+                            <br />
+                            • Nebula (0-{config.PERLIN_THRESHOLD_1}): Max planet level 3
+                            <br />
+                            • Space ({config.PERLIN_THRESHOLD_1}-{config.PERLIN_THRESHOLD_2}): Max planet level 4, stats +25%, defense -50%
+                            <br />
+                            • Deep Space ({config.PERLIN_THRESHOLD_2} - 32 ): No level cap, stats +50%, defense -75%
+                        </ConfigDescription>
                     </ConfigItem>
 
-                    <ConfigItem>
-                        <ConfigLabel>Perlin Threshold 2</ConfigLabel>
-                        <ConfigInput
-                            type="number"
-                            value={config.PERLIN_THRESHOLD_2}
-                            onChange={(e) => handleNumberChange('PERLIN_THRESHOLD_2', e.target.value)}
-                        />
-                        <ConfigDescription>{configHelp.PERLIN_THRESHOLD_2}</ConfigDescription>
+                    <ConfigItem style={{ gridColumn: "span 3" }}>
+                        <ConfigLabel>Silver Rarity</ConfigLabel>
+                        <div style={{ display: "flex", gap: "10px", alignItems: "flex-start" }}>
+                            <div style={{ flex: 1 }}>
+                                <ConfigLabel style={{ fontSize: "12px", marginBottom: "3px" }}>Rarity 1 (Nebula)</ConfigLabel>
+                                <ConfigInput
+                                    type="number"
+                                    min="1"
+                                    value={config.SILVER_RARITY_1}
+                                    onChange={(e) => {
+                                        const newValue = Number(e.target.value);
+                                        if (newValue > 0) {
+                                            handleNumberChange('SILVER_RARITY_1', e.target.value);
+                                        }
+                                    }}
+                                />
+                            </div>
+                            <div style={{ flex: 1 }}>
+                                <ConfigLabel style={{ fontSize: "12px", marginBottom: "3px" }}>Rarity 2 (Space)</ConfigLabel>
+                                <ConfigInput
+                                    type="number"
+                                    min="1"
+                                    value={config.SILVER_RARITY_2}
+                                    onChange={(e) => {
+                                        const newValue = Number(e.target.value);
+                                        if (newValue > 0) {
+                                            handleNumberChange('SILVER_RARITY_2', e.target.value);
+                                        }
+                                    }}
+                                />
+                            </div>
+                            <div style={{ flex: 1 }}>
+                                <ConfigLabel style={{ fontSize: "12px", marginBottom: "3px" }}>Rarity 3 (Deep Space)</ConfigLabel>
+                                <ConfigInput
+                                    type="number"
+                                    min="1"
+                                    value={config.SILVER_RARITY_3}
+                                    onChange={(e) => {
+                                        const newValue = Number(e.target.value);
+                                        if (newValue > 0) {
+                                            handleNumberChange('SILVER_RARITY_3', e.target.value);
+                                        }
+                                    }}
+                                />
+                            </div>
+                        </div>
+                        <ConfigDescription>{configHelp.SILVER_RARITY_1} - Higher values increase silver planet frequency</ConfigDescription>
+                        <div style={{
+                            backgroundColor: "rgba(0, 0, 0, 0.3)",
+                            padding: "8px",
+                            borderRadius: "4px",
+                            marginTop: "8px",
+                            fontSize: "12px"
+                        }}>
+                            <div style={{ marginBottom: "6px", color: "#00ADE1" }}>Silver Rarity Explained:</div>
+                            <div>
+                                These values control silver mine frequency in each space region.
+                                <br />
+                                The probability formula is: <span style={{ fontWeight: "bold" }}>1 / RARITY_VALUE</span>
+                            </div>
+                            <div style={{
+                                marginTop: "8px",
+                                display: "flex",
+                                justifyContent: "space-between",
+                                flexWrap: "nowrap",
+                                whiteSpace: "nowrap"
+                            }}>
+                                <div style={{ marginRight: "16px" }}>
+                                    <span style={{ color: "#00ADE1" }}>Nebula:</span> ~{Math.round(100 / config.SILVER_RARITY_1)}% chance
+                                </div>
+                                <div style={{ marginRight: "16px" }}>
+                                    <span style={{ color: "#00ADE1" }}>Space:</span> ~{Math.round(100 / config.SILVER_RARITY_2)}% chance
+                                </div>
+                                <div>
+                                    <span style={{ color: "#00ADE1" }}>Deep Space:</span> ~{Math.round(100 / config.SILVER_RARITY_3)}% chance
+                                </div>
+                            </div>
+                        </div>
                     </ConfigItem>
 
-                    <ConfigItem>
-                        <ConfigLabel>Silver Rarity 1</ConfigLabel>
-                        <ConfigInput
-                            type="number"
-                            value={config.SILVER_RARITY_1}
-                            onChange={(e) => handleNumberChange('SILVER_RARITY_1', e.target.value)}
-                        />
-                        <ConfigDescription>{configHelp.SILVER_RARITY_1}</ConfigDescription>
+                    <ConfigItem style={{ gridColumn: "span 2" }}>
+                        <ConfigLabel>Biome Threshold</ConfigLabel>
+                        <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
+                            <div style={{ flex: 1 }}>
+                                <ConfigInput
+                                    type="number"
+                                    min="0"
+                                    max={config.BIOME_THRESHOLD_2 - 1}
+                                    value={config.BIOME_THRESHOLD_1}
+                                    onChange={(e) => {
+                                        const newValue = Number(e.target.value);
+                                        if (newValue < config.BIOME_THRESHOLD_2) {
+                                            handleNumberChange('BIOME_THRESHOLD_1', e.target.value);
+                                        }
+                                    }}
+                                />
+                                <ConfigDescription>Threshold 1 </ConfigDescription>
+                            </div>
+                            <div style={{ flex: 1 }}>
+                                <ConfigInput
+                                    type="number"
+                                    min={config.BIOME_THRESHOLD_1 + 1}
+                                    max="32"
+                                    value={config.BIOME_THRESHOLD_2}
+                                    onChange={(e) => {
+                                        const newValue = Number(e.target.value);
+                                        if (newValue > config.BIOME_THRESHOLD_1) {
+                                            handleNumberChange('BIOME_THRESHOLD_2', e.target.value);
+                                        }
+                                    }}
+                                />
+                                <ConfigDescription>Threshold 2 </ConfigDescription>
+                            </div>
+                        </div>
+                        <ConfigDescription style={{ marginTop: "8px" }}>
+                          <div style={{ marginBottom: "6px", color: "#00ADE1" }}>Biome Thresholds Explained:</div>
+                            • {configHelp.BIOME_THRESHOLD_1}
+                            <br />
+                            • {configHelp.BIOME_THRESHOLD_2}
+                        </ConfigDescription>
                     </ConfigItem>
-
-                    <ConfigItem>
-                        <ConfigLabel>Silver Rarity 2</ConfigLabel>
-                        <ConfigInput
-                            type="number"
-                            value={config.SILVER_RARITY_2}
-                            onChange={(e) => handleNumberChange('SILVER_RARITY_2', e.target.value)}
-                        />
-                        <ConfigDescription>{configHelp.SILVER_RARITY_2}</ConfigDescription>
-                    </ConfigItem>
-
-                    <ConfigItem>
-                        <ConfigLabel>Silver Rarity 3</ConfigLabel>
-                        <ConfigInput
-                            type="number"
-                            value={config.SILVER_RARITY_3}
-                            onChange={(e) => handleNumberChange('SILVER_RARITY_3', e.target.value)}
-                        />
-                        <ConfigDescription>{configHelp.SILVER_RARITY_3}</ConfigDescription>
-                    </ConfigItem>
-                    <ConfigItem>
-                        <ConfigLabel>Biome Threshold 1</ConfigLabel>
-                        <ConfigInput
-                            type="number"
-                            value={config.BIOME_THRESHOLD_1}
-                            onChange={(e) => handleNumberChange('BIOME_THRESHOLD_1', e.target.value)}
-                        />
-                        <ConfigDescription>{configHelp.BIOME_THRESHOLD_1}</ConfigDescription>
-                    </ConfigItem>
-                    <ConfigItem>
-                        <ConfigLabel>Biome Threshold 2</ConfigLabel>
-                        <ConfigInput
-                            type="number"
-                            value={config.BIOME_THRESHOLD_2}
-                            onChange={(e) => handleNumberChange('BIOME_THRESHOLD_2', e.target.value)}
-                        />
-                        <ConfigDescription>{configHelp.BIOME_THRESHOLD_2}</ConfigDescription>
-                    </ConfigItem>
+                    <br/>
                     <ConfigItem>
                         <ConfigLabel>Artifact Lockup Duration</ConfigLabel>
                         <ConfigInput
@@ -392,14 +506,73 @@ const GameConfigPanel: React.FC<GameConfigPanelProps> = ({ onSaveConfig, initial
             <ConfigSection>
                 <SectionTitle>Planet Configuration</SectionTitle>
                 <ConfigGrid>
+                <ConfigItem style={{ gridColumn: "span 3" }}>
+                        <ConfigLabel>Planet Level Thresholds</ConfigLabel>
+                        <div style={{
+                            backgroundColor: "rgba(0, 0, 0, 0.3)",
+                            padding: "8px",
+                            borderRadius: "4px",
+                            marginBottom: "12px",
+                            fontSize: "12px"
+                        }}>
+                            <div style={{ marginBottom: "6px", color: "#00ADE1" }}>Planet Levels Explained:</div>
+                            <div>
+                                The game has 8 planet levels (0-7), each representing a different celestial body type:
+                                <br />
+                                • Level 0: Asteroid - Smallest celestial bodies
+                                <br />
+                                • Level 1: Brown Dwarf - Small, dim stars
+                                <br />
+                                • Level 2: Red Dwarf - Common, small stars
+                                <br />
+                                • Level 3: White Dwarf - Compact, dense stars
+                                <br />
+                                • Level 4: Yellow Star - Medium-sized stars
+                                <br />
+                                • Level 5: Blue Star - Hot, massive stars
+                                <br />
+                                • Level 6: Giant - Enormous stars
+                                <br />
+                                • Level 7: Supergiant - Largest celestial bodies
+                            </div>
+                            <div style={{ marginTop: "8px" }}>
+                                These thresholds define boundary values that determine a planet's level based on its location hash. Each planet has a unique hash value, and the game compares it against these thresholds to assign the appropriate level.
+                            </div>
+                            <div style={{ marginTop: "8px" }}>
+                                Planets with hash values below a threshold will be assigned that level. <strong>Higher threshold values</strong> mean more planets will qualify for that level, making them <strong>more common</strong>. Thresholds must be in descending order (each value smaller than the previous).
+                            </div>
+                            <div style={{ marginTop: "8px", fontStyle: "italic" }}>
+                                Note: Different space regions have level restrictions:
+                                <br />
+                                • Nebula: Max level 3 (White Dwarf)
+                                <br />
+                                • Space: Max level 4 (Yellow Star)
+                                <br />
+                                • Deep Space: No level limit
+                            </div>
+                        </div>
+                    </ConfigItem>
                     {config.planetLevelThresholds.map((value, index) => (
                         <ConfigItem key={`level-${index}`}>
-                            <ConfigLabel>Planet Level Threshold {index + 1}</ConfigLabel>
+                            <ConfigLabel>Level {index} Threshold ({PlanetLevel[index]})</ConfigLabel>
                             <ConfigInput
                                 type="number"
+                                min={index === 7 ? 960 : config.planetLevelThresholds[index + 1] + 1}
+                                max={index === 0 ? 16777216 : config.planetLevelThresholds[index - 1] - 1}
                                 value={value}
-                                onChange={(e) => handleArrayChange('planetLevelThresholds', index, e.target.value)}
+                                onChange={(e) => {
+                                  const newValue = Number(e.target.value);
+                                  const isValid =
+                                      (index === 0 || newValue < config.planetLevelThresholds[index - 1]) &&
+                                      (index === 7 || newValue > config.planetLevelThresholds[index + 1]) &&
+                                      (index !== 7 || newValue >= 960);
+
+                                  if (isValid) {
+                                      handleArrayChange('planetLevelThresholds', index, e.target.value);
+                                  }
+                                }}
                             />
+                            <ConfigDescription>Hash boundary for {PlanetLevel[index]}</ConfigDescription>
                         </ConfigItem>
                     ))}
                 </ConfigGrid>
@@ -444,7 +617,12 @@ const GameConfigPanel: React.FC<GameConfigPanelProps> = ({ onSaveConfig, initial
                             value={config.target4RadiusConstant}
                             onChange={(e) => handleNumberChange('target4RadiusConstant', e.target.value)}
                         />
-                        <ConfigDescription>{configHelp.target4RadiusConstant}</ConfigDescription>
+                        <ConfigDescription>
+                            {configHelp.target4RadiusConstant}
+                            <div style={{ marginTop: "8px", backgroundColor: "rgba(0, 0, 0, 0.2)", padding: "6px", borderRadius: "4px" }}>
+                                A baseline value that directly influences the world radius calculation based on Level 4 planets (Yellow Stars). The game calculates two potential radii (one from Level 4 planets and one from Level 5) and uses whichever is larger. Higher values create a larger universe from the start, regardless of player count or planet discoveries.
+                            </div>
+                        </ConfigDescription>
                     </ConfigItem>
 
                     <ConfigItem>
@@ -454,7 +632,12 @@ const GameConfigPanel: React.FC<GameConfigPanelProps> = ({ onSaveConfig, initial
                             value={config.target5RadiusConstant}
                             onChange={(e) => handleNumberChange('target5RadiusConstant', e.target.value)}
                         />
-                        <ConfigDescription>{configHelp.target5RadiusConstant}</ConfigDescription>
+                        <ConfigDescription>
+                            {configHelp.target5RadiusConstant}
+                            <div style={{ marginTop: "8px", backgroundColor: "rgba(0, 0, 0, 0.2)", padding: "6px", borderRadius: "4px" }}>
+                                A baseline value that directly influences the world radius calculation based on Level 5 planets (Blue Stars). The game compares this radius with the one from Level 4 planets and uses the larger value. Increasing this constant expands the universe independent of player count or discovered planets.
+                            </div>
+                        </ConfigDescription>
                     </ConfigItem>
                 </ConfigGrid>
             </ConfigSection>
