@@ -1566,6 +1566,10 @@ class GameManager extends EventEmitter {
     return this.contractsAPI.deployContract(gameConfig);
   }
 
+  deployTokenContract(): Promise<EthAddress> {
+    return this.contractsAPI.deployTokenContract();
+  }
+
   /**
    * Makes this game manager aware of a new chunk - which includes its location, size,
    * as well as all of the planets contained in that chunk. Causes the client to load

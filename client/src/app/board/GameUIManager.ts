@@ -758,6 +758,10 @@ class GameUIManager extends EventEmitter {
     return this.gameManager.deployContract(gameConfig);
   }
 
+  deployTokenContract(): Promise<EthAddress> {
+    return this.gameManager.deployTokenContract();
+  }
+
   // non-nullable
   getHomeCoords(): WorldCoords {
     return this.gameManager.getHomeCoords() || { x: 0, y: 0 };

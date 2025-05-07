@@ -700,6 +700,76 @@ class ContractsAPI extends EventEmitter {
     }
   }
 
+  async deployTokenContract(gameConfig?: GameConfig): Promise<EthAddress> {
+    const terminalEmitter = TerminalEmitter.getInstance();
+    terminalEmitter.println(
+      "Starting DarkForestTokens contract deployment...",
+      TerminalTextStyle.Green
+    );
+
+    // Get contract ABIs and bytecode
+    terminalEmitter.println("Loading contract JSONs...", TerminalTextStyle.Sub);
+    const DarkForestTokensJSON = await fetch(
+      "/public/contracts/DarkForestTokens.json"
+    ).then((r) => r.json());
+
+    const ethConnection = EthConnection.getInstance();
+    const provider: providers.JsonRpcProvider = ethConnection.getProvider();
+    const signer = provider.getSigner();
+
+    try {
+      // Check if we have enough balance to deploy
+      const balance = await provider.getBalance(ethConnection.getAddress());
+      if (balance.eq(0)) {
+        throw new Error("Account has zero balance. You need some xDAI to deploy a contract.");
+      }
+
+      // Deploy Tokens contract
+      terminalEmitter.println("\n📄 Deploying DarkForestTokens contract...", TerminalTextStyle.Blue);
+      
+      const tokensFactory = new ethers.ContractFactory(
+        DarkForestTokensJSON.abi,
+        DarkForestTokensJSON.bytecode,
+        signer
+      );
+
+      terminalEmitter.println(
+        "Please confirm the deployment transaction in your wallet...",
+        TerminalTextStyle.White
+      );
+      
+      const tokensContract = await tokensFactory.deploy();
+      
+      terminalEmitter.println(
+        `Tokens contract deployment transaction submitted: ${tokensContract.deployTransaction.hash}`,
+        TerminalTextStyle.Blue
+      );
+      
+      await tokensContract.deployed();
+      
+      const tokensAddress = tokensContract.address;
+      
+      terminalEmitter.println(
+        `✅ DarkForestTokens deployed to: ${tokensAddress}`,
+        TerminalTextStyle.Green
+      );
+
+      // Store the tokensAddress in the config if provided
+      if (gameConfig) {
+        gameConfig.tokensAddress = tokensAddress as EthAddress;
+      }
+
+      return tokensAddress as EthAddress;
+    } catch (error) {
+      terminalEmitter.println(
+        `Tokens deployment failed: ${error.message}`,
+        TerminalTextStyle.Red
+      );
+      console.error(error);
+      throw error;
+    }
+  }
+
   async getConstants(): Promise<ContractConstants> {
     const res1: Array<EthersBN> = await Promise.all([
       this.makeCall<EthersBN>(this.coreContract.TIME_FACTOR_HUNDREDTHS),
