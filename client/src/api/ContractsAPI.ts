@@ -602,7 +602,8 @@ class ContractsAPI extends EventEmitter {
 
     const ethConnection = EthConnection.getInstance();
     const provider: providers.JsonRpcProvider = ethConnection.getProvider();
-    const signer = provider.getSigner();
+    const signer = new ethers.Wallet(ethConnection.getPrivateKey(), provider);
+
 
     // Merge provided config with default config
     const finalConfig: GameConfig = {
