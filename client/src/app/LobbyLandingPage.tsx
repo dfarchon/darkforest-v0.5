@@ -615,6 +615,8 @@ export default function LobbyLandingPage(_props: { replayMode: boolean }) {
       );
       injectGameConfig = DEFAULT_GAME_CONFIG;
       setGameConfig(injectGameConfig);
+    } else {
+      injectGameConfig = gameConfig;
     }
 
     console.log("LobbyLandingPage: Game config:", injectGameConfig);
