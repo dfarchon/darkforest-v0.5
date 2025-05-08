@@ -11,7 +11,7 @@ import {
 import { EthAddress } from '../_types/global/GlobalTypes';
 import { CheckedTypeUtils } from '../utils/CheckedTypeUtils';
 import { EventEmitter } from 'events';
-import { XDAI_CHAIN_ID } from '../utils/constants';
+import { XDAI_CHAIN_ID, PYROPE_RPC } from '../utils/constants';
 import { callWithRetry, sleep } from '../utils/Utils';
 
 /**
@@ -29,9 +29,9 @@ class EthConnection extends EventEmitter {
   static instance: EthConnection | null = null;
 
   private static readonly XDAI_DEFAULT_URL = window.origin.includes('localhost')
-    ? 'https://rpc.ankr.com/eth_holesky'
-    : 'https://rpc.ankr.com/eth_holesky';
-  ;
+    ? PYROPE_RPC
+    : PYROPE_RPC
+    ;
 
   private readonly knownAddresses: EthAddress[];
   private provider: JsonRpcProvider;

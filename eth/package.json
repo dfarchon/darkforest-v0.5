@@ -14,6 +14,7 @@
     "hardhat:dev": "hardhat --network localhost",
     "deploy:dev": "NODE_ENV=development hardhat --network localhost deploy",
     "deploy:prod": "NODE_ENV=production hardhat --network holesky deploy",
+    "deploy:pyrope": "NODE_ENV=production hardhat --network pyrope deploy",
     "test": "oz compile --optimizer on && mocha --exit --recursive test --timeout 25000"
   },
   "devDependencies": {

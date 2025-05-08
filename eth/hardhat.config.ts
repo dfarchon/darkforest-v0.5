@@ -42,6 +42,13 @@ const config: HardhatUserConfig = {
       gasMultiplier: 1.5, // Increased to 1.5x
       timeout: 120000, // 2 minutes timeout
     },
+    pyrope: {
+      url: process.env.PYROPE_RPC,
+      accounts: {
+        mnemonic: MNEMONIC,
+      },
+      chainId: 695569,
+    },
   },
   solidity: {
     version: "0.6.9",

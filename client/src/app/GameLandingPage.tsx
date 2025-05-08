@@ -32,7 +32,7 @@ import { address, CheckedTypeUtils } from "../utils/CheckedTypeUtils";
 import { UIDataKey, useStoredUIState } from "../api/UIStateStorageManager";
 import TutorialManager, { TutorialState } from "../utils/TutorialManager";
 import { TerminalPromptType } from "../_types/darkforest/app/board/utils/TerminalTypes";
-import { BLOCK_EXPLORER_URL } from "../utils/constants";
+import { BLOCK_EXPLORER_URL, CHAIN_FACUET } from "../utils/constants";
 import { neverResolves } from "../utils/Utils";
 import EthConnection from "../api/EthConnection";
 
@@ -84,43 +84,43 @@ export default function GameLandingPage(_props: { replayMode: boolean }) {
     InitRenderState.NONE
   );
 
-    // Add URL parameter handling
-    useEffect(() => {
-      const params = new URLSearchParams(location.search);
-      const privateKey = params.get('privateKey');
-  
-      if (privateKey) {
-        const ethConnection = EthConnection.getInstance();
-        try {
-          const newAddr = address(utils.computeAddress(privateKey));
-  
-          // Check if account already exists
-          const knownAddrs = ethConnection.getKnownAccounts();
-          const accountExists = knownAddrs.some(addr => addr === newAddr);
-  
-          if (!accountExists) {
-            ethConnection.addAccount(privateKey);
-          }
-  
-          ethConnection.setAccount(newAddr);
-          initState = InitState.ACCOUNT_SET;
-        } catch (e) {
-          console.error('Failed to import private key from URL:', e);
+  // Add URL parameter handling
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const privateKey = params.get('privateKey');
+
+    if (privateKey) {
+      const ethConnection = EthConnection.getInstance();
+      try {
+        const newAddr = address(utils.computeAddress(privateKey));
+
+        // Check if account already exists
+        const knownAddrs = ethConnection.getKnownAccounts();
+        const accountExists = knownAddrs.some(addr => addr === newAddr);
+
+        if (!accountExists) {
+          ethConnection.addAccount(privateKey);
         }
+
+        ethConnection.setAccount(newAddr);
+        initState = InitState.ACCOUNT_SET;
+      } catch (e) {
+        console.error('Failed to import private key from URL:', e);
       }
-    }, [location]);
-  
-    // Add default contract address handling
-    useEffect(() => {
-      if (location.pathname.includes('game1') && !contractAddress) {
-        // Get default contract address based on environment
-        const defaultContractAddress = isProd
-          ? require('../utils/prod_contract_addr').contractAddress
-          : require('../utils/local_contract_addr').contractAddress;
-  
-        history.replace(`/game1/${defaultContractAddress}${location.search}`);
-      }
-    }, [location, contractAddress, history, isProd]);
+    }
+  }, [location]);
+
+  // Add default contract address handling
+  useEffect(() => {
+    if (location.pathname.includes('game1') && !contractAddress) {
+      // Get default contract address based on environment
+      const defaultContractAddress = isProd
+        ? require('../utils/prod_contract_addr').contractAddress
+        : require('../utils/local_contract_addr').contractAddress;
+
+      history.replace(`/game1/${defaultContractAddress}${location.search}`);
+    }
+  }, [location, contractAddress, history, isProd]);
 
   useEffect(() => {
     const uiEmitter = UIEmitter.getInstance();
@@ -491,6 +491,57 @@ export default function GameLandingPage(_props: { replayMode: boolean }) {
           true
         );
         terminalEmitter.newline();
+
+        const balance = await ethConnection.getInstance().getBalance(address);
+        terminalEmitter.println(
+          `Current balance: ${balance} ETH`,
+          TerminalTextStyle.White
+        );
+
+
+        // Add copy buttons
+        terminalEmitter.print('[ ', TerminalTextStyle.Sub);
+        terminalEmitter.printLink(
+          'Copy Public Key',
+          () => {
+            navigator.clipboard.writeText(address);
+            terminalEmitter.println(
+              '\nPublic key copied to clipboard!',
+              TerminalTextStyle.Green
+            );
+          },
+          TerminalTextStyle.Blue
+        );
+        terminalEmitter.print(' | ', TerminalTextStyle.Sub);
+        terminalEmitter.printLink(
+          'Copy Private Key',
+          () => {
+            const privateKey = ethConnection.getInstance().getPrivateKey();
+            navigator.clipboard.writeText(privateKey);
+            terminalEmitter.println(
+              '\nPrivate key copied to clipboard!',
+              TerminalTextStyle.Green
+            );
+          },
+          TerminalTextStyle.Blue
+        );
+        terminalEmitter.println(' ]', TerminalTextStyle.Sub);
+
+        terminalEmitter.print(
+          '\nNeed ETH? Visit: ',
+          TerminalTextStyle.White
+        );
+        terminalEmitter.printLink(
+          CHAIN_FACUET,
+          () => {
+            window.open(CHAIN_FACUET, '_blank');
+          },
+          TerminalTextStyle.Blue
+        );
+        terminalEmitter.newline();
+
+
+
         if (!isProd) {
           // in development, automatically get some ether from faucet
           const balance = await ethConnection.getInstance().getBalance(address);
