@@ -123,8 +123,8 @@ const configHelp = {
     gameEndTimestamp: "Game end timestamp (Unix time)",
     target4RadiusConstant: "Target 4 radius constant",
     target5RadiusConstant: "Target 5 radius constant",
-    BIOME_THRESHOLD_1: "First biome threshold",
-    BIOME_THRESHOLD_2: "Second biome threshold",
+    BIOME_THRESHOLD_1: "First biome threshold - T1",
+    BIOME_THRESHOLD_2: "Second biome threshold - T2",
     ARTIFACT_LOCKUP_DURATION_SECONDS: "Artifact lockup duration (seconds)"
 };
 
@@ -240,7 +240,7 @@ const GameConfigPanel: React.FC<GameConfigPanelProps> = ({ onSaveConfig, initial
     // Format seconds into human readable duration string
     const formatSeconds = (seconds: number): string => {
         if (seconds <= 0) return '0 seconds';
-        
+
         const days = Math.floor(seconds / (24 * 60 * 60));
         const hours = Math.floor((seconds % (24 * 60 * 60)) / (60 * 60));
         const minutes = Math.floor((seconds % (60 * 60)) / 60);
@@ -278,11 +278,11 @@ const GameConfigPanel: React.FC<GameConfigPanelProps> = ({ onSaveConfig, initial
                             min={1}
                             value={config.TIME_FACTOR_HUNDREDTHS}
                             onChange={(e) => {
-                              const newValue = Number(e.target.value);
-                              if (newValue > 0) {
-                                  handleNumberChange('TIME_FACTOR_HUNDREDTHS', e.target.value);
-                              }
-                          }}
+                                const newValue = Number(e.target.value);
+                                if (newValue > 0) {
+                                    handleNumberChange('TIME_FACTOR_HUNDREDTHS', e.target.value);
+                                }
+                            }}
                         />
                         <ConfigDescription>{configHelp.TIME_FACTOR_HUNDREDTHS}</ConfigDescription>
                     </ConfigItem>
@@ -465,13 +465,54 @@ const GameConfigPanel: React.FC<GameConfigPanelProps> = ({ onSaveConfig, initial
                             </div>
                         </div>
                         <ConfigDescription style={{ marginTop: "8px" }}>
-                          <div style={{ marginBottom: "6px", color: "#00ADE1" }}>Biome Thresholds Explained:</div>
+                            <div style={{ marginBottom: "6px", color: "#00ADE1" }}>Biome Thresholds Explained:</div>
                             • {configHelp.BIOME_THRESHOLD_1}
                             <br />
                             • {configHelp.BIOME_THRESHOLD_2}
+                            <div style={{
+                                backgroundColor: "rgba(0, 0, 0, 0.3)",
+                                padding: "8px",
+                                borderRadius: "4px",
+                                marginTop: "8px",
+                                fontSize: "12px"
+                            }}>
+                                <div>
+                                    The game world is divided into 9 different biomes, each providing unique bonuses to artifacts:
+                                    <br />
+                                    • Ocean: Speed +10%, Defense +10%
+                                    <br />
+                                    • Forest: Defense +10%, Population Cap & Growth +10%
+                                    <br />
+                                    • Grassland: Population Cap & Growth +10%, Range +10%
+                                    <br />
+                                    • Tundra: Defense +10%, Range +10%
+                                    <br />
+                                    • Swamp: Speed +10%, Range +10%
+                                    <br />
+                                    • Desert: Speed +20%
+                                    <br />
+                                    • Ice: Range +20%
+                                    <br />
+                                    • Wasteland: Defense +20%
+                                    <br />
+                                    • Lava: Population Cap & Growth +20%
+                                </div>
+                                <div style={{ marginTop: "8px", color: "white" }}>
+                                    Biome distribution rules:
+                                    <br />
+                                    • Nebula region: Ocean (below T1), Forest (T1-T2), Grassland (above T2)
+                                    <br />
+                                    • Space region: Tundra (below T1), Swamp (T1-T2), Desert (above T2)
+                                    <br />
+                                    • Deep Space region: Ice (below T1), Wasteland (T1-T2), Lava (above T2)
+                                </div>
+                                <div style={{ marginTop: "8px", color: "white" }}>
+                                    The T1 and T2 values determine the distribution ratio of different biomes. Lower thresholds make the first biome type in each region rarer and the third type more common. Balancing these values controls the availability of various artifact bonuses in the game.
+                                </div>
+                            </div>
                         </ConfigDescription>
                     </ConfigItem>
-                    <br/>
+                    <br />
                     <ConfigItem>
                         <ConfigLabel>Artifact Lockup Duration</ConfigLabel>
                         <ConfigInput
@@ -506,7 +547,7 @@ const GameConfigPanel: React.FC<GameConfigPanelProps> = ({ onSaveConfig, initial
             <ConfigSection>
                 <SectionTitle>Planet Configuration</SectionTitle>
                 <ConfigGrid>
-                <ConfigItem style={{ gridColumn: "span 3" }}>
+                    <ConfigItem style={{ gridColumn: "span 3" }}>
                         <ConfigLabel>Planet Level Thresholds</ConfigLabel>
                         <div style={{
                             backgroundColor: "rgba(0, 0, 0, 0.3)",
@@ -561,15 +602,15 @@ const GameConfigPanel: React.FC<GameConfigPanelProps> = ({ onSaveConfig, initial
                                 max={index === 0 ? 16777216 : config.planetLevelThresholds[index - 1] - 1}
                                 value={value}
                                 onChange={(e) => {
-                                  const newValue = Number(e.target.value);
-                                  const isValid =
-                                      (index === 0 || newValue < config.planetLevelThresholds[index - 1]) &&
-                                      (index === 7 || newValue > config.planetLevelThresholds[index + 1]) &&
-                                      (index !== 7 || newValue >= 960);
+                                    const newValue = Number(e.target.value);
+                                    const isValid =
+                                        (index === 0 || newValue < config.planetLevelThresholds[index - 1]) &&
+                                        (index === 7 || newValue > config.planetLevelThresholds[index + 1]) &&
+                                        (index !== 7 || newValue >= 960);
 
-                                  if (isValid) {
-                                      handleArrayChange('planetLevelThresholds', index, e.target.value);
-                                  }
+                                    if (isValid) {
+                                        handleArrayChange('planetLevelThresholds', index, e.target.value);
+                                    }
                                 }}
                             />
                             <ConfigDescription>Hash boundary for {PlanetLevel[index]}</ConfigDescription>
