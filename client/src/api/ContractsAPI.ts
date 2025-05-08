@@ -598,9 +598,7 @@ class ContractsAPI extends EventEmitter {
     const DarkForestCoreJSON = await fetch(
       "/public/contracts/DarkForestCore.json"
     ).then((r) => r.json());
-    const DarkForestTokensJSON = await fetch(
-      "/public/contracts/DarkForestTokens.json"
-    ).then((r) => r.json());
+
 
     const ethConnection = EthConnection.getInstance();
     const provider: providers.JsonRpcProvider = ethConnection.getProvider();
@@ -643,6 +641,10 @@ class ContractsAPI extends EventEmitter {
 
       // First deploy the Tokens contract
       terminalEmitter.println("\n📄 Deploying DarkForestTokens contract...", TerminalTextStyle.Blue);
+
+      const DarkForestTokensJSON = await fetch(
+        "/public/contracts/DarkForestTokens.json"
+      ).then((r) => r.json());
 
       const tokensFactory = new ethers.ContractFactory(
         DarkForestTokensJSON.abi,
