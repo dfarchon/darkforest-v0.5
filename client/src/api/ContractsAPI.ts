@@ -598,11 +598,11 @@ class ContractsAPI extends EventEmitter {
     const DarkForestCoreJSON = await fetch(
       "/public/contracts/DarkForestCore.json"
     ).then((r) => r.json());
-
-    // For ethers compatibility
+    const DarkForestTokensJSON = await fetch(
+      "/public/contracts/DarkForestTokens.json"
+    ).then((r) => r.json());
 
     const ethConnection = EthConnection.getInstance();
-
     const provider: providers.JsonRpcProvider = ethConnection.getProvider();
     const signer = provider.getSigner();
 
@@ -641,8 +641,41 @@ class ContractsAPI extends EventEmitter {
         throw new Error("Account has zero balance. You need some xDAI to deploy a contract.");
       }
 
+      // First deploy the Tokens contract
+      terminalEmitter.println("\n📄 Deploying DarkForestTokens contract...", TerminalTextStyle.Blue);
+
+      const tokensFactory = new ethers.ContractFactory(
+        DarkForestTokensJSON.abi,
+        DarkForestTokensJSON.bytecode,
+        signer
+      );
+
+      terminalEmitter.println(
+        "Please confirm the tokens deployment transaction in your wallet...",
+        TerminalTextStyle.White
+      );
+
+      const tokensContract = await tokensFactory.deploy();
+
+      terminalEmitter.println(
+        `Tokens contract deployment transaction submitted: ${tokensContract.deployTransaction.hash}`,
+        TerminalTextStyle.Blue
+      );
+
+      await tokensContract.deployed();
+
+      const tokensAddress = tokensContract.address;
+
+      terminalEmitter.println(
+        `✅ DarkForestTokens deployed to: ${tokensAddress}`,
+        TerminalTextStyle.Green
+      );
+
+      // Add tokensAddress to gameConfig
+      finalConfig.tokensAddress = tokensAddress as EthAddress;
+
       // Now deploy the main DarkForestCore contract with libraries
-      terminalEmitter.println(`Deploying main DarkForestCore contract...`);
+      terminalEmitter.println(`\n🌟 Deploying main DarkForestCore contract...`, TerminalTextStyle.Blue);
 
       const linkedBytecode = this.linkLibraries(
         DarkForestCoreJSON.bytecode,
@@ -657,7 +690,7 @@ class ContractsAPI extends EventEmitter {
       );
 
       terminalEmitter.println(
-        "Please confirm the deployment transaction in your wallet...",
+        "Please confirm the core deployment transaction in your wallet...",
         TerminalTextStyle.White
       );
       const coreContract = await coreFactory.deploy();
@@ -667,15 +700,19 @@ class ContractsAPI extends EventEmitter {
       );
       await coreContract.deployed();
 
-      // Initialize the core contract
+      const coreAddress = coreContract.address;
       terminalEmitter.println(
-        "Initializing DarkForestCore contract...",
+        `✅ DarkForestCore deployed to: ${coreAddress}`,
         TerminalTextStyle.Green
       );
 
-      console.log("finalConfig");
-      console.log(finalConfig);
+      // Initialize the core contract
+      terminalEmitter.println(
+        "\n🔧 Initializing DarkForestCore contract...",
+        TerminalTextStyle.Green
+      );
 
+      console.log("Initializing with config:", finalConfig);
       const initTx = await coreContract.init(finalConfig);
 
       terminalEmitter.println(
@@ -683,86 +720,36 @@ class ContractsAPI extends EventEmitter {
         TerminalTextStyle.Blue
       );
       await initTx.wait();
-
       terminalEmitter.println(
-        `Contract successfully deployed at: ${coreContract.address}`,
+        `✅ Core initialization complete`,
         TerminalTextStyle.Green
       );
 
-      return coreContract.address;
+      // Initialize the tokens contract with the core contract address
+      terminalEmitter.println(
+        "\n🔄 Initializing DarkForestTokens contract...",
+        TerminalTextStyle.Green
+      );
+      const tokensTx = await tokensContract.initialize(coreAddress, finalConfig.adminAddress);
+      terminalEmitter.println(
+        `Tokens initialization transaction submitted: ${tokensTx.hash}`,
+        TerminalTextStyle.Blue
+      );
+      await tokensTx.wait();
+      terminalEmitter.println(
+        `✅ Tokens contract initialized with core address: ${coreAddress}`,
+        TerminalTextStyle.Green
+      );
+
+      terminalEmitter.println(
+        `\n🎉 Deployment complete! Core contract address: ${coreAddress}`,
+        TerminalTextStyle.Green
+      );
+
+      return coreAddress;
     } catch (error) {
       terminalEmitter.println(
         `Deployment failed: ${error.message}`,
-        TerminalTextStyle.Red
-      );
-      console.error(error);
-      throw error;
-    }
-  }
-
-  async deployTokenContract(gameConfig?: GameConfig): Promise<EthAddress> {
-    const terminalEmitter = TerminalEmitter.getInstance();
-    terminalEmitter.println(
-      "Starting DarkForestTokens contract deployment...",
-      TerminalTextStyle.Green
-    );
-
-    // Get contract ABIs and bytecode
-    terminalEmitter.println("Loading contract JSONs...", TerminalTextStyle.Sub);
-    const DarkForestTokensJSON = await fetch(
-      "/public/contracts/DarkForestTokens.json"
-    ).then((r) => r.json());
-
-    const ethConnection = EthConnection.getInstance();
-    const provider: providers.JsonRpcProvider = ethConnection.getProvider();
-    const signer = provider.getSigner();
-
-    try {
-      // Check if we have enough balance to deploy
-      const balance = await provider.getBalance(ethConnection.getAddress());
-      if (balance.eq(0)) {
-        throw new Error("Account has zero balance. You need some xDAI to deploy a contract.");
-      }
-
-      // Deploy Tokens contract
-      terminalEmitter.println("\n📄 Deploying DarkForestTokens contract...", TerminalTextStyle.Blue);
-      
-      const tokensFactory = new ethers.ContractFactory(
-        DarkForestTokensJSON.abi,
-        DarkForestTokensJSON.bytecode,
-        signer
-      );
-
-      terminalEmitter.println(
-        "Please confirm the deployment transaction in your wallet...",
-        TerminalTextStyle.White
-      );
-      
-      const tokensContract = await tokensFactory.deploy();
-      
-      terminalEmitter.println(
-        `Tokens contract deployment transaction submitted: ${tokensContract.deployTransaction.hash}`,
-        TerminalTextStyle.Blue
-      );
-      
-      await tokensContract.deployed();
-      
-      const tokensAddress = tokensContract.address;
-      
-      terminalEmitter.println(
-        `✅ DarkForestTokens deployed to: ${tokensAddress}`,
-        TerminalTextStyle.Green
-      );
-
-      // Store the tokensAddress in the config if provided
-      if (gameConfig) {
-        gameConfig.tokensAddress = tokensAddress as EthAddress;
-      }
-
-      return tokensAddress as EthAddress;
-    } catch (error) {
-      terminalEmitter.println(
-        `Tokens deployment failed: ${error.message}`,
         TerminalTextStyle.Red
       );
       console.error(error);

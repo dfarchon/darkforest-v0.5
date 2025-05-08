@@ -140,6 +140,23 @@ class EthConnection extends EventEmitter {
     return this.loadContract(contractAddress, contractABI);
   }
 
+  public async loadTokensContract(customTokensAddress?: string): Promise<Contract> {
+    const contractABI = (
+      await fetch('/public/contracts/DarkForestTokens.json').then((x) => x.json())
+    ).abi;
+
+    const isProd = process.env.NODE_ENV === 'production';
+    let tokensAddress = isProd
+      ? require('../utils/prod_contract_addr').tokensAddress
+      : require('../utils/local_contract_addr').tokensAddress;
+
+    if (customTokensAddress) {
+      tokensAddress = customTokensAddress;
+    }
+
+    return this.loadContract(tokensAddress, contractABI);
+  }
+
   public async loadWhitelistContract(): Promise<Contract> {
     const whitelistABI = (
       await fetch('/public/contracts/Whitelist.json').then((x) => x.json())

@@ -617,33 +617,10 @@ export default function LobbyLandingPage(_props: { replayMode: boolean }) {
       setGameConfig(injectGameConfig);
     }
 
-    terminalEmitter.println(
-      "Deploying token contract... Please confirm transaction in your wallet",
-      TerminalTextStyle.White
-    );
-
-    try {
-      const tokenContractAddress =
-        await gameUIManagerRef.current.deployTokenContract();
-      console.log("Contract deployed successfully:", tokenContractAddress);
-      injectGameConfig = {
-        ...(injectGameConfig || DEFAULT_GAME_CONFIG),
-        tokensAddress: tokenContractAddress as EthAddress,
-      };
-      setGameConfig(injectGameConfig);
-    } catch (error) {
-      console.error("Token contract deployment failed:", error);
-      terminalEmitter.println(
-        `Token contract deployment failed: ${error.message || "Unknown error"}`,
-        TerminalTextStyle.Red
-      );
-      return;
-    }
-
     console.log("LobbyLandingPage: Game config:", injectGameConfig);
 
     terminalEmitter.println(
-      "Deploying contract... Please confirm transaction in your wallet",
+      "Deploying contracts... Please confirm transaction in your wallet",
       TerminalTextStyle.White
     );
 
@@ -971,8 +948,7 @@ export default function LobbyLandingPage(_props: { replayMode: boolean }) {
       setGameAccounts(updatedAccounts);
 
       terminalEmitter.println(
-        `Successfully transferred ${transferAmount} ETH to Account ${
-          index + 1
+        `Successfully transferred ${transferAmount} ETH to Account ${index + 1
         }`,
         TerminalTextStyle.Green
       );
@@ -1181,16 +1157,17 @@ export default function LobbyLandingPage(_props: { replayMode: boolean }) {
 
           // Update account balances
           ethConnection.getBalance(address(account.address)).then((newBalance) => {
-            setGameAccounts(prev => prev.map(acc => ({address: acc.address,
+            setGameAccounts(prev => prev.map(acc => ({
+              address: acc.address,
               privateKey: acc.privateKey,
-              balance: acc.address === account.address?newBalance.toString():acc.balance,}) 
+              balance: acc.address === account.address ? newBalance.toString() : acc.balance,
+            })
             ));
           });
 
           successCount++;
           terminalEmitter.println(
-            `Successfully transferred ${transferAmount} ETH to Account ${
-              i + 1
+            `Successfully transferred ${transferAmount} ETH to Account ${i + 1
             }`,
             TerminalTextStyle.Green
           );
@@ -1405,14 +1382,14 @@ export default function LobbyLandingPage(_props: { replayMode: boolean }) {
                         marginLeft: "15px",
                         opacity:
                           isTransferringToAll ||
-                          gameAccounts.length === 0 ||
-                          !deployedContractAddress
+                            gameAccounts.length === 0 ||
+                            !deployedContractAddress
                             ? 0.5
                             : 1,
                         pointerEvents:
                           isTransferringToAll ||
-                          gameAccounts.length === 0 ||
-                          !deployedContractAddress
+                            gameAccounts.length === 0 ||
+                            !deployedContractAddress
                             ? "none"
                             : ("auto" as any),
                       }}
@@ -1491,8 +1468,7 @@ export default function LobbyLandingPage(_props: { replayMode: boolean }) {
                             onClick={() =>
                               copyToClipboardWithMessage(
                                 `${window.location.origin}/game1/${deployedContractAddress}?privateKey=${account.privateKey}`,
-                                `Game URL with private key copied for Account ${
-                                  index + 1
+                                `Game URL with private key copied for Account ${index + 1
                                 }`
                               )
                             }

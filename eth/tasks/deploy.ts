@@ -52,16 +52,16 @@ const exec = async (command: string): Promise<string> => {
 
 // Load game configuration from JSON file
 const loadGameConfig = (configPath: string = './config/gameConfig.json'): any => {
-  const resolvedPath = path.resolve(process.cwd(), configPath);
-  try {
-      const configData = fs.readFileSync(resolvedPath, 'utf8');
-      const config = JSON.parse(configData);
-      console.log(`Game configuration loaded successfully from ${resolvedPath}`);
-      return config;
-  } catch (error) {
-      console.error(`Failed to load game configuration from ${resolvedPath}: ${error}`);
-      throw error;
-  }
+    const resolvedPath = path.resolve(process.cwd(), configPath);
+    try {
+        const configData = fs.readFileSync(resolvedPath, 'utf8');
+        const config = JSON.parse(configData);
+        console.log(`Game configuration loaded successfully from ${resolvedPath}`);
+        return config;
+    } catch (error) {
+        console.error(`Failed to load game configuration from ${resolvedPath}: ${error}`);
+        throw error;
+    }
 };
 
 // ============================================
@@ -176,156 +176,168 @@ async function deploy(
 
     // Deploy core contracts with game configuration
     const { coreAddress, libraries } = await deployCoreWithConfig(
-      gameConfig,
-      hre,
+        gameConfig,
+        hre,
     );
 
     fs.writeFileSync(
-      isDev === false
-          ? "../client/src/utils/prod_contract_addr.ts"
-          : "../client/src/utils/local_contract_addr.ts",
-      `export const contractAddress = '${coreAddress}';`,
-  );
+        isDev === false
+            ? "../client/src/utils/prod_contract_addr.ts"
+            : "../client/src/utils/local_contract_addr.ts",
+        `export const contractAddress = '${coreAddress}';\nexport const tokensAddress = '${tokensAddress}';`,
+    );
 
-  // Save library addresses to file
-  fs.writeFileSync(
-      isDev === false
-          ? "../client/src/utils/prod_library_addrs.ts"
-          : "../client/src/utils/local_library_addrs.ts",
-      `export const libraryAddresses = ${JSON.stringify(libraries, null, 2)};`
-  );
+    // Save library addresses to file
+    fs.writeFileSync(
+        isDev === false
+            ? "../client/src/utils/prod_library_addrs.ts"
+            : "../client/src/utils/local_library_addrs.ts",
+        `export const libraryAddresses = ${JSON.stringify(libraries, null, 2)};`
+    );
 
+    // Initialize the tokens contract with the core contract address
+    console.log("\n🔄 Initializing DarkForestTokens contract...");
+    await tokensContract.initialize(coreAddress, gameConfig.adminAddress);
+    console.log("✅ DarkForestTokens initialized with:");
+    console.log("→ Core address:", coreAddress);
+    console.log("→ Admin address:", gameConfig.adminAddress);
 
-  console.log("Deploy over. You can quit this process.");
+    console.log("Deploy over. You can quit this process.");
 
-  return;
+    return;
 }
 
 task("client:config", "client config").setAction(clientConfig);
 
 async function clientConfig() {
-  // Check if directory exists before creating it
-  try {
-      if (!fs.existsSync('../client/public/contracts')) {
-          await exec("mkdir -p ../client/public/contracts");
-      }
+    // Check if directory exists before creating it
+    try {
+        if (!fs.existsSync('../client/public/contracts')) {
+            await exec("mkdir -p ../client/public/contracts");
+        }
 
-      // Copy the main DarkForestCore contract JSON
-      await exec(
-          "cp ./artifacts/contracts/DarkForestCore.sol/DarkForestCore.json ../client/public/contracts/DarkForestCore.json",
-      );
+        // Copy the main DarkForestCore contract JSON
+        await exec(
+            "cp ./artifacts/contracts/DarkForestCore.sol/DarkForestCore.json ../client/public/contracts/DarkForestCore.json",
+        );
 
-      // Copy all library contract JSONs
-      const libraryContracts = [
-          "DarkForestInitialize",
-          "DarkForestLazyUpdate",
-          "DarkForestPlanet",
-          "DarkForestUtils",
-          "Verifier"
-      ];
+        // Copy all library contract JSONs
+        const libraryContracts = [
+            "DarkForestInitialize",
+            "DarkForestLazyUpdate",
+            "DarkForestPlanet",
+            "DarkForestUtils",
+            "Verifier"
+        ];
 
-      for (const library of libraryContracts) {
-          console.log(`Copying ${library} contract JSON...`);
-          await exec(
-              `cp ./artifacts/contracts/${library}.sol/${library}.json ../client/public/contracts/${library}.json`,
-          );
-      }
+        for (const library of libraryContracts) {
+            console.log(`Copying ${library} contract JSON...`);
+            await exec(
+                `cp ./artifacts/contracts/${library}.sol/${library}.json ../client/public/contracts/${library}.json`,
+            );
+        }
 
-      console.log("All contract JSONs copied to client/public/contracts/");
+        // Copy DarkForestTokens contract JSON
+        console.log("Copying DarkForestTokens contract JSON...");
+        await exec(
+            "cp ./artifacts/contracts/DarkForestTokens.sol/DarkForestTokens.json ../client/public/contracts/DarkForestTokens.json"
+        );
+
+        console.log("All contract JSONs copied to client/public/contracts/");
 
 
-  } catch (error) {
-      console.error("Error in clientConfig:", error);
-  }
+    } catch (error) {
+        console.error("Error in clientConfig:", error);
+    }
 }
 
 export async function deployCoreWithConfig(
-  gameConfig: any,
-  hre: HardhatRuntimeEnvironment,
+    gameConfig: any,
+    hre: HardhatRuntimeEnvironment,
 ): Promise<{ coreAddress: string, libraries: Record<string, string> }> {
-  console.log("\n📦 Deploying library contracts...");
+    console.log("\n📦 Deploying library contracts...");
 
-  const libraries: Record<string, string> = {};
+    const libraries: Record<string, string> = {};
 
-  console.log("\n1️⃣ Deploying DarkForestUtils...");
-  const factory1 = await hre.ethers.getContractFactory("DarkForestUtils");
-  const contract1 = await factory1.deploy();
-  await contract1.waitForDeployment();
-  console.log("✅ DarkForestUtils deployed to:", contract1.target);
-  libraries["DarkForestUtils"] = contract1.target.toString();
+    console.log("\n1️⃣ Deploying DarkForestUtils...");
+    const factory1 = await hre.ethers.getContractFactory("DarkForestUtils");
+    const contract1 = await factory1.deploy();
+    await contract1.waitForDeployment();
+    console.log("✅ DarkForestUtils deployed to:", contract1.target);
+    libraries["DarkForestUtils"] = contract1.target.toString();
 
-  console.log("\n2️⃣ Deploying DarkForestLazyUpdate...");
-  const factory2 = await hre.ethers.getContractFactory("DarkForestLazyUpdate");
-  const contract2 = await factory2.deploy();
-  await contract2.waitForDeployment();
-  console.log("✅ DarkForestLazyUpdate deployed to:", contract2.target);
-  libraries["DarkForestLazyUpdate"] = contract2.target.toString();
+    console.log("\n2️⃣ Deploying DarkForestLazyUpdate...");
+    const factory2 = await hre.ethers.getContractFactory("DarkForestLazyUpdate");
+    const contract2 = await factory2.deploy();
+    await contract2.waitForDeployment();
+    console.log("✅ DarkForestLazyUpdate deployed to:", contract2.target);
+    libraries["DarkForestLazyUpdate"] = contract2.target.toString();
 
-  console.log("\n3️⃣ Deploying DarkForestPlanet...");
-  const factory3 = await hre.ethers.getContractFactory("DarkForestPlanet", {
-      libraries: {
-          DarkForestLazyUpdate: contract2.target,
-          DarkForestUtils: contract1.target
-      }
-  });
-  const contract3 = await factory3.deploy();
-  await contract3.waitForDeployment();
-  console.log("✅ DarkForestPlanet deployed to:", contract3.target);
-  libraries["DarkForestPlanet"] = contract3.target.toString();
+    console.log("\n3️⃣ Deploying DarkForestPlanet...");
+    const factory3 = await hre.ethers.getContractFactory("DarkForestPlanet", {
+        libraries: {
+            DarkForestLazyUpdate: contract2.target,
+            DarkForestUtils: contract1.target
+        }
+    });
+    const contract3 = await factory3.deploy();
+    await contract3.waitForDeployment();
+    console.log("✅ DarkForestPlanet deployed to:", contract3.target);
+    libraries["DarkForestPlanet"] = contract3.target.toString();
 
-  console.log("\n4️⃣ Deploying DarkForestInitialize...");
-  const factory4 = await hre.ethers.getContractFactory("DarkForestInitialize");
-  const contract4 = await factory4.deploy();
-  await contract4.waitForDeployment();
-  console.log("✅ DarkForestInitialize deployed to:", contract4.target);
-  libraries["DarkForestInitialize"] = contract4.target.toString();
+    console.log("\n4️⃣ Deploying DarkForestInitialize...");
+    const factory4 = await hre.ethers.getContractFactory("DarkForestInitialize");
+    const contract4 = await factory4.deploy();
+    await contract4.waitForDeployment();
+    console.log("✅ DarkForestInitialize deployed to:", contract4.target);
+    libraries["DarkForestInitialize"] = contract4.target.toString();
 
-  console.log("\n5️⃣ Deploying Verifier...");
-  const factory5 = await hre.ethers.getContractFactory("Verifier");
-  const contract5 = await factory5.deploy();
-  await contract5.waitForDeployment();
-  console.log("✅ Verifier deployed to:", contract5.target);
-  libraries["Verifier"] = contract5.target.toString();
+    console.log("\n5️⃣ Deploying Verifier...");
+    const factory5 = await hre.ethers.getContractFactory("Verifier");
+    const contract5 = await factory5.deploy();
+    await contract5.waitForDeployment();
+    console.log("✅ Verifier deployed to:", contract5.target);
+    libraries["Verifier"] = contract5.target.toString();
 
-  console.log("\n🌟 Deploying main DarkForestCore contract...");
-  const factory = await hre.ethers.getContractFactory("DarkForestCore", {
-      libraries: {
-          DarkForestInitialize: contract4.target,
-          DarkForestPlanet: contract3.target,
-          DarkForestUtils: contract1.target,
-          Verifier: contract5.target,
-      },
-  });
-  const contract = await factory.deploy();
-  console.log("⏳ Waiting for deployment...");
-  await contract.waitForDeployment();
-  console.log("✅ DarkForestCore deployed to:", contract.target);
+    console.log("\n🌟 Deploying main DarkForestCore contract...");
+    const factory = await hre.ethers.getContractFactory("DarkForestCore", {
+        libraries: {
+            DarkForestInitialize: contract4.target,
+            DarkForestPlanet: contract3.target,
+            DarkForestUtils: contract1.target,
+            Verifier: contract5.target,
+        },
+    });
+    const contract = await factory.deploy();
+    console.log("⏳ Waiting for deployment...");
+    await contract.waitForDeployment();
+    console.log("✅ DarkForestCore deployed to:", contract.target);
 
-  console.log("\n🔧 Initializing DarkForestCore with config...");
-  console.log("→ Admin address:", gameConfig.adminAddress);
-  console.log("→ Whitelist enabled:", gameConfig.whitelistEnabled);
-  console.log("→ ZK checks disabled:", gameConfig.DISABLE_ZK_CHECK);
+    console.log("\n🔧 Initializing DarkForestCore with config...");
+    console.log("→ Admin address:", gameConfig.adminAddress);
+    console.log("→ Whitelist enabled:", gameConfig.whitelistEnabled);
+    console.log("→ ZK checks disabled:", gameConfig.DISABLE_ZK_CHECK);
 
-  console.log("gameConfig", gameConfig);
-  
-
-  const tx = await contract.init(gameConfig);
-
-  console.log("⏳ Waiting for initialization...");
-  await tx.wait();
-  console.log("✅ Initialization complete");
-  console.log("→ Transaction hash:", tx.hash);
+    console.log("gameConfig", gameConfig);
 
 
+    const tx = await contract.init(gameConfig);
 
-  await clientConfig();
+    console.log("⏳ Waiting for initialization...");
+    await tx.wait();
+    console.log("✅ Initialization complete");
+    console.log("→ Transaction hash:", tx.hash);
 
-  console.log("✅ Client config complete");
 
 
-  return {
-      coreAddress: contract.target.toString(),
-      libraries: libraries
-  };
+    await clientConfig();
+
+    console.log("✅ Client config complete");
+
+
+    return {
+        coreAddress: contract.target.toString(),
+        libraries: libraries
+    };
 
 }

@@ -303,7 +303,7 @@ class GameUIManager extends EventEmitter {
 
         const dist = Math.sqrt(
           (mouseDownCoords.x - mouseUpOverCoords.x) ** 2 +
-            (mouseDownCoords.y - mouseUpOverCoords.y) ** 2
+          (mouseDownCoords.y - mouseUpOverCoords.y) ** 2
         );
         const myAtk: number = moveShipsDecay(forces, mouseDownPlanet, dist);
         let effPercentSilver = this.getSilverSending(from.locationId);
@@ -756,10 +756,6 @@ class GameUIManager extends EventEmitter {
 
   deployContract(gameConfig?: GameConfig): Promise<string> {
     return this.gameManager.deployContract(gameConfig);
-  }
-
-  deployTokenContract(): Promise<EthAddress> {
-    return this.gameManager.deployTokenContract();
   }
 
   // non-nullable

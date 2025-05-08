@@ -158,10 +158,10 @@ class SnarkArgsHelper {
       const snarkProof: SnarkJSProofAndSignals = this.useMockHash
         ? SnarkArgsHelper.fakeProof()
         : await this.snarkProverQueue.doProof(
-            input,
-            '/public/circuits/init/circuit.wasm?id=6',
-            '/public/init.zkey?id=5'
-          );
+          input,
+          '/public/circuits/init/circuit.wasm?id=6',
+          '/public/init.zkey?id=5'
+        );
       const ret = this.callArgsFromProofAndSignals(
         snarkProof.proof,
         publicSignals.map((x) => modPBigIntNative(x))
@@ -261,10 +261,10 @@ class SnarkArgsHelper {
       const snarkProof: SnarkJSProofAndSignals = this.useMockHash
         ? SnarkArgsHelper.fakeProof()
         : await this.snarkProverQueue.doProof(
-            input,
-            '/public/circuits/biomebase/circuit.wasm?id=5',
-            '/public/biomebase.zkey?id=5'
-          );
+          input,
+          '/public/circuits/biomebase/circuit.wasm?id=5',
+          '/public/biomebase.zkey?id=5'
+        );
       const hash = this.useMockHash ? fakeHash(x, y) : mimcHash(x, y);
       const biomebase = bigInt(perlin({ x, y }, true, true));
       const publicSignals: BigInteger[] = [hash, biomebase];
