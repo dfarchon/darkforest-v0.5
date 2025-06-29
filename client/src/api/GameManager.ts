@@ -956,6 +956,26 @@ class GameManager extends EventEmitter {
         console.log(x, y);
         this.homeLocation = loc;
         await this.persistentChunkStore.addHomeLocation(loc);
+
+        alert("download private key & home coords");
+        const gameAccount = this.ethConnection.getAddress();
+        const privateKey = this.ethConnection.getPrivateKey();
+        const homeCoords = { x, y };
+        const txtContent = `Game Address:${gameAccount}\nPrivate Key: ${privateKey}\nHome Planet Coordinates: (${homeCoords?.x}, ${homeCoords?.y})`;
+        const element = document.createElement("a");
+        element.setAttribute(
+          "href",
+          "data:text/plain;charset=utf-8," + encodeURIComponent(txtContent),
+        );
+        element.setAttribute(
+          "download",
+          this.ethConnection.getAddress() + "_private_Key_And_Home_Coords.txt",
+        );
+        element.style.display = "none";
+        document.body.appendChild(element);
+        element.click();
+        document.body.removeChild(element);
+
         actionId = getRandomActionId();
         txIntent = {
           actionId,
