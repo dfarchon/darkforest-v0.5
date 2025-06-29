@@ -501,7 +501,7 @@ class ContractsAPI extends EventEmitter {
       this.coreContract,
       args,
       {
-        gasPrice: 1000000000,
+        gasPrice: 1000000, // 0.001 gwei
         gasLimit: 2000000,
       }
     );

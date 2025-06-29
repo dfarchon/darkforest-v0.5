@@ -70,7 +70,7 @@ export class TxExecutor extends EventEmitter {
     contract: Contract,
     args: unknown[],
     overrides: providers.TransactionRequest = {
-      gasPrice: 1000000000,
+      gasPrice: 1000000, // 0.001 gwei
       gasLimit: 2000000,
     }
   ): PendingTransaction {
@@ -196,7 +196,7 @@ export class TxExecutor extends EventEmitter {
             (error as any).body || []
           );
         }
-      } catch (e) {}
+      } catch (e) { }
     }
 
     logEvent.rpc_endpoint = this.eth.getRpcEndpoint();
