@@ -235,24 +235,38 @@ class GameManager extends EventEmitter {
     await persistentChunkStore.saveTouchedPlanetIds(allTouchedPlanetIds);
 
     // only load {arrival data, planet data} for planets that we have mined on this device.
-    const planetsToLoad = allTouchedPlanetIds.filter((id) =>
-      minedPlanetIds.has(id)
-    );
+    // const planetsToLoad = allTouchedPlanetIds.filter((id) =>
+    // minedPlanetIds.has(id)
+    // );
+    const planetsToLoad = allTouchedPlanetIds;
 
     // fetch planets after allArrivals, since an arrival to a new planet might be sent
     // while we are fetching
     terminalEmitter.println('(3/5) Getting pending moves...');
     const allArrivals = await contractsAPI.getAllArrivals(planetsToLoad);
     terminalEmitter.println('(4/5) Getting planet metadata...');
-    const touchedAndMinedPlanets = await contractsAPI.bulkGetPlanets(
+    // const touchedAndMinedPlanets = await contractsAPI.bulkGetPlanets(
+    //   planetsToLoad
+    // );
+
+    // touchedAndMinedPlanets.forEach((planet, locId) => {
+    //   if (touchedAndMinedPlanets.has(locId)) {
+    //     planetVoyageIdMap.set(locId, []);
+    //   }
+    // });
+
+
+    const touchedPlanets = await contractsAPI.bulkGetPlanets(
       planetsToLoad
     );
 
-    touchedAndMinedPlanets.forEach((planet, locId) => {
-      if (touchedAndMinedPlanets.has(locId)) {
+    touchedPlanets.forEach((planet, locId) => {
+      if (touchedPlanets.has(locId)) {
         planetVoyageIdMap.set(locId, []);
       }
     });
+
+
 
     for (const arrival of allArrivals) {
       const voyageIds = planetVoyageIdMap.get(arrival.toPlanet);
@@ -266,7 +280,12 @@ class GameManager extends EventEmitter {
     // get artifacts on touched + mined planets
     // as well as artifacts i own as NFTs
     const heldArtifactIds: ArtifactId[] = [];
-    touchedAndMinedPlanets.forEach((planet) => {
+    // touchedAndMinedPlanets.forEach((planet) => {
+    //   if (planet.heldArtifactId) {
+    //     heldArtifactIds.push(planet.heldArtifactId);
+    //   }
+    // });
+    touchedPlanets.forEach((planet) => {
       if (planet.heldArtifactId) {
         heldArtifactIds.push(planet.heldArtifactId);
       }
@@ -296,7 +315,8 @@ class GameManager extends EventEmitter {
       account,
       balance,
       players,
-      touchedAndMinedPlanets,
+      // touchedAndMinedPlanets,
+      touchedPlanets,
       new Set<LocationId>(Array.from(allTouchedPlanetIds)),
       worldRadius,
       arrivals,

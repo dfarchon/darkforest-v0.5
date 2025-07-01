@@ -82,6 +82,45 @@ type ScoreboardEntry = {
   topPlanets: Planet[];
 };
 
+function calculateScoreboard(
+  players: Player[],
+  planets: Planet[]
+): ScoreboardEntry[] {
+  const scoreboardMap: Record<string, ScoreboardEntry> = {};
+  for (const player of players) {
+    scoreboardMap[player.address] = {
+      playerId: player.address,
+      score: 0,
+      topPlanets: [],
+    };
+    if (player.twitter) {
+      scoreboardMap[player.address].twitter = player.twitter;
+    }
+  }
+  for (const planet of planets) {
+    const owner = planet.owner;
+    if (scoreboardMap[owner]) {
+      scoreboardMap[owner].topPlanets.push(planet);
+    }
+  }
+  for (const player of players) {
+    const entry: ScoreboardEntry = scoreboardMap[player.address];
+    entry.topPlanets.sort((a, b) => b.energyCap - a.energyCap);
+    const nPlanets = entry.topPlanets.length;
+    for (let i = 0; i < nPlanets; i += 1) {
+      const planet = entry.topPlanets[i];
+      entry.score += (planet.silverSpent + planet.silver) / 10; // silver spent or held on this planet
+      if (i < 10) {
+        entry.score += planet.energyCap;
+      }
+    }
+  }
+  const entries: ScoreboardEntry[] = Object.values(scoreboardMap);
+  entries.sort((a, b) => b.score - a.score);
+
+  return entries;
+}
+
 // as [rank, score]
 export function calculateRankAndScore(
   scoreboard: ScoreboardEntry[],
@@ -139,14 +178,39 @@ export function LeaderboardPane({ hook }: { hook: ModalHook }) {
 
   const [visible] = hook;
 
+  // useEffect(() => {
+  //   if (uiManager) {
+  //     getCachedScoreboard().then((res) => {
+  //       setScoreboard(getScoreboard(uiManager, res.scoreboard));
+  //       setLastUpdated(res.timestamp);
+  //     });
+  //   }
+  // }, [uiManager, visible, account]);
+
   useEffect(() => {
-    if (uiManager) {
-      getCachedScoreboard().then((res) => {
-        setScoreboard(getScoreboard(uiManager, res.scoreboard));
-        setLastUpdated(res.timestamp);
-      });
-    }
+    if (!uiManager) return;
+
+    // Update scoreboard immediately and then every 10 seconds
+    const updateScoreboard = () => {
+      const players = uiManager.getAllPlayers();
+      const planets = uiManager.getAllOwnedPlanets();
+      const entries = calculateScoreboard(players, planets);
+      setLastUpdated(Date.now());
+      setScoreboard(entries);
+    };
+
+    // Execute immediately on mount
+    updateScoreboard();
+
+    // Set up 10-second interval timer
+    const interval = setInterval(updateScoreboard, 10000); // 10 seconds = 10000ms
+
+    // Cleanup function: clear timer when component unmounts or dependencies change
+    return () => {
+      clearInterval(interval);
+    };
   }, [uiManager, visible, account]);
+
 
   return (
     <ModalPane hook={hook} title='Leaderboard' name={ModalName.Leaderboard}>
