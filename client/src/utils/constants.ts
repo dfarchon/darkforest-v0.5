@@ -21,6 +21,9 @@ export const PYROPE_RPC = 'https://rpc.pyropechain.com';
 
 export const CHAIN_FACUET = 'https://pyropechain.com/faucet';
 
+export const CHAIN_NAME = 'Optimism L2';
+export const TOKEN_NAME = 'ETH';
+
 export const HAT_SIZES = [
   'None',
   'Tiny HAT',

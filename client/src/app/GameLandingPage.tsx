@@ -32,7 +32,7 @@ import { address, CheckedTypeUtils } from "../utils/CheckedTypeUtils";
 import { UIDataKey, useStoredUIState } from "../api/UIStateStorageManager";
 import TutorialManager, { TutorialState } from "../utils/TutorialManager";
 import { TerminalPromptType } from "../_types/darkforest/app/board/utils/TerminalTypes";
-import { BLOCK_EXPLORER_URL, CHAIN_FACUET } from "../utils/constants";
+import { BLOCK_EXPLORER_URL, CHAIN_FACUET, CHAIN_NAME } from "../utils/constants";
 import { neverResolves } from "../utils/Utils";
 import EthConnection from "../api/EthConnection";
 
@@ -213,7 +213,7 @@ export default function GameLandingPage(_props: { replayMode: boolean }) {
     terminalEmitter.print("Connecting to Ethereum L2");
     await animEllipsis();
     terminalEmitter.print(" ");
-    terminalEmitter.println("Connected to xDAI STAKE.", TerminalTextStyle.Blue);
+    terminalEmitter.println("Connected to " + CHAIN_NAME + ".", TerminalTextStyle.Blue);
 
     terminalEmitter.print("Installing flux capacitor");
     await animEllipsis();
@@ -282,7 +282,7 @@ export default function GameLandingPage(_props: { replayMode: boolean }) {
     await animEllipsis();
     terminalEmitter.print(" ");
     terminalEmitter.println(
-      "Connected to xDAI L2 network.",
+      "Connected to " + CHAIN_NAME + " network.",
       TerminalTextStyle.White
     );
 
@@ -526,6 +526,7 @@ export default function GameLandingPage(_props: { replayMode: boolean }) {
           TerminalTextStyle.Blue
         );
         terminalEmitter.println(' ]', TerminalTextStyle.Sub);
+
 
         terminalEmitter.print(
           '\nNeed ETH? Visit: ',

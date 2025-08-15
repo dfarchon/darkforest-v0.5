@@ -10,6 +10,7 @@ import { PopupManager } from './PopupManager';
 import { deferred, timeoutAfter } from '../utils/Utils';
 import { EventLogger } from '../instrumentation/EventLogger';
 import { ThrottledConcurrentQueue } from '../utils/ThrottledConcurrentQueue';
+import { getGasPriceFromURL } from './urlManager';
 
 export interface QueuedTxRequest {
   onSubmissionError: (e: Error) => void;
@@ -70,7 +71,7 @@ export class TxExecutor extends EventEmitter {
     contract: Contract,
     args: unknown[],
     overrides: providers.TransactionRequest = {
-      gasPrice: 1000000, // 0.001 gwei
+      gasPrice: 1000000000 * getGasPriceFromURL(), //default is 0.001 gwei
       gasLimit: 2000000,
     }
   ): PendingTransaction {
@@ -113,7 +114,7 @@ export class TxExecutor extends EventEmitter {
     if (balance < TxExecutor.MIN_BALANCE_ETH) {
       const notifsManager = NotificationManager.getInstance();
       notifsManager.balanceEmpty();
-      throw new Error('xDAI balance too low!');
+      throw new Error('balance too low!');
     }
   }
 
@@ -138,6 +139,7 @@ export class TxExecutor extends EventEmitter {
 
       time_called = Date.now();
       const methodName = TxTypeToEthFunctionName[txRequest.type];
+
       const submitted = await timeoutAfter<providers.TransactionResponse>(
         txRequest.contract[methodName](...txRequest.args, {
           ...txRequest.overrides,

@@ -91,7 +91,7 @@ class EthConnection extends EventEmitter {
       this.provider = newProvider;
       if (process.env.NODE_ENV === 'production') {
         if ((await newProvider.getNetwork()).chainId !== XDAI_CHAIN_ID) {
-          throw new Error('not a valid xDAI RPC URL');
+          throw new Error('not a valid RPC URL');
         }
       }
       this.provider = newProvider;

@@ -11,6 +11,7 @@ import UnsubscribePage from './UnsubscribePage';
 import { ShareArtifact } from './sharing/ShareArtifact';
 import { ThrottledConcurrentQueueBenchmark } from './benchmark/ThrottledConcurrentQueueBenchmark';
 import LobbyLandingPage from './LobbyLandingPage';
+import LandingPageRedux from './LandingPageRedux';
 
 function App() {
   return (
@@ -22,7 +23,7 @@ function App() {
           path='/replay1'
           render={() => <GameLandingPage replayMode={true} />}
         />
-        <Route path='/' exact component={LandingPage} />
+        <Route path='/' exact component={LandingPageRedux} />
         <Route path='/planet/:locationId' component={SharePlanet} />
         <Route path='/artifact/:artifactId' component={ShareArtifact} />
         <Route

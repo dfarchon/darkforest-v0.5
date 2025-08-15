@@ -44,6 +44,14 @@ export function HelpPane({ hook }: { hook: ModalHook }) {
   return (
     <ModalPane hook={hook} title='Help' name={ModalName.Help}>
       <HelpWrapper>
+        <p className='title'> Dark Forest Redux</p>
+        <p>
+          In August 2025, we successfully restored Dark Forest's classic version 0.5,
+          commemorating together the golden age of Dark Forest!
+
+        </p>
+        <br />
+
         <p className='title'>Plugins Contest</p>
         <p>
           Thanks so much for playing in Dark Forest v0.5! We've launched a

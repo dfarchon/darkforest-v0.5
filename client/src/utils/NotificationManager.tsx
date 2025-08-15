@@ -21,6 +21,7 @@ import {
 } from '../_types/global/GlobalTypes';
 import dfstyles from '../styles/dfstyles';
 import { biomeName } from './ArtifactUtils';
+import { TOKEN_NAME } from './constants';
 
 export enum NotificationType {
   Tx,
@@ -265,7 +266,7 @@ class NotificationManager extends EventEmitter {
     this.notify(
       NotificationType.BalanceEmpty,
       <span>
-        Your xDAI account is out of balance!
+        Your {TOKEN_NAME} account is out of balance!
         <br />
         Click <FAQ04Link>here</FAQ04Link> to learn how to get more.
       </span>

@@ -4,6 +4,7 @@ import styled, { css, keyframes } from 'styled-components';
 import Button from '../components/Button';
 import dfstyles from '../styles/dfstyles';
 import { ONE_DAY } from '../utils/Utils';
+import { CHAIN_NAME, TOKEN_NAME } from '../utils/constants';
 
 const StyledTxConfirmPopup = styled.div`
   width: 100%;
@@ -145,16 +146,18 @@ export function TxConfirmPopup({ match }: RouteComponentProps) {
     if (checked) doApproveFor24H();
     else approve();
   };
+  const rawGasPrice = localStorage.getItem('gasPrice');
 
+  const gasPrice = rawGasPrice ? Number(rawGasPrice) : 0.001; //default is  0.001 gwei
   const fromPlanet = localStorage.getItem(`${addr.toLowerCase()}-fromPlanet`);
   const toPlanet = localStorage.getItem(`${addr.toLowerCase()}-toPlanet`);
 
   const hatPlanet = localStorage.getItem(`${addr.toLowerCase()}-hatPlanet`);
   const hatLevel = localStorage.getItem(`${addr.toLowerCase()}-hatLevel`);
   const hatCost: number =
-    method === 'buyHat' && hatLevel ? 2 ** parseInt(hatLevel) : 0;
+    method === 'buyHat' && hatLevel ? 2 ** parseInt(hatLevel) * 0.001 : 0;
 
-  const txCost: number = 0.002 + hatCost;
+  const txCost: number = gasPrice * 0.002 + hatCost;
 
   const upPlanet = localStorage.getItem(`${addr.toLowerCase()}-upPlanet`);
   const branch = localStorage.getItem(`${addr.toLowerCase()}-branch`);
@@ -204,7 +207,7 @@ export function TxConfirmPopup({ match }: RouteComponentProps) {
             <div>
               <b>HAT Level</b>
               <span>
-                {hatLevel} ({hatCost} xDAI)
+                {hatLevel} ({hatCost} {TOKEN_NAME})
               </span>
             </div>
           </>
@@ -290,15 +293,15 @@ export function TxConfirmPopup({ match }: RouteComponentProps) {
       <div>
         <div>
           <b>Gas Fee</b>
-          <span>0.001 GWEI</span>
+          <span>{gasPrice} GWEI</span>
         </div>
         <div>
           <b>Gas Limit</b>
-          <span>2000000</span>
+          <span>2,000,000</span>
         </div>
         <div>
-          <b>Total Transaction Cost</b>
-          <span>{txCost.toFixed(8)} xDAI</span>
+          <b>Transaction Max Cost</b>
+          <span>{txCost.toFixed(8)} {TOKEN_NAME}</span>
         </div>
         {method === 'buyHat' && hatLevel && +hatLevel > 6 && (
           <div>
@@ -314,7 +317,7 @@ export function TxConfirmPopup({ match }: RouteComponentProps) {
         )}
         <div className='mtop'>
           <b>Account Balance</b>
-          <span>{parseFloat(balance).toFixed(8)} xDAI</span>
+          <span>{parseFloat(balance).toFixed(8)} {TOKEN_NAME}</span>
         </div>
         <div className='mtop'>
           <Button onClick={doReject}>
@@ -330,10 +333,10 @@ export function TxConfirmPopup({ match }: RouteComponentProps) {
       <div>
         <div>
           <span>
-            <ConfirmIcon /> DF connected to xDAI
+            <ConfirmIcon /> DF connected to {CHAIN_NAME}
           </span>
           <span>
-            Auto-confirm {'txs under $0.01'} for 24 hours{' '}
+            Auto-confirm {'txs '} for 24 hours{' '}
             <input
               type='checkbox'
               checked={checked}

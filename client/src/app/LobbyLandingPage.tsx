@@ -35,7 +35,7 @@ import { address } from "../utils/CheckedTypeUtils";
 import { UIDataKey, useStoredUIState } from "../api/UIStateStorageManager";
 import TutorialManager, { TutorialState } from "../utils/TutorialManager";
 import { TerminalPromptType } from "../_types/darkforest/app/board/utils/TerminalTypes";
-import { BLOCK_EXPLORER_URL } from "../utils/constants";
+import { BLOCK_EXPLORER_URL, CHAIN_NAME } from "../utils/constants";
 import styled from "styled-components";
 import {
   DEFAULT_GAME_CONFIG,
@@ -376,7 +376,7 @@ export default function LobbyLandingPage(_props: { replayMode: boolean }) {
     terminalEmitter.println("Initializing Dark Forest...");
     terminalEmitter.println("Connecting to blockchain...");
     await animEllipsis();
-    terminalEmitter.println("Connected to xDAI STAKE.", TerminalTextStyle.Blue);
+    terminalEmitter.println("Connected to " + CHAIN_NAME + ".", TerminalTextStyle.Blue);
     terminalEmitter.newline();
 
     // Skip compatibility checks
