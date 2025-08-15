@@ -46,6 +46,7 @@ contract DarkForestStorageV1 {
     mapping(uint256 => DarkForestTypes.PlanetExtendedInfo)
         public planetsExtendedInfo;
     mapping(address => bool) public isPlayerInitialized;
+    mapping(address => uint) public moveCnt;
     mapping(uint256 => uint256) public contractOwnedArtifactLocations;
 
     // maps location id to planet events array
@@ -54,4 +55,23 @@ contract DarkForestStorageV1 {
 
     // maps event id to arrival data
     mapping(uint256 => DarkForestTypes.ArrivalData) public planetArrivals;
+
+    // function getTokenMintEndTimestamp() public view returns (uint256) {
+    //     return tokenMintEndTimestamp;
+    // }
+
+    // function getTarget4RadiusConstant() public view returns (uint256) {
+    //     return target4RadiusConstant;
+    // }
+
+    // function bulkGetPlayersMoveCount(
+    //     uint256 startIdx,
+    //     uint256 endIdx
+    // ) public view returns (uint256[] memory ret) {
+    //     // return slice of players array from startIdx through endIdx - 1
+    //     ret = new uint256[](endIdx - startIdx);
+    //     for (uint256 i = startIdx; i < endIdx; i++) {
+    //         ret[i - startIdx] = playerMoveCount[playerIds[i]];
+    //     }
+    // }
 }

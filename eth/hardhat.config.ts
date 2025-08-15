@@ -3,6 +3,8 @@ import "@nomicfoundation/hardhat-toolbox";
 import "dotenv/config";
 
 import "./tasks/deploy";
+import "./tasks/admin";
+import "./tasks/analysis";
 
 const PUBLIC_MNEMONIC =
   "change typical hire slam amateur loan grid fix drama electric seed label";

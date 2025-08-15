@@ -28,7 +28,7 @@ import { Red, Sub } from '../../components/Text';
 import { useState } from 'react';
 import { GameObjects } from '../../api/GameObjects';
 
-const MINT_END = 1611584314 * 1000;
+const MINT_END = 4789012345 * 1000;
 
 const StyledFindArtifactPane = styled.div`
   width: 30em;
