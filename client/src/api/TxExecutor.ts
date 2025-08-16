@@ -45,7 +45,7 @@ export class TxExecutor extends EventEmitter {
   /**
    * don't allow users to submit txs if balance falls below
    */
-  private static readonly MIN_BALANCE_ETH = 0.002;
+  private static readonly MIN_BALANCE_ETH = 0.0000001;
 
   private txQueue: ThrottledConcurrentQueue;
   private lastTransaction: number;
