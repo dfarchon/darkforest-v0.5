@@ -11,15 +11,19 @@ export { MIN_CHUNK_SIZE, MAX_CHUNK_SIZE, LOCATION_ID_UB };
 // no slash at end plz
 // export const BLOCK_EXPLORER_URL = 'https://blockscout.com/poa/xdai';
 // export const BLOCK_EXPLORER_URL = 'https://holesky.etherscan.io';
-export const BLOCK_EXPLORER_URL = 'https://pyrope.blockscout.com';
+// export const BLOCK_EXPLORER_URL = 'https://pyrope.blockscout.com';
+export const BLOCK_EXPLORER_URL = 'https://explorer.optimism.io';
 
 // export const XDAI_CHAIN_ID = 100; 
 // export const XDAI_CHAIN_ID = 17000;
-export const XDAI_CHAIN_ID = 695569;
+// export const XDAI_CHAIN_ID = 695569;
+export const XDAI_CHAIN_ID = 10;
 
-export const PYROPE_RPC = 'https://rpc.pyropechain.com';
+// export const PYROPE_RPC = 'https://rpc.pyropechain.com';
+export const PYROPE_RPC = 'https://mainnet.optimism.io';
 
-export const CHAIN_FACUET = 'https://pyropechain.com/faucet';
+// export const CHAIN_FACUET = 'https://pyropechain.com/faucet';
+export const CHAIN_FACUET = 'https://app.optimism.io/';
 
 export const CHAIN_NAME = 'Optimism L2';
 export const TOKEN_NAME = 'ETH';

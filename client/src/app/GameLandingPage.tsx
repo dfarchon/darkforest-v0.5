@@ -726,9 +726,9 @@ export default function GameLandingPage(_props: { replayMode: boolean }) {
       );
 
       terminalEmitter.printLink(
-        "https://blockscout.com/poa/xdai/",
+        BLOCK_EXPLORER_URL,
         () => {
-          window.open("https://blockscout.com/poa/xdai/");
+          window.open(BLOCK_EXPLORER_URL);
         },
         TerminalTextStyle.Red
       );

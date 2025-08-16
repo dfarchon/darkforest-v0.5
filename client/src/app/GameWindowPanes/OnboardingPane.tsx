@@ -9,6 +9,7 @@ import { AccountContext } from '../GameWindow';
 import { Btn } from '../GameWindowComponents/Btn';
 import { SettingsIcon } from '../Icons';
 import { ModalName, ModalPane } from './ModalPane';
+import { BLOCK_EXPLORER_URL } from '../../utils/constants';
 
 const StyledOnboardingContent = styled.div`
   width: 36em;
@@ -55,8 +56,8 @@ enum OnboardState {
 
 function OnboardMoney({ advance }: { advance: () => void }) {
   const account = useContext<EthAddress | null>(AccountContext);
-  const explorerAddressLink = `https://blockscout.com/poa/xdai/address/${account}`;
-
+  // const explorerAddressLink = `https://blockscout.com/poa/xdai/address/${account}`;
+  const explorerAddressLink = BLOCK_EXPLORER_URL + account;
   return (
     <StyledOnboardingContent>
       <p>
