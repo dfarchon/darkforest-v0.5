@@ -38,7 +38,7 @@ const Container = styled.div`
 `;
 
 const ContentContainer = styled.div`
-  max-width: 800px;
+  max-width: 900px;
   margin: auto;
   padding: 20px;
   text-align: left;
@@ -47,6 +47,81 @@ const ContentContainer = styled.div`
 const Title = styled.h1`
   font-size: 3em;
   margin: 0 0 20px 0;
+`;
+
+const PrizePoolTitle = styled.h2`
+  font-size: 1.8em;
+  margin: 20px 0 15px 0;
+  color: #00ffff;
+  text-align: center;
+`;
+
+const PrizePoolContainer = styled.div`
+  background: rgba(0, 255, 0, 0.1);
+  border: 2px solid #00ff00;
+  border-radius: 8px;
+  padding: 20px;
+  margin: 20px 0;
+  width: 700px;
+`;
+
+const RightContainer = styled.div`
+  background: rgba(0, 255, 255, 0.1);
+  border: none;
+  border-radius: 8px;
+  padding: 20px;
+  margin: 20px 0;
+  width: 700px;
+  text-align: center;
+`;
+
+const PrizePoolAmount = styled.div`
+  font-size: 1.8em;
+  font-weight: bold;
+  color: #00ffff;
+  margin: 15px 0;
+  text-shadow: 0 0 15px #00ffff;
+`;
+
+const PrizeRules = styled.div`
+  text-align: left;
+  margin: 20px 0;
+`;
+
+const RuleItem = styled.div`
+  margin: 15px 0;
+  padding: 10px;
+  border-left: 3px solid #00ff00;
+  background: rgba(0, 255, 0, 0.05);
+`;
+
+const MilestoneGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 15px;
+  margin: 20px 0;
+`;
+
+const MilestoneItem = styled.div`
+  background: rgba(0, 255, 255, 0.1);
+  border: 1px solid #00ffff;
+  border-radius: 6px;
+  padding: 12px;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+`;
+
+const SponsorNote = styled.div`
+  background: rgba(255, 255, 0, 0.1);
+  border: 1px solid #ffff00;
+  border-radius: 8px;
+  padding: 15px;
+  margin: 20px 0;
+  text-align: center;
+  color: #ffff00;
 `;
 
 const Text = styled.p`
@@ -93,11 +168,18 @@ const GameButton = styled.button`
   }
 `;
 
-const LandingPageRedux: React.FC = () => {
-    const history = useHistory();
+const ContainerWrapper = styled.div`
+  display: flex;
+  gap: 30px;
+  align-items: flex-start;
+  justify-content: center;
+`;
 
-    const shareOnTwitter = () => {
-        const message = encodeURIComponent(`Dark Forest veterans, a distant signal calls…
+const LandingPageRedux: React.FC = () => {
+  const history = useHistory();
+
+  const shareOnTwitter = () => {
+    const message = encodeURIComponent(`Dark Forest veterans, a distant signal calls…
 
 [ redux.dfmud.xyz ]
 
@@ -110,50 +192,97 @@ The war approaches in silence…
 @VitalikButerin
 @nicksdjohnson
 `);
-        const twitterUrl = `https://twitter.com/intent/tweet?text=${message}`;
-        window.open(twitterUrl, "_blank");
-    };
+    const twitterUrl = `https://twitter.com/intent/tweet?text=${message}`;
+    window.open(twitterUrl, "_blank");
+  };
 
-    const enterGame = () => {
-        // Add game entry logic here
-        console.log("Entering game...");
-        history.push('/game1');
-    };
+  const enterGame = () => {
+    // Add game entry logic here
+    console.log("Entering game...");
+    history.push('/game1');
+  };
 
-    return (
-        <Container>
-            <ContentContainer>
-                <Title>Dark Forest Redux</Title>
-                <Title>ETH $4000+ Celebration</Title>
+  return (
+    <Container>
+      <ContentContainer>
+        <ContainerWrapper>
+          <PrizePoolContainer>
+            <PrizePoolTitle>0.5 ETH 🏆 </PrizePoolTitle>
 
-                <Text>
-                    A distant signal calls to you…<br />
-                    Echoes of classic rounds stir once more…<br />
-                    Awakened by the @DFArchon team
-                </Text>
+            <Text style={{ textAlign: 'center', marginBottom: '20px' }}>
+              Prize pool will be distributed until exhausted
+            </Text>
 
-                <Text>
-                    Tag 3 commanders from your old battlegrounds.<br />
-                    The war approaches in silence…
-                </Text>
+            <PrizeRules>
+              <RuleItem>
+                <strong>Base Reward:</strong> 0.000002 ETH per move (max 2000 moves per account)
+              </RuleItem>
 
-                <Text>
-                    <Link onClick={shareOnTwitter}>Share on Twitter</Link>
-                </Text>
+              <Text style={{ textAlign: 'center', margin: '20px 0' }}>
+                <strong>Milestone Bonuses (cumulative):</strong>
+              </Text>
 
-                <GameButton onClick={enterGame}>
-                    Enter the Dark Forest
-                </GameButton>
+              <MilestoneGrid>
+                <MilestoneItem>
+                  <span style={{ fontSize: '1.2em', fontWeight: 'bold' }}>100 Moves</span>
+                  <span>+0.0001 ETH</span>
+                </MilestoneItem>
+                <MilestoneItem>
+                  <span style={{ fontSize: '1.2em', fontWeight: 'bold' }}>500 Moves</span>
+                  <span>+0.001 ETH</span>
+                </MilestoneItem>
+                <MilestoneItem>
+                  <span style={{ fontSize: '1.2em', fontWeight: 'bold' }}>1000 Moves</span>
+                  <span>+0.002 ETH</span>
+                </MilestoneItem>
+                <MilestoneItem>
+                  <span style={{ fontSize: '1.2em', fontWeight: 'bold' }}>2000 Moves</span>
+                  <span>+0.005 ETH</span>
+                </MilestoneItem>
+              </MilestoneGrid>
 
-                <Text>
-                    Dark Forest Community Round <br />
-                    Start: Aug 16th <br />
-                    Inifite Game <br />
-                    More details will be revealed soon
-                </Text>
-            </ContentContainer>
-        </Container>
-    );
+              <RuleItem>
+                <strong>Distribution:</strong> Rewards distributed every 24 hours, ranked by moves
+              </RuleItem>
+            </PrizeRules>
+          </PrizePoolContainer>
+
+          <RightContainer>
+
+
+
+            <div style={{ background: 'rgba(255,255,0,0.1)', border: '1px solid #ffff00', borderRadius: '8px', padding: '15px', margin: '20px 0', textAlign: 'center', color: '#ffff00' }}>
+              <Text style={{ color: '#ffff00', margin: '0 0 10px 0' }}>
+                💡 Want to sponsor and grow the prize pool? Please DM us!
+              </Text>
+            </div>
+
+
+
+            <GameButton onClick={shareOnTwitter}>
+              Share on X
+            </GameButton>
+
+            <GameButton onClick={enterGame}>
+              Enter  Dark Forest
+            </GameButton>
+
+            <Text style={{ textAlign: 'center', marginTop: '20px' }}>
+              Dark Forest Community Round <br />
+              df 0.5 <br />
+              Powered by DFArchon team <br />
+
+              Start: Aug 16th 1PM (UTC+0) <br />
+              Infinite Game <br />
+            </Text>
+
+
+
+          </RightContainer>
+        </ContainerWrapper>
+      </ContentContainer>
+    </Container>
+  );
 };
 
 export default LandingPageRedux;
