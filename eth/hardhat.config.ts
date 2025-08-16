@@ -51,6 +51,13 @@ const config: HardhatUserConfig = {
       },
       chainId: 695569,
     },
+    optimism: {
+      url: process.env.OP_RPC,
+      accounts: {
+        mnemonic: MNEMONIC,
+      },
+      chainId: 10,
+    }
   },
   solidity: {
     version: "0.6.9",

@@ -3,7 +3,7 @@
     "whitelistEnabled": false,
     "paused": false,
     "DISABLE_ZK_CHECK": false,
-    "TIME_FACTOR_HUNDREDTHS": 400,
+    "TIME_FACTOR_HUNDREDTHS": 100,
     "PERLIN_THRESHOLD_1": 15,
     "PERLIN_THRESHOLD_2": 17,
     "PLANET_RARITY": 6000,

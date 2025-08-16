@@ -1,7 +1,7 @@
 export const libraryAddresses = {
-  "DarkForestUtils": "0xcD21165630c84999De15a02D8B3Fe37eFf3AA29e",
-  "DarkForestLazyUpdate": "0xA323F06BdEf16e8d6f58EB7f265042190631891C",
-  "DarkForestPlanet": "0x0A322A93e6a8F69Dd18576031c542451063c2446",
-  "DarkForestInitialize": "0x1A37b287f5FD668CF078a3cd8a95d740f7c9b669",
-  "Verifier": "0xe16fc734FE96afB0CBDe73bC48dC1cd0055f38B2"
+  "DarkForestUtils": "0x3Fba9d7206119097063e18D2ad87FE61d7cdBa61",
+  "DarkForestLazyUpdate": "0xcb9dB74818B01e50Ba420Af0D11FD15E090C77CB",
+  "DarkForestPlanet": "0xf69Fe385A3eA27f38D0c8CCCB1e2a92d3ea35bC7",
+  "DarkForestInitialize": "0x1B9536183C1cADffa5233577aCa89F172D85e279",
+  "Verifier": "0x30ef504e3eDdEf5029f6fa7efEb81CAA6CF3b0dE"
 };

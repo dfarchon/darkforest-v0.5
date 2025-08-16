@@ -1,7 +1,7 @@
 import { task } from "hardhat/config";
 import type { HardhatRuntimeEnvironment } from "hardhat/types";
 
-const contractAddress = "0x6c452936A27F5Afc41bCC9Dd49a5bdedBdfA9b7A";
+const contractAddress = "0x43F7602c746ddd1CA562061a0E76BBC9fe01266E";
 
 
 // Change admin address
