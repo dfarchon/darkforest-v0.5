@@ -227,7 +227,8 @@ export function FindArtifactPane({
         <p>
           <Red>
             {canMint ? (
-              'NOTE: You will no longer be able to mint new artifacts after Jan 25!'
+              // 'NOTE: You will no longer be able to mint new artifacts after Jan 25!'
+              'NOTE: The deadline for minting artifacts is 100 years from now!'
             ) : (
               <span>
                 NOTE: You can no longer mint new artifacts! Join us in v0.6 at @
@@ -320,6 +321,6 @@ export function FindArtifactPane({
           </>
         )}
       </StyledFindArtifactPane>
-    </ModalPane>
+    </ModalPane >
   );
 }
