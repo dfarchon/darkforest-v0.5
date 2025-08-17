@@ -526,6 +526,7 @@ export default function GameLandingPage(_props: { replayMode: boolean }) {
           TerminalTextStyle.Blue
         );
         terminalEmitter.println(' ]', TerminalTextStyle.Sub);
+        terminalEmitter.println('Please send ETH on Optimism to your burner account');
 
 
         terminalEmitter.print(
