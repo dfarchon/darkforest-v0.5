@@ -78,16 +78,16 @@ task("change-token-mint-end", "Change token mint end time")
 
 // Change target4 radius constant
 task("change-target4-radius", "Change target4 radius constant")
-    .addParam("newConstant", "New radius constant")
+    .addParam("newconstant", "New radius constant")
     .setAction(async (args, hre: HardhatRuntimeEnvironment) => {
         try {
             const contract = await hre.ethers.getContractAt(
                 "DarkForestCore",
                 contractAddress,
             );
-            const tx = await contract.changeTarget4RadiusConstant(args.newConstant);
+            const tx = await contract.changeTarget4RadiusConstant(args.newconstant);
             await tx.wait();
-            console.log("Target4 radius constant changed to:", args.newConstant);
+            console.log("Target4 radius constant changed to:", args.newconstant);
             console.log("Transaction hash:", tx.hash);
         } catch (error) {
             console.error("Error:", error);
