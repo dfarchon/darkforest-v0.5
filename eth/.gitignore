@@ -1,5 +1,7 @@
 node_modules
 .env
+.env.optimism 
+.env.pyrope
 
 # Hardhat files
 /cache

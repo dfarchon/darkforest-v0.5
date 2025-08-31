@@ -62,6 +62,7 @@ contract DarkForestCore is Initializable, DarkForestStorageV1 {
         SILVER_RARITY_3 = _gameConfig.SILVER_RARITY_3;
         planetLevelThresholds = _gameConfig.planetLevelThresholds;
         gameEndTimestamp = _gameConfig.gameEndTimestamp;
+        tokenMintEndTimestamp = _gameConfig.gameEndTimestamp;
         target4RadiusConstant = _gameConfig.target4RadiusConstant;
         target5RadiusConstant = _gameConfig.target5RadiusConstant;
         tokens = DarkForestTokens(_gameConfig.tokensAddress);
