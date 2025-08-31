@@ -24,7 +24,7 @@
         960
     ],
     "gameEndTimestamp": 4789012345,
-    "target4RadiusConstant": 6400,
+    "target4RadiusConstant": 25600,
     "target5RadiusConstant": 200,
     "tokensAddress": "0x0000000000000000000000000000000000000000"
 }
