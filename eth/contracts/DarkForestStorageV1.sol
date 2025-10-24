@@ -46,6 +46,7 @@ contract DarkForestStorageV1 {
     mapping(uint256 => DarkForestTypes.PlanetExtendedInfo)
         public planetsExtendedInfo;
     mapping(address => bool) public isPlayerInitialized;
+    mapping(address => uint) public moveCnt;
     mapping(uint256 => uint256) public contractOwnedArtifactLocations;
 
     // maps location id to planet events array
