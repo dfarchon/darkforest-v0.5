@@ -12,6 +12,8 @@ import GameUIManager from '../board/GameUIManager';
 import GameUIManagerContext from '../board/GameUIManagerContext';
 import { Btn } from '../GameWindowComponents/GameWindowComponents';
 import { PauseIcon, TargetIcon } from '../Icons';
+import { CHAIN_NAME } from '../../utils/constants';
+
 
 function TutorialPaneContent({
   tutorialState,
@@ -63,7 +65,7 @@ function TutorialPaneContent({
   } else if (tutorialState === TutorialState.Deselect) {
     return (
       <div>
-        Congrats, you've submitted a move to xDAI! Moves that are in the mempool
+        Congrats, you've submitted a move to {CHAIN_NAME}! Moves that are in the mempool
         are shown as dotted lines. Accepted moves are shown as solid lines.
         <br />
         <br />

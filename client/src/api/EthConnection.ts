@@ -11,7 +11,7 @@ import {
 import { EthAddress } from '../_types/global/GlobalTypes';
 import { CheckedTypeUtils } from '../utils/CheckedTypeUtils';
 import { EventEmitter } from 'events';
-import { XDAI_CHAIN_ID, PYROPE_RPC } from '../utils/constants';
+import { CHAIN_ID, CHAIN_RPC } from '../utils/constants';
 import { callWithRetry, sleep } from '../utils/Utils';
 
 /**
@@ -29,8 +29,8 @@ class EthConnection extends EventEmitter {
   static instance: EthConnection | null = null;
 
   private static readonly XDAI_DEFAULT_URL = window.origin.includes('localhost')
-    ? PYROPE_RPC
-    : PYROPE_RPC
+    ? CHAIN_RPC
+    : CHAIN_RPC
     ;
 
   private readonly knownAddresses: EthAddress[];
@@ -90,8 +90,8 @@ class EthConnection extends EventEmitter {
        */
       this.provider = newProvider;
       if (process.env.NODE_ENV === 'production') {
-        if ((await newProvider.getNetwork()).chainId !== XDAI_CHAIN_ID) {
-          throw new Error('not a valid xDAI RPC URL');
+        if ((await newProvider.getNetwork()).chainId !== CHAIN_ID) {
+          throw new Error('not a valid RPC URL');
         }
       }
       this.provider = newProvider;

@@ -60,12 +60,14 @@ import { aggregateBulkGetter, callWithRetry } from "../utils/Utils";
 import TerminalEmitter, { TerminalTextStyle } from "../utils/TerminalEmitter";
 import EthConnection from "./EthConnection";
 import NotificationManager from "../utils/NotificationManager";
-import { BLOCK_EXPLORER_URL } from "../utils/constants";
+import { BLOCK_EXPLORER_URL, CHAIN_NAME, TOKEN_NAME } from "../utils/constants";
 import bigInt from "big-integer";
 import { EthDecoders } from "./EthDecoders";
 import { TxExecutor } from "./TxExecutor";
 import { ThrottledConcurrentQueue } from "../utils/ThrottledConcurrentQueue";
 import { GameConfig, DEFAULT_GAME_CONFIG } from "../_types/global/GlobalTypes";
+import { getGasPriceFromURL } from './urlManager';
+
 
 export const CONTRACT_PRECISION = 1000;
 
@@ -501,7 +503,7 @@ class ContractsAPI extends EventEmitter {
       this.coreContract,
       args,
       {
-        gasPrice: 1000000, // 0.001 gwei
+        gasPrice: 1000000000 * getGasPriceFromURL(), //default is 0.001 gwei
         gasLimit: 2000000,
       }
     );
@@ -537,11 +539,17 @@ class ContractsAPI extends EventEmitter {
     if (!this.txRequestExecutor) {
       throw new Error("no signer, cannot execute tx");
     }
+
+    const val = bigInt(1000000000000000)
+      .multiply(2 ** currentHatLevel)
+      .toString();
+
+
+    console.log('val', val);
+
     const overrides: providers.TransactionRequest = {
       gasLimit: 500000,
-      value: bigInt(1000000000000000000)
-        .multiply(2 ** currentHatLevel)
-        .toString(),
+      value: val,
     };
 
     const tx = this.txRequestExecutor.makeRequest(
@@ -637,7 +645,7 @@ class ContractsAPI extends EventEmitter {
       // Check if we have enough balance to deploy
       const balance = await provider.getBalance(ethConnection.getAddress());
       if (balance.eq(0)) {
-        throw new Error("Account has zero balance. You need some xDAI to deploy a contract.");
+        throw new Error("Account has zero balance. You need some  " + TOKEN_NAME + " to deploy a contract.");
       }
 
       // First deploy the Tokens contract

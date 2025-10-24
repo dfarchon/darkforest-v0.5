@@ -2,7 +2,7 @@ import React, { useContext, useEffect } from 'react';
 import { useState } from 'react';
 import styled from 'styled-components';
 import { Sub } from '../../components/Text';
-import { HAT_SIZES } from '../../utils/constants';
+import { HAT_SIZES, TOKEN_NAME } from '../../utils/constants';
 import { ProcgenUtils } from '../../utils/ProcgenUtils';
 import UIEmitter, { UIEmitterEvent } from '../../utils/UIEmitter';
 import { EthAddress, Planet } from '../../_types/global/GlobalTypes';
@@ -37,12 +37,33 @@ const StyledHatPane = styled.div`
   }
 `;
 
+// NOTE: Fix the issue where the selected planet was not updated in time in the future
 export function HatPane({ hook }: { hook: ModalHook }) {
   const selected = useContext<Planet | null>(SelectedContext);
   const uiManager = useContext<GameUIManager | null>(GameUIManagerContext);
 
   const [balance, setBalance] = useState<number>(0);
   const [visible, setVisible] = hook;
+  const [refreshKey, setRefreshKey] = useState<number>(0);
+
+  // Get latest planet data
+  const getLatestSelectedPlanet = (): Planet | null => {
+    if (!uiManager || !selected) return null;
+    return uiManager.getPlanetWithId(selected.locationId) || selected;
+  };
+
+  // Refresh HatPane every 1 second
+  useEffect(() => {
+    if (!visible) return;
+
+    const refreshInterval = setInterval(() => {
+      setRefreshKey(prev => prev + 1);
+    }, 1000);
+
+    return () => {
+      clearInterval(refreshInterval);
+    };
+  }, [visible]);
 
   useEffect(() => {
     if (!uiManager) return;
@@ -58,7 +79,7 @@ export function HatPane({ hook }: { hook: ModalHook }) {
     return () => {
       clearInterval(intervalId);
     };
-  }, [uiManager, visible]);
+  }, [uiManager, visible, selected, refreshKey]);
 
   useEffect(() => {
     const doChange = (type: ContextMenuType) => {
@@ -76,58 +97,61 @@ export function HatPane({ hook }: { hook: ModalHook }) {
       uiEmitter.removeListener(UIEmitterEvent.ContextChange, doChange);
       uiEmitter.removeListener(UIEmitterEvent.GamePlanetSelected, hide);
     };
-  });
+  }, []);
+
+  // Use latest planet data
+  const latestSelected = getLatestSelectedPlanet();
 
   const getCost = () => {
-    return selected ? 2 ** selected.hatLevel : 1;
+    return latestSelected ? 2 ** latestSelected.hatLevel * 0.001 : 1 * 0.001;
   };
 
   const hatUpgradePending = (): boolean => {
-    if (!selected) return true;
-    if (!selected.unconfirmedBuyHats) return false;
-    return selected.unconfirmedBuyHats.length > 0;
+    if (!latestSelected) return true;
+    if (!latestSelected.unconfirmedBuyHats) return false;
+    return latestSelected.unconfirmedBuyHats.length > 0;
   };
 
   const account = useContext<EthAddress | null>(AccountContext);
 
   const enabled = (): boolean =>
-    !hatUpgradePending() && selected?.owner === account && balance > getCost();
+    !hatUpgradePending() && latestSelected?.owner === account && balance > getCost();
 
   return (
     <ModalPane hook={hook} title={'Planet HATs'} name={ModalName.Hats}>
       <StyledHatPane>
         <div>
           <Sub>HAT</Sub>
-          <span>{ProcgenUtils.getPlanetCosmetic(selected).hatType}</span>
+          <span>{ProcgenUtils.getPlanetCosmetic(latestSelected).hatType}</span>
         </div>
         <div>
           <Sub>HAT Level</Sub>
-          <span>{HAT_SIZES[selected ? selected.hatLevel : 0]}</span>
+          <span>{HAT_SIZES[latestSelected ? latestSelected.hatLevel : 0]}</span>
         </div>
         <div className='margin-top'>
           <Sub>Next Level Cost</Sub>
           <span>
-            {getCost()} USD <Sub>/</Sub> {getCost()} DAI
+            {getCost()} {TOKEN_NAME}
           </span>
         </div>
         <div>
           <Sub>Current Balance</Sub>
-          <span>{balance} xDAI</span>
+          <span>{balance} {TOKEN_NAME}</span>
         </div>
         <div>
           <a onClick={() => window.open('https://blog.zkga.me/df-04-faq')}>
-            <u>Get More xDAI</u>
+            <u>Get More {TOKEN_NAME}</u>
           </a>
         </div>
         <div>
           <Btn
             onClick={() => {
-              if (!enabled() || !uiManager || !selected) return;
-              uiManager.buyHat(selected);
+              if (!enabled() || !uiManager || !latestSelected) return;
+              uiManager.buyHat(latestSelected);
             }}
             className={!enabled() ? 'btn-disabled' : ''}
           >
-            {selected && selected.hatLevel > 0 ? 'Upgrade' : 'Buy'} HAT
+            {latestSelected && latestSelected.hatLevel > 0 ? 'Upgrade' : 'Buy'} HAT
           </Btn>
         </div>
       </StyledHatPane>
