@@ -12,9 +12,11 @@
     "prettier": "prettier --write --plugin=prettier-plugin-solidity 'contracts/**/*.sol'",
     "compile": "hardhat compile",
     "hardhat:dev": "hardhat --network localhost",
+    "wallet:new": "hardhat --network localhost wallet:new",
     "deploy:dev": "NODE_ENV=development hardhat --network localhost deploy",
     "deploy:prod": "NODE_ENV=production hardhat --network holesky deploy",
     "deploy:pyrope": "NODE_ENV=production hardhat --network pyrope deploy",
+    "deploy:baseSepolia": "NODE_ENV=production hardhat --network baseSepolia deploy",
     "test": "oz compile --optimizer on && mocha --exit --recursive test --timeout 25000"
   },
   "devDependencies": {

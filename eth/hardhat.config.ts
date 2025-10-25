@@ -5,6 +5,7 @@ import "dotenv/config";
 import "./tasks/deploy";
 import "./tasks/admin";
 import "./tasks/analysis";
+import "./tasks/wallet";
 
 const PUBLIC_MNEMONIC =
   "change typical hire slam amateur loan grid fix drama electric seed label";
@@ -12,6 +13,8 @@ const PUBLIC_MNEMONIC =
 const MNEMONIC = process.env.deployer_mnemonic || PUBLIC_MNEMONIC;
 
 const HOLESKY_RPC = process.env.HOLESKY_RPC;
+
+const BASE_SEPOLIA_RPC = process.env.BASE_SEPOLIA_RPC;
 
 const config: HardhatUserConfig = {
   defaultNetwork: "localhost",
@@ -50,6 +53,13 @@ const config: HardhatUserConfig = {
         mnemonic: MNEMONIC,
       },
       chainId: 695569,
+    },
+    baseSepolia: {
+      url: process.env.BASE_SEPOLIA_RPC,
+      accounts: {
+        mnemonic: MNEMONIC,
+      },
+      chainId: 84532,
     },
   },
   solidity: {

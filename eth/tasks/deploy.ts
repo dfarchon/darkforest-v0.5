@@ -148,7 +148,7 @@ async function deploy(
     const controllerWalletAddress = deployer.address;
     gameConfig.adminAddress = controllerWalletAddress;
 
-    const requires = hre.ethers.parseEther("0.1");
+    const requires = hre.ethers.parseEther("0.005");
     // Retrieve the balance of the deployer's address using the provider
     const balance = await deployer.provider.getBalance(deployer.address);
 
