@@ -21,7 +21,7 @@ import TutorialManager, { TutorialState } from '../../utils/TutorialManager';
 
 const StyledExploreContextPane = styled.div`
   width: 18.5em;
-  height: 8em;
+  height: 10em;
 
   & p:last-child {
     margin-top: 0.5em;

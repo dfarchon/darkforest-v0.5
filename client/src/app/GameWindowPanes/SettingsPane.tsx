@@ -18,6 +18,7 @@ import Viewport, { getDefaultScroll } from '../board/Viewport';
 import { AccountContext } from '../GameWindow';
 import { Btn } from '../GameWindowComponents/Btn';
 import { ModalHook, ModalName, ModalPane } from './ModalPane';
+import { CHAIN_NAME } from '../../utils/constants';
 
 const scrollMin = 0.0001 * 10000;
 const scrollMax = 0.01 * 10000;
@@ -337,7 +338,7 @@ export function SettingsPane({
             <span>{balance}</span>
           </div>
           <div className='row'>
-            <Sub>Auto-confirm txs under $0.01</Sub>
+            <Sub>Auto-confirm txs </Sub>
             <input
               type='checkbox'
               checked={allowTx}
@@ -391,7 +392,7 @@ export function SettingsPane({
         <div className='section'>
           <p>
             We collect a minimal set of data and statistics such as SNARK
-            proving times, average transaction times across browsers, and xDAI
+            proving times, average transaction times across browsers, and {CHAIN_NAME}
             transaction errors, to help us optimize performance and fix bugs.
             This does not include personal data like email or IP address.
           </p>

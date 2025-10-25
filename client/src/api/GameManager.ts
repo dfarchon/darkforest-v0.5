@@ -1526,7 +1526,7 @@ class GameManager extends EventEmitter {
     );
     localStorage.setItem(
       `${this.getAccount()?.toLowerCase()}-hatLevel`,
-      (planet.hatLevel + 1).toString()
+      (planet.hatLevel).toString()
     );
 
     const actionId = getRandomActionId();

@@ -28,7 +28,7 @@ import { Red, Sub } from '../../components/Text';
 import { useState } from 'react';
 import { GameObjects } from '../../api/GameObjects';
 
-const MINT_END = 1611584314 * 1000;
+const MINT_END = 4789012345 * 1000;
 
 const StyledFindArtifactPane = styled.div`
   width: 30em;
@@ -227,7 +227,8 @@ export function FindArtifactPane({
         <p>
           <Red>
             {canMint ? (
-              'NOTE: You will no longer be able to mint new artifacts after Jan 25!'
+              // 'NOTE: You will no longer be able to mint new artifacts after Jan 25!'
+              'NOTE: The deadline for minting artifacts is 100 years from now!'
             ) : (
               <span>
                 NOTE: You can no longer mint new artifacts! Join us in v0.6 at @

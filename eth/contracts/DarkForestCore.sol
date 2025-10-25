@@ -84,11 +84,11 @@ contract DarkForestCore is Initializable, DarkForestStorageV1 {
     ////////////////////////////
 
     // Whitelist events
-    event WhitelistStatusChanged(bool enabled);
-    event PlayerWhitelisted(address player);
-    event KeyAdded(bytes32 keyHash);
-    event KeyUsed(bytes32 keyHash, address owner);
-    event PlayerRemovedFromWhitelist(address player);
+    // event WhitelistStatusChanged(bool enabled);
+    // event PlayerWhitelisted(address player);
+    // event KeyAdded(bytes32 keyHash);
+    // event KeyUsed(bytes32 keyHash, address owner);
+    // event PlayerRemovedFromWhitelist(address player);
 
     // // Toggle whitelist functionality
     // function setWhitelistEnabled(bool _enabled) public onlyAdmin {
@@ -179,7 +179,7 @@ contract DarkForestCore is Initializable, DarkForestStorageV1 {
     /// ACCESS CONTROL ///
     //////////////////////
     modifier onlyAdmin() {
-        require(msg.sender == adminAddress, "Sender is not a game master");
+        require(msg.sender == adminAddress, "admin");
         _;
     }
 
@@ -196,7 +196,7 @@ contract DarkForestCore is Initializable, DarkForestStorageV1 {
     modifier notTokenEnded() {
         require(
             block.timestamp < tokenMintEndTimestamp,
-            "Token mint period has ended"
+            "Mint period has ended"
         );
         _;
     }
@@ -357,6 +357,10 @@ contract DarkForestCore is Initializable, DarkForestStorageV1 {
         }
     }
 
+    function getMoveCnt(address addr) public view returns (uint) {
+        return moveCnt[addr];
+    }
+
     function getPlanetLevelThresholds() public view returns (uint256[] memory) {
         return planetLevelThresholds;
     }
@@ -500,7 +504,7 @@ contract DarkForestCore is Initializable, DarkForestStorageV1 {
         uint256 _perlin,
         bool _isHomePlanet
     ) private {
-        require(_locationIdValid(_location), "Not a valid planet location");
+        require(_locationIdValid(_location), "invalid");
 
         (
             uint256 _level,
@@ -518,7 +522,7 @@ contract DarkForestCore is Initializable, DarkForestStorageV1 {
             );
 
         if (_isHomePlanet) {
-            require(_level == 0, "Can only initialize on planet level 0");
+            require(_level == 0, "only lvl 0");
         }
 
         DarkForestPlanet.initializePlanet(
@@ -622,7 +626,7 @@ contract DarkForestCore is Initializable, DarkForestStorageV1 {
         }
 
         // check radius
-        require(_newRadius <= worldRadius, "Attempting to move out of bounds");
+        require(_newRadius <= worldRadius, "Out of bounds");
 
         // Only perform if the toPlanet have never initialized previously
         if (!planetsExtendedInfo[_newLoc].isInitialized) {
@@ -648,14 +652,16 @@ contract DarkForestCore is Initializable, DarkForestStorageV1 {
                 }
             }
             if (msg.sender == planets[_newLoc].owner) {
-                require(arrivalsFromOwner < 6, "Planet is rate-limited");
+                require(arrivalsFromOwner < 6, "Rate-limited");
             } else {
-                require(arrivalsFromOthers < 6, "Planet is rate-limited");
+                require(arrivalsFromOthers < 6, "Rate-limited");
             }
         }
 
         // Refresh fromPlanet first before doing any action on it
         refreshPlanet(_oldLoc);
+        moveCnt[msg.sender]++;
+
         DarkForestPlanet.move(
             _oldLoc,
             _newLoc,
@@ -703,7 +709,7 @@ contract DarkForestCore is Initializable, DarkForestStorageV1 {
     ) public notPaused {
         require(
             planetsExtendedInfo[_location].isInitialized == true,
-            "Planet is not initialized"
+            "Not initialized"
         );
 
         refreshPlanet(_location);
@@ -728,7 +734,7 @@ contract DarkForestCore is Initializable, DarkForestStorageV1 {
     function buyHat(uint256 _location) public payable {
         require(
             planetsExtendedInfo[_location].isInitialized == true,
-            "Planet is not initialized"
+            "Not initialized"
         );
 
         refreshPlanet(_location);
@@ -738,9 +744,10 @@ contract DarkForestCore is Initializable, DarkForestStorageV1 {
             "Only owner can buy hat for planet"
         );
 
-        uint256 cost = (1 << planetsExtendedInfo[_location].hatLevel) * 1 ether;
+        uint256 cost = (1 << planetsExtendedInfo[_location].hatLevel) *
+            0.001 ether;
 
-        require(msg.value >= cost, "Insufficient value sent");
+        require(msg.value >= cost, "Insufficient value");
 
         planetsExtendedInfo[_location].hatLevel += 1;
         emit BoughtHat(_location);
